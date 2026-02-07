@@ -21,10 +21,10 @@ export type Database = {
           created_at: string | null
           id: string
           origin_url: string | null
-          platform: string
+          platform: Database["public"]["Enums"]["job_platform"]
           position_title: string
           raw_data: Json | null
-          status: string
+          status: Database["public"]["Enums"]["job_status"]
           user_id: string
         }
         Insert: {
@@ -33,10 +33,10 @@ export type Database = {
           created_at?: string | null
           id?: string
           origin_url?: string | null
-          platform: string
+          platform: Database["public"]["Enums"]["job_platform"]
           position_title: string
           raw_data?: Json | null
-          status?: string
+          status?: Database["public"]["Enums"]["job_status"]
           user_id: string
         }
         Update: {
@@ -45,10 +45,10 @@ export type Database = {
           created_at?: string | null
           id?: string
           origin_url?: string | null
-          platform?: string
+          platform?: Database["public"]["Enums"]["job_platform"]
           position_title?: string
           raw_data?: Json | null
-          status?: string
+          status?: Database["public"]["Enums"]["job_status"]
           user_id?: string
         }
         Relationships: []
@@ -93,7 +93,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      job_platform: "WANTED" | "SARAMIN" | "LINKEDIN" | "MANUAL"
+      job_status:
+        | "APPLIED"
+        | "DOCS_PASSED"
+        | "INTERVIEWING"
+        | "OFFERED"
+        | "REJECTED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -220,6 +226,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      job_platform: ["WANTED", "SARAMIN", "LINKEDIN", "MANUAL"],
+      job_status: [
+        "APPLIED",
+        "DOCS_PASSED",
+        "INTERVIEWING",
+        "OFFERED",
+        "REJECTED",
+      ],
+    },
   },
 } as const
