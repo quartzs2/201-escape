@@ -1,6 +1,13 @@
 import { BaseAdapter } from "@/lib/adapters/BaseAdapter";
 import { RECRUIT_SITE_URLS } from "@/lib/constants/recruit-sites";
-import { JobPost, JobId } from "@/lib/types/job";
+import {
+  JobPost,
+  JobId,
+  MANUAL_JOB_DEFAULTS,
+  partialJobPostSchema,
+} from "@/lib/types/job";
+
+const manualInputSchema = partialJobPostSchema.omit({ platform: true });
 
 /**
  * 사용자가 직접 입력한 데이터를 처리하는 기본 어댑터
@@ -13,14 +20,17 @@ export class ManualAdapter extends BaseAdapter {
   /**
    * 수동 입력 데이터를 정규화된 규격으로 반환
    */
-  transform(data: Partial<JobPost>): JobPost {
+  override transform(rawContent: unknown): JobPost {
+    const parseResult = manualInputSchema.safeParse(rawContent);
+    const data = parseResult.success ? parseResult.data : {};
+
     return {
-      id: data.id ?? (crypto.randomUUID() as JobId),
-      platform: "MANUAL",
-      title: data.title ?? "제목 없는 공고",
-      companyName: data.companyName ?? "회사명 미입력",
-      url: data.url ?? "",
-      status: data.status ?? "APPLIED",
+      id: data.id ? (data.id as JobId) : (crypto.randomUUID() as JobId),
+      platform: MANUAL_JOB_DEFAULTS.platform,
+      title: data.title ?? MANUAL_JOB_DEFAULTS.title,
+      companyName: data.companyName ?? MANUAL_JOB_DEFAULTS.companyName,
+      url: data.url ?? MANUAL_JOB_DEFAULTS.url,
+      status: data.status ?? MANUAL_JOB_DEFAULTS.status,
       appliedDate: data.appliedDate,
       memo: data.memo,
     };
