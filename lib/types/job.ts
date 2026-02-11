@@ -25,7 +25,32 @@ export const MANUAL_JOB_DEFAULTS = {
   companyName: "회사명 미입력",
   url: "",
   status: "APPLIED",
-} satisfies Pick<JobPost, "platform" | "title" | "companyName" | "url" | "status">;
+} satisfies Pick<
+  JobPost,
+  "platform" | "title" | "companyName" | "url" | "status"
+>;
+
+export const WANTED_JOB_DEFAULTS = {
+  platform: "WANTED",
+  title: "제목 없는 공고",
+  companyName: "회사명 미입력",
+  url: "",
+  status: "APPLIED",
+} satisfies Pick<
+  JobPost,
+  "platform" | "title" | "companyName" | "url" | "status"
+>;
+
+export const SARAMIN_JOB_DEFAULTS = {
+  platform: "SARAMIN",
+  title: "제목 없는 공고",
+  companyName: "회사명 미입력",
+  url: "",
+  status: "APPLIED",
+} satisfies Pick<
+  JobPost,
+  "platform" | "title" | "companyName" | "url" | "status"
+>;
 
 export const jobStatusSchema = z.enum(Constants.public.Enums.job_status);
 
