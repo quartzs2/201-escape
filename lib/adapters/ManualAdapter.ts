@@ -24,6 +24,10 @@ export class ManualAdapter extends BaseAdapter {
     return url === "" || !isExternalSite;
   }
 
+  async fetch(_url: string): Promise<unknown> {
+    throw new Error("Manual adapter does not support URL extraction.");
+  }
+
   /**
    * 수동 입력 데이터를 정규화된 규격으로 반환
    */
