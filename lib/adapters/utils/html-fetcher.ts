@@ -49,7 +49,7 @@ async function fetchWithManualRedirect(initialUrl: string): Promise<string> {
   let redirectCount = 0;
 
   while (redirectCount <= EXTRACT_JOB_MAX_REDIRECT_COUNT) {
-    const validated = validateSafeUrl(currentUrl);
+    const validated = await validateSafeUrl(currentUrl);
     if (!validated.ok) {
       throw new Error(`Insecure redirect or URL blocked: ${validated.reason}`);
     }

@@ -11,7 +11,7 @@ export type ExtractJobDataResult =
   | { ok: false; reason: string };
 
 export async function extractJobData(url: string): Promise<ExtractJobDataResult> {
-  const validatedUrlResult = validateSafeUrl(url);
+  const validatedUrlResult = await validateSafeUrl(url);
   if (!validatedUrlResult.ok) {
     return validatedUrlResult;
   }
