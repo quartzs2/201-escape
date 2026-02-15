@@ -2,6 +2,7 @@ import { BaseAdapter } from "@/lib/adapters/BaseAdapter";
 import { ManualAdapter } from "@/lib/adapters/ManualAdapter";
 import { SaraminAdapter } from "@/lib/adapters/SaraminAdapter";
 import { WantedAdapter } from "@/lib/adapters/WantedAdapter";
+import { JobPost } from "@/lib/types/job";
 
 export class AdapterFactory {
   private static adapters: BaseAdapter[] = [
@@ -17,5 +18,25 @@ export class AdapterFactory {
     const adapter = this.adapters.find((a) => a.supports(url));
 
     return adapter ?? new ManualAdapter();
+  }
+
+  static async extractFromUrl(url: string): Promise<JobPost> {
+    const adapter = this.getAdapter(url);
+
+    if (adapter instanceof ManualAdapter) {
+      return adapter.transform({ url });
+    }
+
+    const rawContent = await adapter.fetch(url);
+    const transformed = adapter.transform(rawContent);
+
+    if (transformed.url.trim().length === 0) {
+      return {
+        ...transformed,
+        url,
+      };
+    }
+
+    return transformed;
   }
 }

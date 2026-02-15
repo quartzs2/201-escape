@@ -10,6 +10,11 @@ export abstract class BaseAdapter {
   abstract supports(url: string): boolean;
 
   /**
+   * URL에서 원본 데이터를 수집
+   */
+  abstract fetch(url: string): Promise<unknown>;
+
+  /**
    * 원본 데이터를 JobPost 형식으로 정규화
    */
   abstract transform(rawContent: unknown): JobPost;
