@@ -127,6 +127,41 @@ export type Database = {
           updated_at?: string
         }
       }
+      job_snapshots: {
+        Insert: {
+          created_at?: string
+          id?: string
+          job_id: string
+          raw_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Relationships: [
+          {
+            columns: ["job_id"]
+            foreignKeyName: "job_snapshots_job_id_fkey"
+            isOneToOne: false
+            referencedColumns: ["id"]
+            referencedRelation: "jobs"
+          },
+        ]
+        Row: {
+          created_at: string
+          id: string
+          job_id: string
+          raw_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_id?: string
+          raw_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+      }
       jobs: {
         Insert: {
           company_name: string
@@ -136,7 +171,6 @@ export type Database = {
           origin_url: string
           platform: Database["public"]["Enums"]["job_platform"]
           position_title: string
-          raw_data?: Json | null
         }
         Relationships: []
         Row: {
@@ -147,7 +181,6 @@ export type Database = {
           origin_url: string
           platform: Database["public"]["Enums"]["job_platform"]
           position_title: string
-          raw_data: Json | null
         }
         Update: {
           company_name?: string
@@ -157,7 +190,6 @@ export type Database = {
           origin_url?: string
           platform?: Database["public"]["Enums"]["job_platform"]
           position_title?: string
-          raw_data?: Json | null
         }
       }
     }
