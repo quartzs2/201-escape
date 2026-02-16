@@ -32,13 +32,6 @@ export function getFirstString(values: Array<string | undefined>): string | unde
 }
 
 /**
- * 메타 태그의 content 속성 값을 가져옵니다.
- */
-export function getMetaContent($: CheerioAPI, selector: string): string | undefined {
-  return asNonEmptyString($(selector).attr("content"));
-}
-
-/**
  * 여러 셀렉터 중 가장 먼저 매칭되는 텍스트를 가져옵니다.
  */
 export function getFirstTextBySelectors(
@@ -56,21 +49,10 @@ export function getFirstTextBySelectors(
 }
 
 /**
- * JSON 문자열을 안전하게 파싱합니다.
+ * 메타 태그의 content 속성 값을 가져옵니다.
  */
-export function parseJson(text: string): unknown {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return undefined;
-  }
-}
-
-/**
- * 값이 객체(Record)인지 확인합니다.
- */
-export function isJsonRecord(value: unknown): value is JsonRecord {
-  return typeof value === "object" && value !== null;
+export function getMetaContent($: CheerioAPI, selector: string): string | undefined {
+  return asNonEmptyString($(selector).attr("content"));
 }
 
 /**
@@ -95,6 +77,13 @@ export function hasJobPostingType(record: JsonRecord): boolean {
 }
 
 /**
+ * 값이 객체(Record)인지 확인합니다.
+ */
+export function isJsonRecord(value: unknown): value is JsonRecord {
+  return typeof value === "object" && value !== null;
+}
+
+/**
  * HTML 내의 application/ld+json 스크립트에서 JobPosting 정보를 추출합니다.
  */
 export function parseJobPostingJsonLd($: CheerioAPI, processor: (item: JsonRecord) => void): void {
@@ -112,4 +101,15 @@ export function parseJobPostingJsonLd($: CheerioAPI, processor: (item: JsonRecor
       }
     }
   });
+}
+
+/**
+ * JSON 문자열을 안전하게 파싱합니다.
+ */
+export function parseJson(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
+  }
 }

@@ -1,5 +1,6 @@
-import { ROUTES } from "@/lib/constants/routes";
 import Link from "next/link";
+
+import { ROUTES } from "@/lib/constants/routes";
 
 export default function AuthCodeErrorPage() {
   return (
@@ -12,16 +13,16 @@ export default function AuthCodeErrorPage() {
         </p>
         <div className="pt-4">
           <Link
-            href={ROUTES.LOGIN}
             className="inline-block rounded-lg bg-black px-6 py-2 text-white transition-colors hover:bg-gray-800"
+            href={ROUTES.LOGIN}
           >
             로그인 페이지로 돌아가기
           </Link>
         </div>
         <div>
           <Link
-            href={ROUTES.HOME}
             className="text-sm text-gray-500 hover:underline"
+            href={ROUTES.HOME}
           >
             메인 화면으로
           </Link>

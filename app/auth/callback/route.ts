@@ -1,9 +1,10 @@
-import { ROUTES } from "@/lib/constants/routes";
-import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
+import { ROUTES } from "@/lib/constants/routes";
+import { createClient } from "@/lib/supabase/server";
+
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { origin, searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   // if "next" is in param, use it as the redirect URL
   let next = searchParams.get("next") ?? ROUTES.HOME;

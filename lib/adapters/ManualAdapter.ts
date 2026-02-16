@@ -1,8 +1,8 @@
 import { BaseAdapter } from "@/lib/adapters/BaseAdapter";
 import { RECRUIT_SITE_URL_LIST } from "@/lib/constants/recruit-sites";
 import {
-  JobPost,
   JobId,
+  JobPost,
   MANUAL_JOB_DEFAULTS,
   partialJobPostSchema,
 } from "@/lib/types/job";
@@ -16,16 +16,16 @@ const manualInputSchema = partialJobPostSchema.omit({ platform: true });
  * 사용자가 직접 입력한 데이터를 처리하는 어댑터
  */
 export class ManualAdapter extends BaseAdapter {
+  async fetch(): Promise<unknown> {
+    throw new Error("Manual adapter does not support URL extraction.");
+  }
+
   supports(url: string): boolean {
     const isExternalSite = RECRUIT_SITE_URL_LIST.some((site) => {
       return url.includes(site);
     });
 
     return url === "" || !isExternalSite;
-  }
-
-  async fetch(_url: string): Promise<unknown> {
-    throw new Error("Manual adapter does not support URL extraction.");
   }
 
   /**
@@ -36,14 +36,14 @@ export class ManualAdapter extends BaseAdapter {
     const data = parsed.success ? parsed.data : {};
 
     return {
-      id: (data.id as JobId) ?? (crypto.randomUUID() as JobId),
-      platform: MANUAL_JOB_DEFAULTS.platform,
-      title: data.title ?? MANUAL_JOB_DEFAULTS.title,
-      companyName: data.companyName ?? MANUAL_JOB_DEFAULTS.companyName,
-      url: data.url ?? MANUAL_JOB_DEFAULTS.url,
-      status: data.status ?? MANUAL_JOB_DEFAULTS.status,
       appliedDate: data.appliedDate,
+      companyName: data.companyName ?? MANUAL_JOB_DEFAULTS.companyName,
+      id: (data.id as JobId) ?? (crypto.randomUUID() as JobId),
       memo: data.memo,
+      platform: MANUAL_JOB_DEFAULTS.platform,
+      status: data.status ?? MANUAL_JOB_DEFAULTS.status,
+      title: data.title ?? MANUAL_JOB_DEFAULTS.title,
+      url: data.url ?? MANUAL_JOB_DEFAULTS.url,
     };
   }
 }

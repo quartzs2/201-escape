@@ -5,14 +5,14 @@ import { JobPost } from "@/lib/types/job";
  */
 export abstract class BaseAdapter {
   /**
-   * 해당 url을 처리할 수 있는 어댑터인지 확인
-   */
-  abstract supports(url: string): boolean;
-
-  /**
    * URL에서 원본 데이터를 수집
    */
   abstract fetch(url: string): Promise<unknown>;
+
+  /**
+   * 해당 url을 처리할 수 있는 어댑터인지 확인
+   */
+  abstract supports(url: string): boolean;
 
   /**
    * 원본 데이터를 JobPost 형식으로 정규화
