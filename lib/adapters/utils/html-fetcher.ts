@@ -1,3 +1,4 @@
+import { validateSafeUrl } from "@/lib/adapters/utils/url-validator";
 import {
   EXTRACT_JOB_MAX_REDIRECT_COUNT,
   EXTRACT_JOB_MAX_RETRY_COUNT,
@@ -5,15 +6,8 @@ import {
   EXTRACT_JOB_REQUEST_TIMEOUT_MS,
   EXTRACT_JOB_RETRY_DELAY_MS,
 } from "@/lib/constants/extract-job";
-import { validateSafeUrl } from "@/lib/adapters/utils/url-validator";
 
 const RETRY_BACKOFF_MULTIPLIER = 1;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
 
 /**
  * URL에서 HTML을 가져옵니다. SSRF 방지를 위해 리다이렉트를 수동으로 처리하고 검증합니다.
@@ -95,4 +89,10 @@ async function fetchWithManualRedirect(initialUrl: string): Promise<string> {
   }
 
   throw new Error(`Too many redirects (max: ${EXTRACT_JOB_MAX_REDIRECT_COUNT})`);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }

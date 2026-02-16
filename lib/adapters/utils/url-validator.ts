@@ -1,8 +1,9 @@
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
-import { RECRUIT_SITE_URL_LIST } from "@/lib/constants/recruit-sites";
-import { EXTRACT_JOB_MAX_URL_LENGTH } from "@/lib/constants/extract-job";
 import { z } from "zod";
+
+import { EXTRACT_JOB_MAX_URL_LENGTH } from "@/lib/constants/extract-job";
+import { RECRUIT_SITE_URL_LIST } from "@/lib/constants/recruit-sites";
 
 export const INVALID_URL_REASON = "Invalid URL format.";
 export const NOT_ALLOWED_DOMAIN_REASON = "Only wanted.co.kr and saramin.co.kr are supported.";
@@ -18,8 +19,83 @@ const urlSchema = z
   .pipe(z.url());
 
 export type UrlValidationResult =
-  | { ok: true; value: URL }
-  | { ok: false; reason: string };
+  | { ok: false; reason: string }
+  | { ok: true; value: URL };
+
+export async function validateSafeUrl(rawUrl: string): Promise<UrlValidationResult> {
+  const parsedUrl = urlSchema.safeParse(rawUrl);
+  if (!parsedUrl.success) {
+    return {
+      ok: false,
+      reason: INVALID_URL_REASON,
+    };
+  }
+
+  const url = new URL(parsedUrl.data);
+  if (!ALLOWED_PROTOCOL_SET.has(url.protocol)) {
+    return {
+      ok: false,
+      reason: INVALID_URL_REASON,
+    };
+  }
+
+  const hostname = url.hostname.toLowerCase();
+
+  if (!isAllowedRecruitHost(hostname)) {
+    return {
+      ok: false,
+      reason: NOT_ALLOWED_DOMAIN_REASON,
+    };
+  }
+
+  if (isBlockedHost(hostname)) {
+    return {
+      ok: false,
+      reason: BLOCKED_HOST_REASON,
+    };
+  }
+
+  if (await hasBlockedResolvedAddress(hostname)) {
+    return {
+      ok: false,
+      reason: BLOCKED_HOST_REASON,
+    };
+  }
+
+  return {
+    ok: true,
+    value: url,
+  };
+}
+
+async function hasBlockedResolvedAddress(hostname: string): Promise<boolean> {
+  const normalizedHost = hostname.toLowerCase();
+  const ipVersion = isIP(normalizedHost);
+  if (ipVersion !== 0) {
+    return isBlockedHost(normalizedHost);
+  }
+
+  try {
+    const records = await lookup(normalizedHost, {
+      all: true,
+      verbatim: true,
+    });
+
+    if (records.length === 0) {
+      return true;
+    }
+
+    for (const record of records) {
+      if (isBlockedHost(record.address)) {
+        return true;
+      }
+    }
+
+    return false;
+  } catch {
+    return true;
+  }
+}
 
 function isAllowedRecruitHost(hostname: string): boolean {
   const normalizedHost = hostname.toLowerCase();
@@ -31,6 +107,27 @@ function isAllowedRecruitHost(hostname: string): boolean {
     ) {
       return true;
     }
+  }
+
+  return false;
+}
+
+function isBlockedHost(hostname: string): boolean {
+  const normalizedHost = hostname.toLowerCase();
+  if (
+    BLOCKED_HOSTNAME_SET.has(normalizedHost) ||
+    normalizedHost.endsWith(".local")
+  ) {
+    return true;
+  }
+
+  const ipVersion = isIP(normalizedHost);
+  if (ipVersion === 4) {
+    return isBlockedIpv4(normalizedHost);
+  }
+
+  if (ipVersion === 6) {
+    return isBlockedIpv6(normalizedHost);
   }
 
   return false;
@@ -85,100 +182,4 @@ function isBlockedIpv6(hostname: string): boolean {
   }
 
   return false;
-}
-
-function isBlockedHost(hostname: string): boolean {
-  const normalizedHost = hostname.toLowerCase();
-  if (
-    BLOCKED_HOSTNAME_SET.has(normalizedHost) ||
-    normalizedHost.endsWith(".local")
-  ) {
-    return true;
-  }
-
-  const ipVersion = isIP(normalizedHost);
-  if (ipVersion === 4) {
-    return isBlockedIpv4(normalizedHost);
-  }
-
-  if (ipVersion === 6) {
-    return isBlockedIpv6(normalizedHost);
-  }
-
-  return false;
-}
-
-async function hasBlockedResolvedAddress(hostname: string): Promise<boolean> {
-  const normalizedHost = hostname.toLowerCase();
-  const ipVersion = isIP(normalizedHost);
-  if (ipVersion !== 0) {
-    return isBlockedHost(normalizedHost);
-  }
-
-  try {
-    const records = await lookup(normalizedHost, {
-      all: true,
-      verbatim: true,
-    });
-
-    if (records.length === 0) {
-      return true;
-    }
-
-    for (const record of records) {
-      if (isBlockedHost(record.address)) {
-        return true;
-      }
-    }
-
-    return false;
-  } catch {
-    return true;
-  }
-}
-
-export async function validateSafeUrl(rawUrl: string): Promise<UrlValidationResult> {
-  const parsedUrl = urlSchema.safeParse(rawUrl);
-  if (!parsedUrl.success) {
-    return {
-      ok: false,
-      reason: INVALID_URL_REASON,
-    };
-  }
-
-  const url = new URL(parsedUrl.data);
-  if (!ALLOWED_PROTOCOL_SET.has(url.protocol)) {
-    return {
-      ok: false,
-      reason: INVALID_URL_REASON,
-    };
-  }
-
-  const hostname = url.hostname.toLowerCase();
-
-  if (!isAllowedRecruitHost(hostname)) {
-    return {
-      ok: false,
-      reason: NOT_ALLOWED_DOMAIN_REASON,
-    };
-  }
-
-  if (isBlockedHost(hostname)) {
-    return {
-      ok: false,
-      reason: BLOCKED_HOST_REASON,
-    };
-  }
-
-  if (await hasBlockedResolvedAddress(hostname)) {
-    return {
-      ok: false,
-      reason: BLOCKED_HOST_REASON,
-    };
-  }
-
-  return {
-    ok: true,
-    value: url,
-  };
 }

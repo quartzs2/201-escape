@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
@@ -20,10 +20,10 @@ export default function LoginPage() {
     url.searchParams.set("next", ROUTES.HOME);
 
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
       options: {
         redirectTo: url.toString(),
       },
+      provider: "google",
     });
 
     if (error) {

@@ -1,10 +1,19 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
@@ -13,87 +22,11 @@ export type Database = {
     PostgrestVersion: "14.1"
   }
   public: {
-    Tables: {
-      jobs: {
-        Row: {
-          applied_at: string | null
-          company_name: string
-          created_at: string | null
-          id: string
-          origin_url: string | null
-          platform: Database["public"]["Enums"]["job_platform"]
-          position_title: string
-          raw_data: Json | null
-          status: Database["public"]["Enums"]["job_status"]
-          user_id: string
-        }
-        Insert: {
-          applied_at?: string | null
-          company_name: string
-          created_at?: string | null
-          id?: string
-          origin_url?: string | null
-          platform: Database["public"]["Enums"]["job_platform"]
-          position_title: string
-          raw_data?: Json | null
-          status?: Database["public"]["Enums"]["job_status"]
-          user_id: string
-        }
-        Update: {
-          applied_at?: string | null
-          company_name?: string
-          created_at?: string | null
-          id?: string
-          origin_url?: string | null
-          platform?: Database["public"]["Enums"]["job_platform"]
-          position_title?: string
-          raw_data?: Json | null
-          status?: Database["public"]["Enums"]["job_status"]
-          user_id?: string
-        }
-        Relationships: []
-      }
-      memos: {
-        Row: {
-          content: string | null
-          id: number
-          is_draft: boolean | null
-          job_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          content?: string | null
-          id?: number
-          is_draft?: boolean | null
-          job_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          content?: string | null
-          id?: number
-          is_draft?: boolean | null
-          job_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "memos_job_id_fkey"
-            columns: ["job_id"]
-            isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
+    CompositeTypes: {
       [_ in never]: never
     }
     Enums: {
-      job_platform: "WANTED" | "SARAMIN" | "LINKEDIN" | "MANUAL"
+      job_platform: "LINKEDIN" | "MANUAL" | "SARAMIN" | "WANTED"
       job_status:
         | "APPLIED"
         | "DOCS_PASSED"
@@ -101,15 +34,112 @@ export type Database = {
         | "OFFERED"
         | "REJECTED"
     }
-    CompositeTypes: {
+    Functions: {
+      [_ in never]: never
+    }
+    Tables: {
+      jobs: {
+        Insert: {
+          applied_at?: null | string
+          company_name: string
+          created_at?: null | string
+          id?: string
+          origin_url?: null | string
+          platform: Database["public"]["Enums"]["job_platform"]
+          position_title: string
+          raw_data?: Json | null
+          status?: Database["public"]["Enums"]["job_status"]
+          user_id: string
+        }
+        Relationships: []
+        Row: {
+          applied_at: null | string
+          company_name: string
+          created_at: null | string
+          id: string
+          origin_url: null | string
+          platform: Database["public"]["Enums"]["job_platform"]
+          position_title: string
+          raw_data: Json | null
+          status: Database["public"]["Enums"]["job_status"]
+          user_id: string
+        }
+        Update: {
+          applied_at?: null | string
+          company_name?: string
+          created_at?: null | string
+          id?: string
+          origin_url?: null | string
+          platform?: Database["public"]["Enums"]["job_platform"]
+          position_title?: string
+          raw_data?: Json | null
+          status?: Database["public"]["Enums"]["job_status"]
+          user_id?: string
+        }
+      }
+      memos: {
+        Insert: {
+          content?: null | string
+          id?: number
+          is_draft?: boolean | null
+          job_id?: null | string
+          updated_at?: null | string
+        }
+        Relationships: [
+          {
+            columns: ["job_id"]
+            foreignKeyName: "memos_job_id_fkey"
+            isOneToOne: false
+            referencedColumns: ["id"]
+            referencedRelation: "jobs"
+          },
+        ]
+        Row: {
+          content: null | string
+          id: number
+          is_draft: boolean | null
+          job_id: null | string
+          updated_at: null | string
+        }
+        Update: {
+          content?: null | string
+          id?: number
+          is_draft?: boolean | null
+          job_id?: null | string
+          updated_at?: null | string
+        }
+      }
+    }
+    Views: {
       [_ in never]: never
     }
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+export type Json =
+  | boolean
+  | Json[]
+  | null
+  | number
+  | string
+  | { [key: string]: Json | undefined }
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
@@ -190,39 +220,9 @@ export type TablesUpdate<
       : never
     : never
 
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export const Constants = {
   public: {
