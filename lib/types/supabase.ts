@@ -26,6 +26,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      interview_type: "CULTURE" | "FINAL" | "HR" | "OTHER" | "TECH"
       job_platform: "LINKEDIN" | "MANUAL" | "SARAMIN" | "WANTED"
       job_status:
         | "APPLIED"
@@ -38,75 +39,157 @@ export type Database = {
       [_ in never]: never
     }
     Tables: {
-      jobs: {
+      applications: {
         Insert: {
-          applied_at?: null | string
-          company_name: string
-          created_at?: null | string
+          applied_at?: string
+          created_at?: string
           id?: string
-          origin_url?: null | string
-          platform: Database["public"]["Enums"]["job_platform"]
-          position_title: string
-          raw_data?: Json | null
+          job_id: string
+          notes?: null | string
           status?: Database["public"]["Enums"]["job_status"]
+          updated_at?: string
           user_id: string
-        }
-        Relationships: []
-        Row: {
-          applied_at: null | string
-          company_name: string
-          created_at: null | string
-          id: string
-          origin_url: null | string
-          platform: Database["public"]["Enums"]["job_platform"]
-          position_title: string
-          raw_data: Json | null
-          status: Database["public"]["Enums"]["job_status"]
-          user_id: string
-        }
-        Update: {
-          applied_at?: null | string
-          company_name?: string
-          created_at?: null | string
-          id?: string
-          origin_url?: null | string
-          platform?: Database["public"]["Enums"]["job_platform"]
-          position_title?: string
-          raw_data?: Json | null
-          status?: Database["public"]["Enums"]["job_status"]
-          user_id?: string
-        }
-      }
-      memos: {
-        Insert: {
-          content?: null | string
-          id?: number
-          is_draft?: boolean | null
-          job_id?: null | string
-          updated_at?: null | string
         }
         Relationships: [
           {
             columns: ["job_id"]
-            foreignKeyName: "memos_job_id_fkey"
+            foreignKeyName: "applications_job_id_fkey"
             isOneToOne: false
             referencedColumns: ["id"]
             referencedRelation: "jobs"
           },
         ]
         Row: {
-          content: null | string
-          id: number
-          is_draft: boolean | null
-          job_id: null | string
-          updated_at: null | string
+          applied_at: string
+          created_at: string
+          id: string
+          job_id: string
+          notes: null | string
+          status: Database["public"]["Enums"]["job_status"]
+          updated_at: string
+          user_id: string
         }
         Update: {
-          content?: null | string
-          id?: number
-          is_draft?: boolean | null
-          job_id?: null | string
-          updated_at?: null | string
+          applied_at?: string
+          created_at?: string
+          id?: string
+          job_id?: string
+          notes?: null | string
+          status?: Database["public"]["Enums"]["job_status"]
+          updated_at?: string
+          user_id?: string
+        }
+      }
+      interviews: {
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          interview_type: Database["public"]["Enums"]["interview_type"]
+          is_draft?: boolean
+          location?: null | string
+          round: number
+          scheduled_at: string
+          scratchpad?: null | string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            columns: ["application_id"]
+            foreignKeyName: "interviews_application_id_fkey"
+            isOneToOne: false
+            referencedColumns: ["id"]
+            referencedRelation: "applications"
+          },
+        ]
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          interview_type: Database["public"]["Enums"]["interview_type"]
+          is_draft: boolean
+          location: null | string
+          round: number
+          scheduled_at: string
+          scratchpad: null | string
+          updated_at: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          interview_type?: Database["public"]["Enums"]["interview_type"]
+          is_draft?: boolean
+          location?: null | string
+          round?: number
+          scheduled_at?: string
+          scratchpad?: null | string
+          updated_at?: string
+        }
+      }
+      job_snapshots: {
+        Insert: {
+          created_at?: string
+          id?: string
+          job_id: string
+          raw_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Relationships: [
+          {
+            columns: ["job_id"]
+            foreignKeyName: "job_snapshots_job_id_fkey"
+            isOneToOne: false
+            referencedColumns: ["id"]
+            referencedRelation: "jobs"
+          },
+        ]
+        Row: {
+          created_at: string
+          id: string
+          job_id: string
+          raw_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_id?: string
+          raw_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+      }
+      jobs: {
+        Insert: {
+          company_name: string
+          created_at?: string
+          description?: null | string
+          id?: string
+          origin_url: string
+          platform: Database["public"]["Enums"]["job_platform"]
+          position_title: string
+        }
+        Relationships: []
+        Row: {
+          company_name: string
+          created_at: string
+          description: null | string
+          id: string
+          origin_url: string
+          platform: Database["public"]["Enums"]["job_platform"]
+          position_title: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          description?: null | string
+          id?: string
+          origin_url?: string
+          platform?: Database["public"]["Enums"]["job_platform"]
+          position_title?: string
         }
       }
     }
@@ -227,6 +310,7 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 export const Constants = {
   public: {
     Enums: {
+      interview_type: ["TECH", "HR", "CULTURE", "FINAL", "OTHER"],
       job_platform: ["WANTED", "SARAMIN", "LINKEDIN", "MANUAL"],
       job_status: [
         "APPLIED",
