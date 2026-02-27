@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 
-import "./globals.css";
 import localFont from "next/font/local";
+
+import { PORTAL_ROOT_ID } from "@/lib/constants/dom";
+
+import "./globals.css";
 
 export const metadata: Metadata = {
   description: "모바일 제스처와 데이터 시각화를 활용한 통합 채용 관리 대시보드",
@@ -21,7 +24,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${pretendard.className} antialiased`}>{children}</body>
+      <body className={`${pretendard.className} antialiased`}>
+        {children}
+        <div id={PORTAL_ROOT_ID} />
+      </body>
     </html>
   );
 }
