@@ -26,6 +26,8 @@ const eslintConfig = defineConfig([
     },
   },
   perfectionist.configs["recommended-natural"],
+  ...storybook.configs["flat/recommended"],
+  eslintConfigPrettier,
   {
     rules: {
       curly: ["error", "all"],
@@ -39,8 +41,6 @@ const eslintConfig = defineConfig([
       "unused-imports/no-unused-imports": "error",
     },
   },
-  ...storybook.configs["flat/recommended"],
-  eslintConfigPrettier,
 ]);
 
 export default eslintConfig;
