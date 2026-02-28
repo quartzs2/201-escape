@@ -167,6 +167,7 @@ export const useBottomSheet = ({ isOpen, onClose }: BottomSheetConfig) => {
   }, []);
 
   useGesture({
+    canDragFromScrollable: (translateY) => translateY > 0,
     enabled: isVisible,
     handleRef: headerRef,
     onDragEnd: ({ translateY, velocity }) => {

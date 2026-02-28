@@ -51,6 +51,7 @@ type DragEndState = {
 };
 
 type GestureConfig = {
+  canDragFromScrollable?: (translateY: number) => boolean;
   enabled: boolean;
   handleRef?: RefObject<HTMLElement | null>;
   onDragEnd: (state: DragEndState) => void;
@@ -60,6 +61,7 @@ type GestureConfig = {
 };
 
 export const useGesture = ({
+  canDragFromScrollable,
   enabled,
   handleRef,
   onDragEnd,
@@ -100,8 +102,7 @@ export const useGesture = ({
       if (isHandleTouched) {
         return true;
       }
-      // 시트가 이미 아래로 내려간 상태에서는 스크롤 영역 밖이어도 드래그 허용
-      if (touchStart.targetY > 0 && !isScrollableTouched) {
+      if (!isScrollableTouched && canDragFromScrollable?.(touchStart.targetY)) {
         return true;
       }
       if (target.contains(eventTarget) && !scrollable?.contains(eventTarget)) {
@@ -316,5 +317,12 @@ export const useGesture = ({
       // transform은 외부에서 닫기 애니메이션으로 관리하므로 여기서는 초기화하지 않음
       // (초기화 시 애니메이션이 끝나기 전에 요소가 순간적으로 원위치로 표시될 수 있음)
     };
-  }, [targetRef, scrollableRef, handleRef, rubberBand, enabled]);
+  }, [
+    targetRef,
+    scrollableRef,
+    handleRef,
+    rubberBand,
+    enabled,
+    canDragFromScrollable,
+  ]);
 };
