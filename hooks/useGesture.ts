@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useEffect, useEffectEvent, useRef } from "react";
 
 const OVERSCROLL_SNAP_THRESHOLD = -30;
 const RUBBER_BAND_FRICTION = 3.5;
@@ -69,11 +69,10 @@ export const useGesture = ({
   scrollableRef,
   targetRef,
 }: GestureConfig) => {
-  const onDragEndRef = useRef(onDragEnd);
-
-  useEffect(() => {
-    onDragEndRef.current = onDragEnd;
-  }, [onDragEnd]);
+  const onDragEndEvent = useEffectEvent(onDragEnd);
+  const canDragFromScrollableEvent = useEffectEvent((translateY: number) =>
+    canDragFromScrollable?.(translateY),
+  );
 
   const metrics = useRef(getInitialMetrics());
 
@@ -102,7 +101,10 @@ export const useGesture = ({
       if (isHandleTouched) {
         return true;
       }
-      if (!isScrollableTouched && canDragFromScrollable?.(touchStart.targetY)) {
+      if (
+        !isScrollableTouched &&
+        canDragFromScrollableEvent(touchStart.targetY)
+      ) {
         return true;
       }
       if (target.contains(eventTarget) && !scrollable?.contains(eventTarget)) {
@@ -241,9 +243,9 @@ export const useGesture = ({
 
       if (currentY < OVERSCROLL_SNAP_THRESHOLD) {
         target.style.transform = "translateY(0px)";
-        onDragEndRef.current({ translateY: 0, velocity: 0 });
+        onDragEndEvent({ translateY: 0, velocity: 0 });
       } else {
-        onDragEndRef.current({ translateY: currentY, velocity });
+        onDragEndEvent({ translateY: currentY, velocity });
       }
 
       metrics.current = getInitialMetrics();
@@ -317,12 +319,5 @@ export const useGesture = ({
       // transform은 외부에서 닫기 애니메이션으로 관리하므로 여기서는 초기화하지 않음
       // (초기화 시 애니메이션이 끝나기 전에 요소가 순간적으로 원위치로 표시될 수 있음)
     };
-  }, [
-    targetRef,
-    scrollableRef,
-    handleRef,
-    rubberBand,
-    enabled,
-    canDragFromScrollable,
-  ]);
+  }, [targetRef, scrollableRef, handleRef, rubberBand, enabled]);
 };
