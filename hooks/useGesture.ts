@@ -101,6 +101,11 @@ export const useGesture = ({
       if (isHandleTouched) {
         return true;
       }
+
+      if (e instanceof MouseEvent) {
+        return false;
+      }
+
       if (
         !isScrollableTouched &&
         canDragFromScrollableEvent(touchStart.targetY)
@@ -111,8 +116,10 @@ export const useGesture = ({
         return true;
       }
 
-      if (isScrollableTouched && touchMove.movingDirection === "down") {
-        return (scrollable?.scrollTop ?? 0) === 0;
+      if (isScrollableTouched) {
+        if (touchMove.movingDirection === "down") {
+          return (scrollable?.scrollTop ?? 0) < 1;
+        }
       }
 
       return false;
