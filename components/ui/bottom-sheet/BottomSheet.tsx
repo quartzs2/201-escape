@@ -116,7 +116,10 @@ function Overlay({ className, ...props }: React.ComponentProps<"div">) {
         isVisible ? "opacity-100" : "opacity-0",
         className,
       )}
-      onClick={() => handleClose()}
+      onClick={(e) => {
+        handleClose();
+        props.onClick?.(e);
+      }}
     />
   );
 }
