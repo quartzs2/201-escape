@@ -1,46 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
-import { useGesture } from "@/hooks";
+import { useDrag } from "@/hooks/useDrag";
+import { useScrollLock } from "@/hooks/useScrollLock";
+import { SpringAnimator } from "@/lib/utils/SpringAnimator";
 
-const ANIMATION_DURATION_MS = 300;
-const TRANSFORM_HIDDEN = "translateY(100%)";
-const TRANSFORM_VISIBLE = "translateY(0px)";
+import { useBottomSheetState } from "./useBottomSheetState";
 
-// 여러 바텀시트가 동시에 열릴 때 scroll lock을 올바르게 관리하기 위한 Set
-const scrollLockOwners = new Set<object>();
-const VELOCITY_CLOSE_THRESHOLD = 0.5;
-const POSITION_CLOSE_RATIO = 0.3;
-const FOCUSABLE_ELEMENTS_SELECTOR = [
-  "a[href]",
-  "button:not([disabled])",
-  "textarea:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  '[tabindex]:not([tabindex="-1"])',
-].join(", ");
+const SPRING_STIFFNESS = 400;
+const SPRING_DAMPING = 35;
+const SPRING_MASS = 1;
 
-const getTitleElement = (sheet: HTMLElement): HTMLElement | null => {
-  const labelledElementId = sheet.getAttribute("aria-labelledby");
-  if (!labelledElementId) {
-    return null;
-  }
-
-  const titleElement = document.getElementById(labelledElementId);
-  return titleElement instanceof HTMLElement ? titleElement : null;
-};
-
-const getFocusableTargets = (sheet: HTMLElement) => {
-  const elements = sheet.querySelectorAll<HTMLElement>(
-    FOCUSABLE_ELEMENTS_SELECTOR,
-  );
-  return {
-    firstElement: elements[0] ?? null,
-    lastElement: elements[elements.length - 1] ?? null,
-    titleElement: getTitleElement(sheet),
-  };
-};
+// 드래그 종료 시 닫힘 판단 기준
+const VELOCITY_CLOSE_THRESHOLD = 500; // px/s (EMA 속도 기준)
+const POSITION_CLOSE_RATIO = 0.4; // 시트 높이 대비 비율
 
 type BottomSheetConfig = {
   isOpen: boolean;
@@ -48,306 +22,94 @@ type BottomSheetConfig = {
 };
 
 export const useBottomSheet = ({ isOpen, onClose }: BottomSheetConfig) => {
-  const [isVisible, setIsVisible] = useState(false);
-  // isOpen이 false → true로 반복 전환될 때, isVisible이 이미 true여도
-  // 포커스 초기화 effect를 재실행하기 위한 카운터
-  const [openCount, setOpenCount] = useState(0);
-
   const sheetRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<HTMLDivElement>(null);
 
-  const prevFocusRef = useRef<HTMLElement | null>(null);
-  const isVisibleRef = useRef(false);
-  const isClosingRef = useRef(false);
-  const closeTimerRef = useRef<null | ReturnType<typeof setTimeout>>(null);
-  const transitionEndListenerRef = useRef<
-    ((e: TransitionEvent) => void) | null
-  >(null);
-  const attachedSheetRef = useRef<HTMLDivElement | null>(null);
-  const closeTokenRef = useRef(0);
+  // SpringAnimator는 lazy 생성 — onUpdate가 sheetRef를 닫아 안정적
+  const springRef = useRef<null | SpringAnimator>(null);
 
-  const onCloseRef = useRef(onClose);
+  const getSpring = (): SpringAnimator => {
+    if (!springRef.current) {
+      springRef.current = new SpringAnimator({
+        damping: SPRING_DAMPING,
+        mass: SPRING_MASS,
+        onUpdate: (position) => {
+          if (sheetRef.current) {
+            sheetRef.current.style.transform = `translateY(${position}px)`;
+          }
+        },
+        stiffness: SPRING_STIFFNESS,
+      });
+    }
 
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
+    return springRef.current;
+  };
 
-  useEffect(() => {
-    return () => {
-      if (closeTimerRef.current) {
-        clearTimeout(closeTimerRef.current);
-      }
-      if (transitionEndListenerRef.current && attachedSheetRef.current) {
-        attachedSheetRef.current.removeEventListener(
-          "transitionend",
-          transitionEndListenerRef.current,
-        );
-      }
-    };
-  }, []);
-
-  const handleClose = useCallback(() => {
+  // useBottomSheetState에 넘기는 콜백 — refs를 통해 항상 최신값 참조
+  const onAnimateIn = (onComplete: () => void) => {
     const sheet = sheetRef.current;
-    if (!sheet || isClosingRef.current || !isVisibleRef.current) {
+
+    if (!sheet) {
+      onComplete();
       return;
     }
 
-    // 닫히는 도중 다시 열릴 경우 이전 cleanup이 실행되지 않도록 토큰으로 무효화
-    closeTokenRef.current += 1;
-    const closeToken = closeTokenRef.current;
-    isClosingRef.current = true;
+    const spring = getSpring();
 
-    const cleanup = () => {
-      if (closeToken !== closeTokenRef.current) {
-        return;
-      }
+    // 화면 아래(offsetHeight)에서 출발해 0으로 애니메이션
+    spring.setPosition(sheet.offsetHeight);
+    spring.animateTo(0, 0, onComplete);
+  };
 
-      if (closeTimerRef.current) {
-        clearTimeout(closeTimerRef.current);
-        closeTimerRef.current = null;
-      }
+  const onAnimateOut = (velocity: number, onComplete: () => void) => {
+    const sheet = sheetRef.current;
 
-      if (transitionEndListenerRef.current && attachedSheetRef.current) {
-        attachedSheetRef.current.removeEventListener(
-          "transitionend",
-          transitionEndListenerRef.current,
-        );
-        transitionEndListenerRef.current = null;
-      }
-      attachedSheetRef.current = null;
-
-      isVisibleRef.current = false;
-      setIsVisible(false);
-      isClosingRef.current = false;
-      onCloseRef.current();
-
-      if (prevFocusRef.current) {
-        const isFocusInSheet = sheetRef.current?.contains(
-          document.activeElement,
-        );
-        const isFocusLost = document.activeElement === document.body;
-
-        if (isFocusInSheet || isFocusLost) {
-          prevFocusRef.current.focus();
-        }
-        prevFocusRef.current = null;
-      }
-    };
-
-    const onTransitionEnd = (e: TransitionEvent) => {
-      if (e.propertyName !== "transform" || e.target !== sheet) {
-        return;
-      }
-
-      if (!isClosingRef.current) {
-        return;
-      }
-
-      cleanup();
-    };
-
-    if (transitionEndListenerRef.current) {
-      sheet.removeEventListener(
-        "transitionend",
-        transitionEndListenerRef.current,
-      );
+    if (!sheet) {
+      onComplete();
+      return;
     }
 
-    transitionEndListenerRef.current = onTransitionEnd;
-    attachedSheetRef.current = sheet;
-    sheet.addEventListener("transitionend", onTransitionEnd);
-    sheet.style.transform = TRANSFORM_HIDDEN;
+    const spring = getSpring();
 
-    closeTimerRef.current = setTimeout(() => {
-      if (isClosingRef.current) {
-        cleanup();
-      }
-    }, ANIMATION_DURATION_MS);
-  }, []);
+    // 현재 spring 위치(drag 후 동기화된 값 또는 0)에서 화면 아래로 애니메이션
+    spring.animateTo(sheet.offsetHeight, velocity, onComplete);
+  };
 
-  useGesture({
-    canDragFromScrollable: (translateY) => translateY > 0,
-    enabled: isVisible,
-    handleRef: headerRef,
+  const { handleClose, isVisible, phase } = useBottomSheetState({
+    isOpen,
+    onAnimateIn,
+    onAnimateOut,
+    onClose,
+  });
+
+  // 드래그는 완전히 열린 상태(open)에서만 활성화
+  useDrag({
+    enabled: phase === "open",
+    handleRef,
     onDragEnd: ({ translateY, velocity }) => {
       const sheet = sheetRef.current;
+      const spring = getSpring();
+
       const isFastSwipe = velocity > VELOCITY_CLOSE_THRESHOLD;
       const isDraggedEnough =
         sheet !== null &&
         translateY > sheet.offsetHeight * POSITION_CLOSE_RATIO;
       const shouldClose = isFastSwipe || isDraggedEnough;
 
+      // 드래그로 이동한 위치를 spring에 동기화한 뒤 스냅 방향 결정
+      spring.setPosition(translateY);
+
       if (shouldClose) {
-        handleClose();
-      } else if (sheet) {
-        sheet.style.transform = TRANSFORM_VISIBLE;
+        // handleClose → phase "closing" → onAnimateOut(velocity) 호출 체인
+        handleClose(velocity);
+      } else {
+        spring.animateTo(0, velocity);
       }
     },
-    scrollableRef: contentRef,
     targetRef: sheetRef,
   });
 
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
+  useScrollLock(isVisible);
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleClose();
-        return;
-      }
-
-      if (e.key === "Tab" && sheetRef.current) {
-        const { firstElement, lastElement, titleElement } = getFocusableTargets(
-          sheetRef.current,
-        );
-
-        if (firstElement === null) {
-          e.preventDefault();
-          if (titleElement) {
-            titleElement.focus();
-          } else {
-            sheetRef.current.focus();
-          }
-          return;
-        }
-
-        if (!sheetRef.current.contains(document.activeElement)) {
-          e.preventDefault();
-          firstElement.focus();
-          return;
-        }
-
-        if (e.shiftKey) {
-          if (
-            document.activeElement === firstElement ||
-            document.activeElement === sheetRef.current
-          ) {
-            e.preventDefault();
-            lastElement.focus();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement.focus();
-          }
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, handleClose]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    closeTokenRef.current += 1;
-
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-
-    if (transitionEndListenerRef.current && attachedSheetRef.current) {
-      attachedSheetRef.current.removeEventListener(
-        "transitionend",
-        transitionEndListenerRef.current,
-      );
-      transitionEndListenerRef.current = null;
-    }
-
-    prevFocusRef.current = document.activeElement as HTMLElement;
-    isClosingRef.current = false;
-
-    // Content의 초기 transform(translateY(100%))이 DOM에 먼저 적용된 후
-    // 애니메이션이 시작되도록 렌더링 이후 다음 태스크로 지연
-    const timer = setTimeout(() => {
-      isVisibleRef.current = true;
-      setIsVisible(true);
-      setOpenCount((c) => c + 1);
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isVisible || !sheetRef.current || isClosingRef.current) {
-      return;
-    }
-
-    let raf2: number | undefined;
-
-    const raf1 = requestAnimationFrame(() => {
-      raf2 = requestAnimationFrame(() => {
-        if (sheetRef.current) {
-          const { firstElement, titleElement } = getFocusableTargets(
-            sheetRef.current,
-          );
-
-          sheetRef.current.style.transform = TRANSFORM_VISIBLE;
-          if (firstElement) {
-            firstElement.focus();
-            return;
-          }
-
-          if (titleElement) {
-            titleElement.focus();
-            return;
-          }
-
-          sheetRef.current.focus();
-        }
-      });
-    });
-
-    return () => {
-      cancelAnimationFrame(raf1);
-      if (raf2) {
-        cancelAnimationFrame(raf2);
-      }
-    };
-  }, [isVisible, openCount]);
-
-  useEffect(() => {
-    if (isOpen) {
-      return;
-    }
-    if (!isVisible || isClosingRef.current) {
-      return;
-    }
-
-    handleClose();
-  }, [isOpen, isVisible, handleClose]);
-
-  useEffect(() => {
-    if (!isVisible) {
-      return;
-    }
-
-    const token = {};
-    scrollLockOwners.add(token);
-
-    if (scrollLockOwners.size === 1) {
-      document.documentElement.style.scrollbarGutter = "stable";
-      document.body.style.overflow = "hidden";
-      document.body.style.overscrollBehavior = "none";
-    }
-
-    return () => {
-      scrollLockOwners.delete(token);
-
-      if (scrollLockOwners.size === 0) {
-        document.documentElement.style.scrollbarGutter = "";
-        document.body.style.overflow = "";
-        document.body.style.overscrollBehavior = "";
-      }
-    };
-  }, [isVisible]);
-
-  return { contentRef, handleClose, headerRef, isVisible, sheetRef };
+  return { handleClose, handleRef, isVisible, phase, sheetRef };
 };

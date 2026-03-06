@@ -25,13 +25,10 @@ function Body({
   style,
   ...props
 }: React.ComponentProps<"div">) {
-  const { contentRef } = useBottomSheetContext();
-
   return (
     <div
       {...props}
       className={cn("flex-1 touch-pan-y overflow-y-auto px-6 pb-10", className)}
-      ref={contentRef}
       style={style}
     >
       {children}
@@ -76,7 +73,7 @@ function Header({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { headerRef } = useBottomSheetContext();
+  const { handleRef } = useBottomSheetContext();
 
   return (
     <div
@@ -85,7 +82,7 @@ function Header({
         "flex w-full cursor-grab touch-none justify-center pt-3 pb-5 select-none active:cursor-grabbing",
         className,
       )}
-      ref={headerRef}
+      ref={handleRef}
     >
       {children ?? (
         <div
@@ -108,7 +105,7 @@ function Overlay({ className, ...props }: React.ComponentProps<"div">) {
         isVisible ? "opacity-100" : "opacity-0",
         className,
       )}
-      onClick={handleClose}
+      onClick={() => handleClose()}
       {...props}
     />
   );
