@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useId } from "react";
 
+import { FocusTrap } from "@/components/common/FocusTrap";
 import { Portal } from "@/components/common/Portal";
 import { cn } from "@/lib/utils";
 
@@ -39,10 +40,11 @@ function Body({
 function Content({
   children,
   className,
+  onKeyDown,
   style,
   ...props
 }: React.ComponentProps<"div">) {
-  const { sheetRef, titleId } = useBottomSheetContext();
+  const { handleClose, phase, sheetRef, titleId } = useBottomSheetContext();
 
   return (
     <div
@@ -55,15 +57,23 @@ function Content({
         "w-full max-w-md rounded-t-[20px] bg-white shadow-2xl",
         "pointer-events-auto relative flex flex-col",
         "max-h-[90vh] min-h-[50vh]",
-        "transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]",
         "pb-[env(safe-area-inset-bottom)]",
         "after:absolute after:top-[calc(100%-1px)] after:right-0 after:left-0 after:h-screen after:bg-white",
         className,
       )}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          e.stopPropagation();
+          handleClose();
+        }
+        onKeyDown?.(e);
+      }}
       ref={sheetRef}
       style={{ ...style, transform: "translateY(100%)" }}
     >
-      {children}
+      <FocusTrap containerRef={sheetRef} isActive={phase === "open"}>
+        {children}
+      </FocusTrap>
     </div>
   );
 }
@@ -100,13 +110,13 @@ function Overlay({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       aria-hidden="true"
+      {...props}
       className={cn(
         "pointer-events-auto absolute inset-0 bg-black/50 transition-opacity duration-300",
         isVisible ? "opacity-100" : "opacity-0",
         className,
       )}
       onClick={() => handleClose()}
-      {...props}
     />
   );
 }
@@ -135,10 +145,10 @@ function Title({ children, className, ...props }: React.ComponentProps<"h2">) {
 
   return (
     <h2
+      {...props}
       className={cn("text-lg font-bold", className)}
       id={titleId}
       tabIndex={-1}
-      {...props}
     >
       {children}
     </h2>
