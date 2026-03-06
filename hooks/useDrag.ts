@@ -68,6 +68,7 @@ export const useDrag = ({
       }
 
       activePointerIdRef.current = e.pointerId;
+      target.setPointerCapture(e.pointerId);
 
       const targetY = getTranslateY(target);
       startYRef.current = e.clientY;
@@ -87,8 +88,6 @@ export const useDrag = ({
       velocityTrackerRef.current.track(e.clientY, performance.now());
 
       if (!hasDraggedRef.current) {
-        // 첫 move 시점에 capture — click 이벤트 억제를 방지하기 위해 pointerdown에서 지연
-        target.setPointerCapture(e.pointerId);
         target.style.willChange = "transform";
         target.style.transition = "none";
       }
@@ -133,6 +132,13 @@ export const useDrag = ({
       if (!hasDraggedRef.current) {
         return;
       }
+
+      // setPointerCapture를 pointerdown에서 설정하면 capture된 상태에서
+      // pointerup이 발생해 click이 억제될 수 있으므로, 드래그 완료 시 명시적으로 억제
+      target.addEventListener("click", (e) => e.stopPropagation(), {
+        capture: true,
+        once: true,
+      });
 
       onDragEndEvent({
         translateY: latestTranslateYRef.current,
