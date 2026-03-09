@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
 
-import { ROUTES } from "@/lib/constants/routes";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const { origin, searchParams } = new URL(request.url);
   const code = searchParams.get("code");
   // if "next" is in param, use it as the redirect URL
-  let next = searchParams.get("next") ?? ROUTES.HOME;
+  let next = searchParams.get("next") ?? "/";
   if (!next.startsWith("/")) {
     // if "next" is not a relative URL, use the default
-    next = ROUTES.HOME;
+    next = "/";
   }
 
   if (code) {
@@ -31,5 +30,5 @@ export async function GET(request: Request) {
   }
 
   // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}${ROUTES.AUTH.ERROR}`);
+  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
 }
