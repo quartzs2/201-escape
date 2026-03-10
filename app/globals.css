@@ -14,7 +14,7 @@
   --color-foreground: #171717;
 
   /* Primary */
-  --color-primary: #3f503a;
+  --color-primary: #40513b;
   --color-primary-foreground: #ffffff;
 
   /* Secondary */
@@ -36,5 +36,5 @@
   /* Border / Input / Ring */
   --color-border: #e5e5e5;
   --color-input: #e5e5e5;
-  --color-ring: #3f503a;
+  --color-ring: #40513b;
 }
