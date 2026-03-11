@@ -16,6 +16,7 @@ export const PLATFORM_LABEL: Record<JobPlatform, string> = {
   WANTED: "원티드",
 };
 
+export const DOCS_STATUSES: JobStatus[] = ["APPLIED", "DOCS_PASSED"];
 export const IN_PROGRESS_STATUSES: JobStatus[] = [
   "APPLIED",
   "DOCS_PASSED",

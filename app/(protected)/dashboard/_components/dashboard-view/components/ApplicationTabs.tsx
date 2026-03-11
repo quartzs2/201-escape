@@ -2,18 +2,23 @@
 
 import { Tabs } from "@/components/ui";
 
+import type { ApplicationItem } from "../types";
+
 import { DONE_STATUSES, IN_PROGRESS_STATUSES } from "../constants";
-import { MOCK_APPLICATIONS } from "../mock-data";
 import { ApplicationList } from "./ApplicationList";
+
+type ApplicationTabsProps = {
+  applications: ApplicationItem[];
+};
 
 const TAB_TRIGGER_CLASS =
   "h-12 flex-1 rounded-none border-b-2 border-transparent px-0 text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none";
 
-export function ApplicationTabs() {
-  const inProgressApplications = MOCK_APPLICATIONS.filter((a) =>
+export function ApplicationTabs({ applications }: ApplicationTabsProps) {
+  const inProgressApplications = applications.filter((a) =>
     IN_PROGRESS_STATUSES.includes(a.status),
   );
-  const doneApplications = MOCK_APPLICATIONS.filter((a) =>
+  const doneApplications = applications.filter((a) =>
     DONE_STATUSES.includes(a.status),
   );
 
@@ -33,7 +38,7 @@ export function ApplicationTabs() {
 
       <Tabs.Content className="mt-0 px-5" value="all">
         <ApplicationList
-          applications={MOCK_APPLICATIONS}
+          applications={applications}
           emptyMessage="아직 지원한 곳이 없습니다"
         />
       </Tabs.Content>
