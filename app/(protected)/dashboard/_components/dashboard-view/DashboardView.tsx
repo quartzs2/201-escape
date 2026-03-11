@@ -1,9 +1,29 @@
+import { getApplications } from "@/lib/actions";
 import { cn, formatKoreanDate } from "@/lib/utils";
 
 import { ApplicationTabs } from "./components/ApplicationTabs";
-import { STATS } from "./mock-data";
+import { DOCS_STATUSES } from "./constants";
 
-export function DashboardView() {
+export async function DashboardView() {
+  const applications = await getApplications();
+
+  const stats = [
+    { label: "전체", value: applications.length },
+    {
+      label: "서류",
+      value: applications.filter((a) => DOCS_STATUSES.includes(a.status))
+        .length,
+    },
+    {
+      label: "면접",
+      value: applications.filter((a) => a.status === "INTERVIEWING").length,
+    },
+    {
+      label: "합격",
+      value: applications.filter((a) => a.status === "OFFERED").length,
+    },
+  ];
+
   return (
     <main className="flex flex-col">
       <div className="px-5 pt-6 pb-5">
@@ -12,11 +32,11 @@ export function DashboardView() {
       </div>
 
       <div className="grid grid-cols-4 border-y border-border">
-        {STATS.map((stat, i) => (
+        {stats.map((stat, i) => (
           <div
             className={cn(
               "flex flex-col items-center gap-1 py-5",
-              i < STATS.length - 1 && "border-r border-border",
+              i < stats.length - 1 && "border-r border-border",
             )}
             key={stat.label}
           >
@@ -28,7 +48,7 @@ export function DashboardView() {
         ))}
       </div>
 
-      <ApplicationTabs />
+      <ApplicationTabs applications={applications} />
     </main>
   );
 }
