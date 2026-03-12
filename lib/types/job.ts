@@ -23,7 +23,7 @@ export type UserId = Brand<string, "UserId">;
 export const MANUAL_JOB_DEFAULTS = {
   companyName: "회사명 미입력",
   platform: "MANUAL",
-  status: "APPLIED",
+  status: "SAVED",
   title: "제목 없는 공고",
   url: "",
 } satisfies Pick<
@@ -34,7 +34,7 @@ export const MANUAL_JOB_DEFAULTS = {
 export const WANTED_JOB_DEFAULTS = {
   companyName: "회사명 미입력",
   platform: "WANTED",
-  status: "APPLIED",
+  status: "SAVED",
   title: "제목 없는 공고",
   url: "",
 } satisfies Pick<
@@ -45,7 +45,7 @@ export const WANTED_JOB_DEFAULTS = {
 export const SARAMIN_JOB_DEFAULTS = {
   companyName: "회사명 미입력",
   platform: "SARAMIN",
-  status: "APPLIED",
+  status: "SAVED",
   title: "제목 없는 공고",
   url: "",
 } satisfies Pick<

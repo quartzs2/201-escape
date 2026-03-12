@@ -7,6 +7,7 @@ export const STATUS_META: Record<JobStatus, { color: string; label: string }> =
     INTERVIEWING: { color: "text-amber-700", label: "면접 중" },
     OFFERED: { color: "text-emerald-700", label: "최종 합격" },
     REJECTED: { color: "text-muted-foreground", label: "불합격" },
+    SAVED: { color: "text-slate-500", label: "관심 공고" },
   };
 
 export const PLATFORM_LABEL: Record<JobPlatform, string> = {
@@ -18,6 +19,7 @@ export const PLATFORM_LABEL: Record<JobPlatform, string> = {
 
 export const DOCS_STATUSES: JobStatus[] = ["APPLIED", "DOCS_PASSED"];
 export const IN_PROGRESS_STATUSES: JobStatus[] = [
+  "SAVED",
   "APPLIED",
   "DOCS_PASSED",
   "INTERVIEWING",
