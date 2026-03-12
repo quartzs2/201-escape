@@ -1,6 +1,7 @@
 import { getApplications } from "@/lib/actions";
 import { cn, formatKoreanDate } from "@/lib/utils";
 
+import { AddJobTrigger } from "../add-job";
 import { ApplicationTabs } from "./components/ApplicationTabs";
 import { DOCS_STATUSES } from "./constants";
 
@@ -49,6 +50,7 @@ export async function DashboardView() {
       </div>
 
       <ApplicationTabs applications={applications} />
+      <AddJobTrigger />
     </main>
   );
 }
