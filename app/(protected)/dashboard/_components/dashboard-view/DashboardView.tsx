@@ -3,7 +3,7 @@ import { cn, formatKoreanDate } from "@/lib/utils";
 
 import { AddJobTrigger } from "../add-job";
 import { GoToTopFAB } from "../go-to-top";
-import { ApplicationTabs } from "./components/ApplicationTabs";
+import { DashboardApplicationsPanel } from "./components/DashboardApplicationsPanel";
 import { DOCS_STATUSES } from "./constants";
 
 export async function DashboardView() {
@@ -50,7 +50,7 @@ export async function DashboardView() {
         ))}
       </div>
 
-      <ApplicationTabs applications={applications} />
+      <DashboardApplicationsPanel applications={applications} />
       <GoToTopFAB />
       <AddJobTrigger />
     </main>

@@ -9,12 +9,16 @@ import { ApplicationList } from "./ApplicationList";
 
 type ApplicationTabsProps = {
   applications: ApplicationListItem[];
+  onSelectApplication: (application: ApplicationListItem) => void;
 };
 
 const TAB_TRIGGER_CLASS =
   "h-12 flex-1 rounded-none border-b-2 border-transparent px-0 text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none";
 
-export function ApplicationTabs({ applications }: ApplicationTabsProps) {
+export function ApplicationTabs({
+  applications,
+  onSelectApplication,
+}: ApplicationTabsProps) {
   const inProgressApplications = applications.filter((a) =>
     IN_PROGRESS_STATUSES.includes(a.status),
   );
@@ -40,18 +44,21 @@ export function ApplicationTabs({ applications }: ApplicationTabsProps) {
         <ApplicationList
           applications={applications}
           emptyMessage="아직 지원한 곳이 없습니다"
+          onSelectApplication={onSelectApplication}
         />
       </Tabs.Content>
       <Tabs.Content className="mt-0 px-5" value="active">
         <ApplicationList
           applications={inProgressApplications}
           emptyMessage="진행 중인 지원이 없습니다"
+          onSelectApplication={onSelectApplication}
         />
       </Tabs.Content>
       <Tabs.Content className="mt-0 px-5" value="done">
         <ApplicationList
           applications={doneApplications}
           emptyMessage="완료된 지원이 없습니다"
+          onSelectApplication={onSelectApplication}
         />
       </Tabs.Content>
     </Tabs>
