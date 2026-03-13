@@ -1,10 +1,10 @@
 "use server";
 
-import type { ApplicationItem } from "@/app/(protected)/dashboard/_components/dashboard-view/types";
+import type { ApplicationListItem } from "@/lib/types/application";
 
 import { createClient } from "../supabase/server";
 
-export async function getApplications(): Promise<ApplicationItem[]> {
+export async function getApplications(): Promise<ApplicationListItem[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase

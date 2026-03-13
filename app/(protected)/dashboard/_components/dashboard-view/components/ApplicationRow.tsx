@@ -1,11 +1,11 @@
 import { cn, getTimeAgo } from "@/lib/utils";
 
-import type { ApplicationItem } from "../types";
+import type { ApplicationListItem } from "../types";
 
 import { PLATFORM_LABEL, STATUS_META } from "../constants";
 
 type ApplicationRowProps = {
-  application: ApplicationItem;
+  application: ApplicationListItem;
 };
 
 export function ApplicationRow({ application }: ApplicationRowProps) {
