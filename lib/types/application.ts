@@ -9,6 +9,13 @@ import {
 
 export const applicationIdSchema = z.uuid("applicationId must be a valid UUID");
 
+export const updateApplicationStatusInputSchema = z
+  .object({
+    applicationId: applicationIdSchema,
+    status: jobStatusSchema,
+  })
+  .strict();
+
 export type ApplicationListItem = {
   appliedAt: string;
   companyName: string;
@@ -59,5 +66,25 @@ export type GetApplicationDetailResult =
     }
   | {
       data: ApplicationDetail;
+      ok: true;
+    };
+
+export type UpdateApplicationStatusErrorCode =
+  | "AUTH_REQUIRED"
+  | "NOT_FOUND"
+  | "QUERY_ERROR"
+  | "VALIDATION_ERROR";
+
+export type UpdateApplicationStatusInput = z.infer<
+  typeof updateApplicationStatusInputSchema
+>;
+
+export type UpdateApplicationStatusResult =
+  | {
+      code: UpdateApplicationStatusErrorCode;
+      ok: false;
+      reason: string;
+    }
+  | {
       ok: true;
     };
