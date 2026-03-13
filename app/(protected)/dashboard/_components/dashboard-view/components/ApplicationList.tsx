@@ -1,11 +1,11 @@
 import { Inbox } from "lucide-react";
 
-import type { ApplicationItem } from "../types";
+import type { ApplicationListItem } from "../types";
 
 import { ApplicationRow } from "./ApplicationRow";
 
 type ApplicationListProps = {
-  applications: ApplicationItem[];
+  applications: ApplicationListItem[];
   emptyMessage?: string;
 };
 

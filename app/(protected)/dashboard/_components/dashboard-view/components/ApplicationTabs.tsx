@@ -2,13 +2,13 @@
 
 import { Tabs } from "@/components/ui";
 
-import type { ApplicationItem } from "../types";
+import type { ApplicationListItem } from "../types";
 
 import { DONE_STATUSES, IN_PROGRESS_STATUSES } from "../constants";
 import { ApplicationList } from "./ApplicationList";
 
 type ApplicationTabsProps = {
-  applications: ApplicationItem[];
+  applications: ApplicationListItem[];
 };
 
 const TAB_TRIGGER_CLASS =
