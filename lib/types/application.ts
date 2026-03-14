@@ -8,11 +8,29 @@ import {
 } from "@/lib/types/job";
 
 export const applicationIdSchema = z.uuid("applicationId must be a valid UUID");
+const applicationNotesSchema = z
+  .string()
+  .trim()
+  .nullable()
+  .transform((value) => {
+    if (value === null || value.length === 0) {
+      return null;
+    }
+
+    return value;
+  });
 
 export const updateApplicationStatusInputSchema = z
   .object({
     applicationId: applicationIdSchema,
     status: jobStatusSchema,
+  })
+  .strict();
+
+export const updateApplicationNotesInputSchema = z
+  .object({
+    applicationId: applicationIdSchema,
+    notes: applicationNotesSchema,
   })
   .strict();
 
@@ -66,6 +84,29 @@ export type GetApplicationDetailResult =
     }
   | {
       data: ApplicationDetail;
+      ok: true;
+    };
+
+export type UpdateApplicationNotesErrorCode =
+  | "AUTH_REQUIRED"
+  | "NOT_FOUND"
+  | "QUERY_ERROR"
+  | "VALIDATION_ERROR";
+
+export type UpdateApplicationNotesInput = z.infer<
+  typeof updateApplicationNotesInputSchema
+>;
+
+export type UpdateApplicationNotesResult =
+  | {
+      code: UpdateApplicationNotesErrorCode;
+      ok: false;
+      reason: string;
+    }
+  | {
+      data: {
+        notes: null | string;
+      };
       ok: true;
     };
 
