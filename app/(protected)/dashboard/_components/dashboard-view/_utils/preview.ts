@@ -3,7 +3,9 @@ import type {
   GetApplicationDetailResult,
 } from "@/lib/types/application";
 
-import { formatKoreanDate } from "@/lib/utils";
+import { formatAppliedAt } from "@/lib/utils";
+
+export { formatAppliedAt };
 
 const DEFAULT_MAX_LENGTH = 160;
 const EMPTY_DESCRIPTION = "공고 설명이 없습니다";
@@ -13,16 +15,6 @@ export type PreviewTextMeta = {
   isEmpty: boolean;
   text: string;
 };
-
-export function formatPreviewAppliedAt(value: string) {
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return formatKoreanDate(date, { includeDayName: false });
-}
 
 export function getDescriptionMeta(
   detail: ApplicationDetail | null,

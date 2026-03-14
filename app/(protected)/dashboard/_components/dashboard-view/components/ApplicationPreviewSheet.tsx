@@ -21,7 +21,7 @@ import { getApplicationDetail } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 
 import {
-  formatPreviewAppliedAt,
+  formatAppliedAt,
   getDescriptionMeta,
   getErrorSummary,
   getNotesMeta,
@@ -152,7 +152,7 @@ export function ApplicationPreviewSheet({
               )}
               {appliedAt && (
                 <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-                  지원일 {formatPreviewAppliedAt(appliedAt)}
+                  지원일 {formatAppliedAt(appliedAt)}
                 </span>
               )}
             </div>
