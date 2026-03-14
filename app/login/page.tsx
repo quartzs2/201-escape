@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import { GoogleIcon } from "@/components/icons/GoogleIcon";
-import { ROUTES } from "@/lib/constants/routes";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -16,8 +15,8 @@ export default function LoginPage() {
 
     const supabase = createClient();
 
-    const url = new URL(ROUTES.AUTH.CALLBACK, window.location.origin);
-    url.searchParams.set("next", ROUTES.HOME);
+    const url = new URL("/auth/callback", window.location.origin);
+    url.searchParams.set("next", "/");
 
     const { error } = await supabase.auth.signInWithOAuth({
       options: {
