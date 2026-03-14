@@ -30,9 +30,9 @@ const ERROR_STATE_META = {
     title: "로그인이 필요합니다",
   },
   NOT_FOUND: {
-    description: "삭제되었거나 접근할 수 없는 공고일 수 있습니다.",
+    description: "삭제되었거나 접근할 수 없는 지원 기록일 수 있습니다.",
     icon: FileTextIcon,
-    title: "공고 상세를 찾을 수 없습니다",
+    title: "지원 기록을 찾을 수 없습니다",
   },
   QUERY_ERROR: {
     description: "잠시 후 다시 시도하거나 대시보드에서 다시 진입해 주세요.",
@@ -47,7 +47,7 @@ const ERROR_STATE_META = {
   VALIDATION_ERROR: {
     description: "잘못된 상세 경로로 접근했습니다.",
     icon: FileTextIcon,
-    title: "유효하지 않은 공고 경로입니다",
+    title: "유효하지 않은 지원 경로입니다",
   },
 } as const;
 
@@ -127,7 +127,7 @@ export default async function ApplicationDetailPage({
 
           <ApplicationStatusSelector
             applicationId={detail.id}
-            ariaLabel="공고 상태 변경"
+            ariaLabel="지원 상태 변경"
             icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
             label="지원 상태"
             status={detail.status}

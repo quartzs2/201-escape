@@ -106,7 +106,7 @@ export function ApplicationPreviewSheet({
 
   const detail = previewState.status === "ready" ? previewState.detail : null;
   const title =
-    detail?.positionTitle ?? application?.positionTitle ?? "공고 미리보기";
+    detail?.positionTitle ?? application?.positionTitle ?? "지원 미리보기";
   const companyName = detail?.companyName ?? application?.companyName ?? "";
   const platform = detail?.platform ?? application?.platform;
   const appliedAt = detail?.appliedAt ?? application?.appliedAt;
@@ -115,7 +115,7 @@ export function ApplicationPreviewSheet({
 
   const footerButtonContent = (
     <>
-      공고 상세 보기
+      지원 상세 보기
       <ChevronRightIcon aria-hidden="true" className="size-4" />
     </>
   );
@@ -157,7 +157,7 @@ export function ApplicationPreviewSheet({
           {application && (
             <ApplicationStatusSelector
               applicationId={application.id}
-              ariaLabel="공고 상태 변경"
+              ariaLabel="지원 상태 변경"
               className="mt-2"
               icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
               label="지원 상태"
@@ -176,7 +176,7 @@ export function ApplicationPreviewSheet({
               role="status"
             >
               <p className="text-sm text-muted-foreground">
-                공고 정보를 불러오는 중입니다.
+                지원 정보를 불러오는 중입니다.
               </p>
             </div>
           )}

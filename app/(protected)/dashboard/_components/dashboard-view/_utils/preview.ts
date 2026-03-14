@@ -30,13 +30,13 @@ export function getErrorSummary(
 ) {
   switch (result.code) {
     case "AUTH_REQUIRED": {
-      return "로그인이 필요한 공고입니다.";
+      return "로그인이 필요합니다.";
     }
     case "NOT_FOUND": {
-      return "공고 상세를 찾을 수 없습니다.";
+      return "지원 기록을 찾을 수 없습니다.";
     }
     default: {
-      return "공고 정보를 불러오지 못했습니다.";
+      return "지원 정보를 불러오지 못했습니다.";
     }
   }
 }
