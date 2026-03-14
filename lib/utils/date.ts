@@ -4,6 +4,16 @@ type FormatKoreanDateOptions = {
   includeDayName?: boolean;
 };
 
+export function formatAppliedAt(value: string): string {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return formatKoreanDate(date, { includeDayName: false });
+}
+
 export function formatKoreanDate(
   date: Date,
   options?: FormatKoreanDateOptions,

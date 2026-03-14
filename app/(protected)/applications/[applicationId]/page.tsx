@@ -7,24 +7,18 @@ import {
 
 import { Button } from "@/components/ui/button/Button";
 import { getApplicationDetail } from "@/lib/actions";
+import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
+import { formatAppliedAt } from "@/lib/utils";
 
 import { BackLink } from "./_components/BackLink";
 import { DetailSection } from "./_components/DetailSection";
 import { ErrorState } from "./_components/ErrorState";
-import { formatAppliedAt } from "./_utils/formatAppliedAt";
 
 type ApplicationDetailPageProps = {
   params: Promise<{
     applicationId: string;
   }>;
 };
-
-const PLATFORM_LABEL = {
-  LINKEDIN: "LinkedIn",
-  MANUAL: "직접 입력",
-  SARAMIN: "사람인",
-  WANTED: "원티드",
-} as const;
 
 const ERROR_STATE_META = {
   AUTH_REQUIRED: {
