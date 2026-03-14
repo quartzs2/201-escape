@@ -6,6 +6,7 @@ import {
   AlertCircleIcon,
   ChevronRightIcon,
   FileTextIcon,
+  ListChecksIcon,
   StickyNoteIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -15,10 +16,12 @@ import type {
   ApplicationDetail,
   ApplicationListItem,
 } from "@/lib/types/application";
+import type { JobStatus } from "@/lib/types/job";
 
+import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
 import { BottomSheet, Button } from "@/components/ui";
 import { getApplicationDetail } from "@/lib/actions";
-import { cn } from "@/lib/utils";
+import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 
 import {
   formatAppliedAt,
@@ -26,13 +29,14 @@ import {
   getErrorSummary,
   getNotesMeta,
 } from "../_utils/preview";
-import { PLATFORM_LABEL, STATUS_META } from "../constants";
+import { PLATFORM_LABEL } from "../constants";
 import { ApplicationPreviewSection } from "./ApplicationPreviewSection";
 
 type ApplicationPreviewSheetProps = {
   application: ApplicationListItem | null;
   isOpen: boolean;
   onCloseAction: () => void;
+  onStatusChangeAction: (applicationId: string, nextStatus: JobStatus) => void;
 };
 
 type ApplicationPreviewState =
@@ -55,11 +59,13 @@ export function ApplicationPreviewSheet({
   application,
   isOpen,
   onCloseAction,
+  onStatusChangeAction,
 }: ApplicationPreviewSheetProps) {
   const [previewState, setPreviewState] = useState<ApplicationPreviewState>({
     status: "idle",
   });
   const requestSequenceRef = useRef(0);
+  const applicationId = application?.id;
 
   const loadApplicationDetail = useEffectEvent(
     async (applicationId: string) => {
@@ -90,19 +96,15 @@ export function ApplicationPreviewSheet({
   );
 
   useEffect(() => {
-    if (!isOpen || !application) {
+    if (!isOpen || !applicationId) {
       requestSequenceRef.current += 1;
       return;
     }
 
-    void loadApplicationDetail(application.id);
-  }, [application, isOpen]);
+    void loadApplicationDetail(applicationId);
+  }, [applicationId, isOpen]);
 
   const detail = previewState.status === "ready" ? previewState.detail : null;
-  const { color, label } = application
-    ? STATUS_META[application.status]
-    : { color: "text-muted-foreground", label: "" };
-
   const title =
     detail?.positionTitle ?? application?.positionTitle ?? "공고 미리보기";
   const companyName = detail?.companyName ?? application?.companyName ?? "";
@@ -124,6 +126,23 @@ export function ApplicationPreviewSheet({
       <BottomSheet.Content>
         <BottomSheet.Header />
         <div className="px-6 pb-4">
+          {(platform || appliedAt) && (
+            <div className="mb-2 flex flex-wrap items-center gap-0">
+              {platform && (
+                <span className="text-xs font-medium text-muted-foreground">
+                  {PLATFORM_LABEL[platform]}
+                </span>
+              )}
+              {platform && appliedAt && (
+                <span className="mx-2 text-xs text-muted-foreground/40">|</span>
+              )}
+              {appliedAt && (
+                <span className="text-xs font-medium text-muted-foreground">
+                  지원일 {formatAppliedAt(appliedAt)}
+                </span>
+              )}
+            </div>
+          )}
           <BottomSheet.Title className="text-xl tracking-[-0.02em] text-foreground">
             {title}
           </BottomSheet.Title>
@@ -136,26 +155,18 @@ export function ApplicationPreviewSheet({
 
         <BottomSheet.Body className="space-y-4 px-6 pb-4">
           {application && (
-            <div className="flex flex-wrap items-center gap-2">
-              <span
-                className={cn(
-                  "rounded-full bg-muted px-3 py-1 text-xs font-semibold",
-                  color,
-                )}
-              >
-                {label}
-              </span>
-              {platform && (
-                <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-                  {PLATFORM_LABEL[platform]}
-                </span>
-              )}
-              {appliedAt && (
-                <span className="rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground">
-                  지원일 {formatAppliedAt(appliedAt)}
-                </span>
-              )}
-            </div>
+            <ApplicationStatusSelector
+              applicationId={application.id}
+              ariaLabel="공고 상태 변경"
+              className="mt-2"
+              icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
+              label="지원 상태"
+              onStatusChangeAction={(nextStatus) => {
+                onStatusChangeAction(application.id, nextStatus);
+              }}
+              status={application.status}
+              updateStatusAction={updateApplicationStatus}
+            />
           )}
 
           {previewState.status === "loading" && (
@@ -194,7 +205,6 @@ export function ApplicationPreviewSheet({
             <>
               <ApplicationPreviewSection
                 body={descriptionMeta.text}
-                className="pt-6"
                 icon={<FileTextIcon aria-hidden="true" className="size-4" />}
                 isEmpty={descriptionMeta.isEmpty}
                 title="공고 설명"

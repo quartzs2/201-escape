@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { getApplications } from "@/lib/actions";
 import { cn, formatKoreanDate } from "@/lib/utils";
 
@@ -50,7 +52,9 @@ export async function DashboardView() {
         ))}
       </div>
 
-      <DashboardApplicationsPanel applications={applications} />
+      <Suspense>
+        <DashboardApplicationsPanel applications={applications} />
+      </Suspense>
       <GoToTopFAB />
       <AddJobTrigger />
     </main>

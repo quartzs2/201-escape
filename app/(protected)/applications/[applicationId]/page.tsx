@@ -1,12 +1,15 @@
 import {
   ExternalLinkIcon,
   FileTextIcon,
+  ListChecksIcon,
   LockKeyholeIcon,
   NotebookPenIcon,
 } from "lucide-react";
 
+import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
 import { Button } from "@/components/ui/button/Button";
 import { getApplicationDetail } from "@/lib/actions";
+import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
 import { formatAppliedAt } from "@/lib/utils";
 
@@ -98,14 +101,14 @@ export default async function ApplicationDetailPage({
               <p className="text-base font-medium text-muted-foreground">
                 {detail.companyName}
               </p>
-              <div className="flex items-start gap-3">
+              <div className="flex items-start">
                 <h1 className="max-w-3xl flex-1 text-[28px] leading-[1.15] font-semibold tracking-[-0.02em] text-foreground sm:text-[32px]">
                   {detail.positionTitle}
                 </h1>
                 {hasOriginUrl && (
                   <Button
                     asChild
-                    className="size-10 shrink-0 rounded-full border border-border px-0 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    className="ml-auto size-10 shrink-0 rounded-full border border-border px-0 text-muted-foreground hover:bg-muted hover:text-foreground"
                     variant="ghost"
                   >
                     <a
@@ -121,6 +124,15 @@ export default async function ApplicationDetailPage({
               </div>
             </div>
           </div>
+
+          <ApplicationStatusSelector
+            applicationId={detail.id}
+            ariaLabel="공고 상태 변경"
+            icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
+            label="지원 상태"
+            status={detail.status}
+            updateStatusAction={updateApplicationStatus}
+          />
         </section>
 
         <div aria-hidden="true" className="h-px w-full bg-border" />
