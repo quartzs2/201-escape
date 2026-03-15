@@ -3,12 +3,12 @@ import {
   FileTextIcon,
   ListChecksIcon,
   LockKeyholeIcon,
-  NotebookPenIcon,
 } from "lucide-react";
 
 import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
 import { Button } from "@/components/ui/button/Button";
 import { getApplicationDetail } from "@/lib/actions";
+import { updateApplicationNotes } from "@/lib/actions/updateApplicationNotes";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
 import { formatAppliedAt } from "@/lib/utils";
@@ -16,6 +16,7 @@ import { formatAppliedAt } from "@/lib/utils";
 import { BackLink } from "./_components/BackLink";
 import { DetailSection } from "./_components/DetailSection";
 import { ErrorState } from "./_components/ErrorState";
+import { MemoEditor } from "./_components/MemoEditor";
 
 type ApplicationDetailPageProps = {
   params: Promise<{
@@ -143,10 +144,10 @@ export default async function ApplicationDetailPage({
             icon={<FileTextIcon aria-hidden="true" className="size-5" />}
             title="공고 설명"
           />
-          <DetailSection
-            body={detail.notes ?? "메모가 없습니다"}
-            icon={<NotebookPenIcon aria-hidden="true" className="size-5" />}
-            title="개인 메모"
+          <MemoEditor
+            applicationId={detail.id}
+            notes={detail.notes}
+            updateNotesAction={updateApplicationNotes}
           />
         </div>
       </div>
