@@ -4,3 +4,4 @@ export { getApplications } from "./getApplications";
 export { saveJobApplication } from "./saveJobApplication";
 export { updateApplicationNotes } from "./updateApplicationNotes";
 export { updateApplicationStatus } from "./updateApplicationStatus";
+export { updateJobDescription } from "./updateJobDescription";
