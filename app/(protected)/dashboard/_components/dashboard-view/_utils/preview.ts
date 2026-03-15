@@ -7,7 +7,6 @@ import { formatAppliedAt } from "@/lib/utils";
 
 export { formatAppliedAt };
 
-const DEFAULT_MAX_LENGTH = 160;
 const EMPTY_DESCRIPTION = "공고 설명이 없습니다";
 const EMPTY_NOTES = "개인 메모가 없습니다";
 
@@ -21,7 +20,7 @@ export function getDescriptionMeta(
 ): PreviewTextMeta {
   return {
     isEmpty: !detail?.description?.trim(),
-    text: getPreviewText(detail?.description ?? null, EMPTY_DESCRIPTION),
+    text: detail?.description?.trim() || EMPTY_DESCRIPTION,
   };
 }
 
@@ -46,24 +45,6 @@ export function getNotesMeta(
 ): PreviewTextMeta {
   return {
     isEmpty: !detail?.notes?.trim(),
-    text: getPreviewText(detail?.notes ?? null, EMPTY_NOTES, 120),
+    text: detail?.notes?.trim() || EMPTY_NOTES,
   };
-}
-
-export function getPreviewText(
-  value: null | string,
-  emptyText: string,
-  maxLength = DEFAULT_MAX_LENGTH,
-) {
-  const normalizedValue = value?.trim();
-
-  if (!normalizedValue) {
-    return emptyText;
-  }
-
-  if (normalizedValue.length <= maxLength) {
-    return normalizedValue;
-  }
-
-  return `${normalizedValue.slice(0, maxLength).trimEnd()}...`;
 }
