@@ -110,6 +110,25 @@ export type UpdateApplicationNotesResult =
       ok: true;
     };
 
+const jobDescriptionSchema = z
+  .string()
+  .trim()
+  .nullable()
+  .transform((value) => {
+    if (value === null || value.length === 0) {
+      return null;
+    }
+
+    return value;
+  });
+
+export const updateJobDescriptionInputSchema = z
+  .object({
+    applicationId: applicationIdSchema,
+    description: jobDescriptionSchema,
+  })
+  .strict();
+
 export type UpdateApplicationStatusErrorCode =
   | "AUTH_REQUIRED"
   | "NOT_FOUND"
@@ -127,5 +146,28 @@ export type UpdateApplicationStatusResult =
       reason: string;
     }
   | {
+      ok: true;
+    };
+
+export type UpdateJobDescriptionErrorCode =
+  | "AUTH_REQUIRED"
+  | "NOT_FOUND"
+  | "QUERY_ERROR"
+  | "VALIDATION_ERROR";
+
+export type UpdateJobDescriptionInput = z.infer<
+  typeof updateJobDescriptionInputSchema
+>;
+
+export type UpdateJobDescriptionResult =
+  | {
+      code: UpdateJobDescriptionErrorCode;
+      ok: false;
+      reason: string;
+    }
+  | {
+      data: {
+        description: null | string;
+      };
       ok: true;
     };
