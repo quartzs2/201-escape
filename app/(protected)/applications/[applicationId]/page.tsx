@@ -10,12 +10,13 @@ import { Button } from "@/components/ui/button/Button";
 import { getApplicationDetail } from "@/lib/actions";
 import { updateApplicationNotes } from "@/lib/actions/updateApplicationNotes";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
+import { updateJobDescription } from "@/lib/actions/updateJobDescription";
 import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
 import { formatAppliedAt } from "@/lib/utils";
 
 import { BackLink } from "./_components/BackLink";
-import { DetailSection } from "./_components/DetailSection";
 import { ErrorState } from "./_components/ErrorState";
+import { JobDescriptionEditor } from "./_components/JobDescriptionEditor";
 import { MemoEditor } from "./_components/MemoEditor";
 
 type ApplicationDetailPageProps = {
@@ -139,10 +140,10 @@ export default async function ApplicationDetailPage({
         <div aria-hidden="true" className="h-px w-full bg-border" />
 
         <div className="grid gap-7">
-          <DetailSection
-            body={detail.description ?? "공고 설명이 없습니다"}
-            icon={<FileTextIcon aria-hidden="true" className="size-5" />}
-            title="공고 설명"
+          <JobDescriptionEditor
+            applicationId={detail.id}
+            description={detail.description}
+            updateDescriptionAction={updateJobDescription}
           />
           <MemoEditor
             applicationId={detail.id}
