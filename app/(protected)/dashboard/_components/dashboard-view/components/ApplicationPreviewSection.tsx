@@ -25,7 +25,7 @@ export function ApplicationPreviewSection({
       </div>
       <p
         className={cn(
-          "text-sm leading-6 whitespace-pre-wrap text-foreground",
+          "line-clamp-3 text-sm leading-6 whitespace-pre-wrap text-foreground",
           isEmpty && "text-muted-foreground",
         )}
       >

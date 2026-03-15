@@ -19,7 +19,7 @@ import type {
 import type { JobStatus } from "@/lib/types/job";
 
 import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
-import { BottomSheet, Button } from "@/components/ui";
+import { BottomSheet, Button, Skeleton } from "@/components/ui";
 import { getApplicationDetail } from "@/lib/actions";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 
@@ -171,13 +171,13 @@ export function ApplicationPreviewSheet({
 
           {previewState.status === "loading" && (
             <div
-              aria-live="polite"
-              className="rounded-2xl border border-dashed border-border px-4 py-5"
+              aria-busy="true"
+              aria-label="지원 정보를 불러오는 중입니다"
+              className="space-y-4"
               role="status"
             >
-              <p className="text-sm text-muted-foreground">
-                지원 정보를 불러오는 중입니다.
-              </p>
+              <ApplicationPreviewSectionSkeleton />
+              <ApplicationPreviewSectionSkeleton />
             </div>
           )}
 
@@ -240,5 +240,21 @@ export function ApplicationPreviewSheet({
         </div>
       </BottomSheet.Content>
     </BottomSheet>
+  );
+}
+
+function ApplicationPreviewSectionSkeleton() {
+  return (
+    <section className="space-y-2 py-1">
+      <div className="flex items-center gap-2">
+        <Skeleton className="size-4" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+      <div className="space-y-1.5">
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-5/6" />
+      </div>
+    </section>
   );
 }
