@@ -9,19 +9,13 @@ import {
   type UpdateApplicationStatusResult,
 } from "@/lib/types/application";
 
-const AUTH_ERROR_CODE = "28000";
+import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
+
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
   NOT_FOUND: "상태를 변경할 지원 정보를 찾을 수 없습니다.",
   VALIDATION_ERROR: "유효하지 않은 지원상태 변경 입력입니다.",
 } as const;
-
-type QueryErrorLike = {
-  code?: string;
-  details?: null | string;
-  hint?: null | string;
-  message: string;
-};
 
 export async function updateApplicationStatus(
   input: UpdateApplicationStatusInput,
@@ -81,14 +75,4 @@ export async function updateApplicationStatus(
   return {
     ok: true,
   };
-}
-
-function normalizeQueryError(error: QueryErrorLike): string {
-  const metadata = [error.details, error.hint].filter(Boolean).join(" | ");
-
-  if (metadata.length > 0) {
-    return `${error.message} (${metadata})`;
-  }
-
-  return error.message;
 }
