@@ -1,13 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 
-const AUTH_ERROR_CODE = "28000";
-
-export type QueryErrorLike = {
-  code?: string;
-  details?: null | string;
-  hint?: null | string;
-  message: string;
-};
+import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 
 type VerifyResult =
   | {
@@ -19,16 +12,6 @@ type VerifyResult =
       ok: true;
       supabase: Awaited<ReturnType<typeof createClient>>;
     };
-
-export function normalizeQueryError(error: QueryErrorLike): string {
-  const metadata = [error.details, error.hint].filter(Boolean).join(" | ");
-
-  if (metadata.length > 0) {
-    return `${error.message} (${metadata})`;
-  }
-
-  return error.message;
-}
 
 /**
  * 인증 및 application 소유권을 검증하고, 성공 시 supabase 클라이언트를 반환합니다.
