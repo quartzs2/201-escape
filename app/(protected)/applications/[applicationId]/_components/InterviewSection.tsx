@@ -2,11 +2,13 @@ import { CalendarIcon } from "lucide-react";
 
 import type { InterviewDetail } from "@/lib/types/interview";
 
+import { deleteInterview } from "@/lib/actions/deleteInterview";
 import { getInterviews } from "@/lib/actions/getInterviews";
 import { upsertInterview } from "@/lib/actions/upsertInterview";
 import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
 import { formatScheduledAt } from "@/lib/utils";
 
+import { DeleteInterviewButton } from "./DeleteInterviewButton";
 import { InterviewFormSheet } from "./InterviewFormSheet";
 
 type InterviewListProps = {
@@ -79,12 +81,18 @@ function InterviewList({ applicationId, interviews }: InterviewListProps) {
                 임시저장
               </span>
             )}
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-1">
               <InterviewFormSheet
                 applicationId={applicationId}
                 interview={interview}
                 mode="edit"
                 upsertAction={upsertInterview}
+              />
+              <DeleteInterviewButton
+                applicationId={applicationId}
+                deleteAction={deleteInterview}
+                interviewId={interview.id}
+                round={interview.round}
               />
             </div>
           </div>
