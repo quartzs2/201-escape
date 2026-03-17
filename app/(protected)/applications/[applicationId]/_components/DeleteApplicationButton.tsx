@@ -1,33 +1,34 @@
 "use client";
 
+import { Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import type {
-  DeleteInterviewInput,
-  DeleteInterviewResult,
-} from "@/lib/types/interview";
+  DeleteApplicationInput,
+  DeleteApplicationResult,
+} from "@/lib/types/application";
 
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
 
-type DeleteInterviewAction = (
-  input: DeleteInterviewInput,
-) => Promise<DeleteInterviewResult>;
+type DeleteApplicationAction = (
+  input: DeleteApplicationInput,
+) => Promise<DeleteApplicationResult>;
 
-type DeleteInterviewButtonProps = {
+type DeleteApplicationButtonProps = {
   applicationId: string;
-  deleteAction: DeleteInterviewAction;
-  interviewId: string;
-  round: number;
+  companyName: string;
+  deleteAction: DeleteApplicationAction;
+  positionTitle: string;
 };
 
-export function DeleteInterviewButton({
+export function DeleteApplicationButton({
   applicationId,
+  companyName,
   deleteAction,
-  interviewId,
-  round,
-}: DeleteInterviewButtonProps) {
+  positionTitle,
+}: DeleteApplicationButtonProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -54,15 +55,14 @@ export function DeleteInterviewButton({
     setErrorMessage(null);
 
     try {
-      const result = await deleteAction({ applicationId, interviewId });
+      const result = await deleteAction({ applicationId });
 
       if (!result.ok) {
         setErrorMessage(result.reason);
         return;
       }
 
-      setIsOpen(false);
-      router.refresh();
+      router.push("/dashboard");
     } finally {
       setIsDeleting(false);
     }
@@ -71,7 +71,8 @@ export function DeleteInterviewButton({
   return (
     <>
       <Button onClick={handleOpen} size="sm" variant="ghost">
-        삭제
+        <Trash2Icon aria-hidden="true" className="size-4" />
+        지원 삭제
       </Button>
 
       <BottomSheet isOpen={isOpen} onClose={handleClose}>
@@ -85,11 +86,16 @@ export function DeleteInterviewButton({
         <BottomSheet.Content className="min-h-0">
           <BottomSheet.Header />
           <BottomSheet.Body>
-            <BottomSheet.Title className="mb-2">
-              면접 일정 삭제
-            </BottomSheet.Title>
+            <BottomSheet.Title className="mb-2">지원 삭제</BottomSheet.Title>
+            <p className="mb-1 text-[15px] text-muted-foreground">
+              <span className="font-medium text-foreground">{companyName}</span>{" "}
+              ·{" "}
+              <span className="font-medium text-foreground">
+                {positionTitle}
+              </span>
+            </p>
             <p className="mb-6 text-[15px] text-muted-foreground">
-              {round}차 면접 일정을 삭제하시겠습니까? 이 작업은 되돌릴 수
+              이 지원 기록과 면접 일정이 모두 삭제됩니다. 이 작업은 되돌릴 수
               없습니다.
             </p>
 
