@@ -16,6 +16,7 @@ import { formatAppliedAt } from "@/lib/utils";
 
 import { BackLink } from "./_components/BackLink";
 import { ErrorState } from "./_components/ErrorState";
+import { InterviewSection } from "./_components/InterviewSection";
 import { JobDescriptionEditor } from "./_components/JobDescriptionEditor";
 import { MemoEditor } from "./_components/MemoEditor";
 
@@ -140,6 +141,8 @@ export default async function ApplicationDetailPage({
         <div aria-hidden="true" className="h-px w-full bg-border" />
 
         <div className="grid gap-7">
+          <InterviewSection applicationId={detail.id} />
+          <div aria-hidden="true" className="h-px w-full bg-border" />
           <JobDescriptionEditor
             applicationId={detail.id}
             description={detail.description}

@@ -32,6 +32,20 @@ export function formatKoreanDate(
   return `${year}년 ${month}월 ${day}일 ${dayName}요일`;
 }
 
+export function formatScheduledAt(value: string): string {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  const formatted = formatKoreanDate(date, { includeDayName: true });
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${formatted} ${hours}:${minutes}`;
+}
+
 export function getTimeAgo(dateString: string): string {
   const diffMs = new Date().getTime() - new Date(dateString).getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
