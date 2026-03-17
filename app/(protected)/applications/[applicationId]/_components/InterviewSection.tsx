@@ -1,11 +1,17 @@
 import { CalendarIcon } from "lucide-react";
 
+import type { InterviewDetail } from "@/lib/types/interview";
+
 import { getInterviews } from "@/lib/actions/getInterviews";
+import { upsertInterview } from "@/lib/actions/upsertInterview";
 import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
 import { formatScheduledAt } from "@/lib/utils";
 
+import { InterviewFormSheet } from "./InterviewFormSheet";
+
 type InterviewListProps = {
-  result: Awaited<ReturnType<typeof getInterviews>>;
+  applicationId: string;
+  interviews: InterviewDetail[];
 };
 
 type InterviewSectionProps = {
@@ -26,23 +32,29 @@ export async function InterviewSection({
         <h2 className="text-base font-semibold tracking-[-0.01em]">
           면접 일정
         </h2>
+        <div className="ml-auto">
+          <InterviewFormSheet
+            applicationId={applicationId}
+            defaultRound={result.ok ? result.data.length + 1 : 1}
+            mode="add"
+            upsertAction={upsertInterview}
+          />
+        </div>
       </div>
 
-      <InterviewList result={result} />
+      {!result.ok ? (
+        <p className="text-[15px] text-muted-foreground">
+          면접 일정을 불러오지 못했습니다.
+        </p>
+      ) : (
+        <InterviewList applicationId={applicationId} interviews={result.data} />
+      )}
     </section>
   );
 }
 
-function InterviewList({ result }: InterviewListProps) {
-  if (!result.ok) {
-    return (
-      <p className="text-[15px] text-muted-foreground">
-        면접 일정을 불러오지 못했습니다.
-      </p>
-    );
-  }
-
-  if (result.data.length === 0) {
+function InterviewList({ applicationId, interviews }: InterviewListProps) {
+  if (interviews.length === 0) {
     return (
       <p className="text-[15px] text-muted-foreground">
         등록된 면접 일정이 없습니다.
@@ -52,7 +64,7 @@ function InterviewList({ result }: InterviewListProps) {
 
   return (
     <ul className="space-y-2">
-      {result.data.map((interview) => (
+      {interviews.map((interview) => (
         <li
           className="space-y-1 rounded-lg border border-border px-4 py-3"
           key={interview.id}
@@ -67,6 +79,14 @@ function InterviewList({ result }: InterviewListProps) {
                 임시저장
               </span>
             )}
+            <div className="ml-auto">
+              <InterviewFormSheet
+                applicationId={applicationId}
+                interview={interview}
+                mode="edit"
+                upsertAction={upsertInterview}
+              />
+            </div>
           </div>
           <p className="text-sm text-muted-foreground">
             {formatScheduledAt(interview.scheduledAt)}

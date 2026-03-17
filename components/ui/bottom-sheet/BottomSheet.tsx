@@ -117,8 +117,10 @@ function Overlay({ className, ...props }: React.ComponentProps<"div">) {
         className,
       )}
       onClick={(e) => {
-        handleClose();
         props.onClick?.(e);
+        if (!e.defaultPrevented) {
+          handleClose();
+        }
       }}
     />
   );
