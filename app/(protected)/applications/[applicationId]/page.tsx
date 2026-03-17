@@ -7,7 +7,7 @@ import {
 
 import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
 import { Button } from "@/components/ui/button/Button";
-import { getApplicationDetail } from "@/lib/actions";
+import { deleteApplication, getApplicationDetail } from "@/lib/actions";
 import { updateApplicationNotes } from "@/lib/actions/updateApplicationNotes";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 import { updateJobDescription } from "@/lib/actions/updateJobDescription";
@@ -15,6 +15,7 @@ import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
 import { formatAppliedAt } from "@/lib/utils";
 
 import { BackLink } from "./_components/BackLink";
+import { DeleteApplicationButton } from "./_components/DeleteApplicationButton";
 import { ErrorState } from "./_components/ErrorState";
 import { InterviewSection } from "./_components/InterviewSection";
 import { JobDescriptionEditor } from "./_components/JobDescriptionEditor";
@@ -84,7 +85,15 @@ export default async function ApplicationDetailPage({
   return (
     <main className="px-5 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-        <BackLink />
+        <div className="flex items-center justify-between">
+          <BackLink />
+          <DeleteApplicationButton
+            applicationId={detail.id}
+            companyName={detail.companyName}
+            deleteAction={deleteApplication}
+            positionTitle={detail.positionTitle}
+          />
+        </div>
 
         <section className="space-y-5">
           <div className="space-y-4">
