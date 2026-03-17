@@ -69,6 +69,26 @@ export type ApplicationDetail = {
   status: JobStatus;
 };
 
+export const deleteApplicationInputSchema = z
+  .object({
+    applicationId: applicationIdSchema,
+  })
+  .strict();
+
+export type DeleteApplicationErrorCode =
+  | "AUTH_REQUIRED"
+  | "NOT_FOUND"
+  | "QUERY_ERROR"
+  | "VALIDATION_ERROR";
+
+export type DeleteApplicationInput = z.infer<
+  typeof deleteApplicationInputSchema
+>;
+
+export type DeleteApplicationResult =
+  | { code: DeleteApplicationErrorCode; ok: false; reason: string }
+  | { ok: true };
+
 export type GetApplicationDetailErrorCode =
   | "AUTH_REQUIRED"
   | "NOT_FOUND"
