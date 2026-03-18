@@ -81,6 +81,17 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
       return;
     }
 
+    if (!values.scheduledAt) {
+      setErrorMessage("면접 일시를 입력해 주세요.");
+      return;
+    }
+
+    const scheduledAtDate = new Date(values.scheduledAt);
+    if (isNaN(scheduledAtDate.getTime())) {
+      setErrorMessage("올바른 면접 일시를 입력해 주세요.");
+      return;
+    }
+
     setIsSaving(true);
     setErrorMessage(null);
 
@@ -90,7 +101,7 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
         interviewType: values.interviewType,
         location: values.location,
         round: values.round,
-        scheduledAt: new Date(values.scheduledAt).toISOString(),
+        scheduledAt: scheduledAtDate.toISOString(),
         scratchpad: values.scratchpad,
       });
 

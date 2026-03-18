@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { applicationIdSchema } from "@/lib/types/application";
+import { nullableTextSchema } from "@/lib/types/common";
 import { Constants, Enums } from "@/lib/types/supabase";
 
 export type InterviewType = Enums<"interview_type">;
@@ -23,27 +24,8 @@ export type InterviewDetail = {
   updatedAt: string;
 };
 
-const interviewLocationSchema = z
-  .string()
-  .trim()
-  .nullable()
-  .transform((value) => {
-    if (value === null || value.length === 0) {
-      return null;
-    }
-    return value;
-  });
-
-const interviewScratchpadSchema = z
-  .string()
-  .trim()
-  .nullable()
-  .transform((value) => {
-    if (value === null || value.length === 0) {
-      return null;
-    }
-    return value;
-  });
+const interviewLocationSchema = nullableTextSchema;
+const interviewScratchpadSchema = nullableTextSchema;
 
 export const upsertInterviewInputSchema = z
   .object({

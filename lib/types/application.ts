@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { nullableTextSchema } from "@/lib/types/common";
 import {
   type JobPlatform,
   jobPlatformSchema,
@@ -8,17 +9,7 @@ import {
 } from "@/lib/types/job";
 
 export const applicationIdSchema = z.uuid("applicationId must be a valid UUID");
-const applicationNotesSchema = z
-  .string()
-  .trim()
-  .nullable()
-  .transform((value) => {
-    if (value === null || value.length === 0) {
-      return null;
-    }
-
-    return value;
-  });
+const applicationNotesSchema = nullableTextSchema;
 
 export const updateApplicationStatusInputSchema = z
   .object({
@@ -136,17 +127,7 @@ export type UpdateApplicationNotesResult =
       ok: true;
     };
 
-const jobDescriptionSchema = z
-  .string()
-  .trim()
-  .nullable()
-  .transform((value) => {
-    if (value === null || value.length === 0) {
-      return null;
-    }
-
-    return value;
-  });
+const jobDescriptionSchema = nullableTextSchema;
 
 export const updateJobDescriptionInputSchema = z
   .object({
