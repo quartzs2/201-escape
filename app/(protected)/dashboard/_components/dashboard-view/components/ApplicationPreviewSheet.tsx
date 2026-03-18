@@ -177,56 +177,61 @@ export function ApplicationPreviewSheet({
             />
           )}
 
-          {visiblePreviewState.status === "loading" && (
-            <div
-              aria-busy="true"
-              aria-label="지원 정보를 불러오는 중입니다"
-              className="space-y-4"
-              role="status"
-            >
-              <ApplicationPreviewSectionSkeleton />
-              <ApplicationPreviewSectionSkeleton />
-            </div>
-          )}
-
-          {visiblePreviewState.status === "error" && (
-            <section
-              aria-live="polite"
-              className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700"
-            >
-              <div className="flex items-start gap-3">
-                <AlertCircleIcon
-                  aria-hidden="true"
-                  className="mt-0.5 size-5 shrink-0"
-                />
-                <div className="space-y-1">
-                  <p className="text-sm font-semibold">
-                    미리보기를 불러오지 못했습니다
-                  </p>
-                  <p className="text-sm leading-6">
-                    {visiblePreviewState.summary}
-                  </p>
-                </div>
+          {/* min-h는 로딩→콘텐츠 전환 시 시트 높이 변동(레이아웃 시프트)을 방지합니다. */}
+          <div className="min-h-58">
+            {visiblePreviewState.status === "loading" && (
+              <div
+                aria-busy="true"
+                aria-label="지원 정보를 불러오는 중입니다"
+                className="space-y-4"
+                role="status"
+              >
+                <ApplicationPreviewSectionSkeleton />
+                <ApplicationPreviewSectionSkeleton />
               </div>
-            </section>
-          )}
+            )}
 
-          {detail && (
-            <>
-              <ApplicationPreviewSection
-                body={descriptionMeta.text}
-                icon={<FileTextIcon aria-hidden="true" className="size-4" />}
-                isEmpty={descriptionMeta.isEmpty}
-                title="공고 설명"
-              />
-              <ApplicationPreviewSection
-                body={notesMeta.text}
-                icon={<StickyNoteIcon aria-hidden="true" className="size-4" />}
-                isEmpty={notesMeta.isEmpty}
-                title="개인 메모"
-              />
-            </>
-          )}
+            {visiblePreviewState.status === "error" && (
+              <section
+                aria-live="polite"
+                className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700"
+              >
+                <div className="flex items-start gap-3">
+                  <AlertCircleIcon
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0"
+                  />
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold">
+                      미리보기를 불러오지 못했습니다
+                    </p>
+                    <p className="text-sm leading-6">
+                      {visiblePreviewState.summary}
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {detail && (
+              <>
+                <ApplicationPreviewSection
+                  body={descriptionMeta.text}
+                  icon={<FileTextIcon aria-hidden="true" className="size-4" />}
+                  isEmpty={descriptionMeta.isEmpty}
+                  title="공고 설명"
+                />
+                <ApplicationPreviewSection
+                  body={notesMeta.text}
+                  icon={
+                    <StickyNoteIcon aria-hidden="true" className="size-4" />
+                  }
+                  isEmpty={notesMeta.isEmpty}
+                  title="개인 메모"
+                />
+              </>
+            )}
+          </div>
         </BottomSheet.Body>
 
         <div className="border-t border-border bg-white px-6 py-4">
@@ -258,9 +263,11 @@ function ApplicationPreviewSectionSkeleton() {
     <section className="space-y-2 py-1">
       <div className="flex items-center gap-2">
         <Skeleton className="size-4" />
-        <Skeleton className="h-4 w-16" />
+        {/* h-5: text-sm(14px)의 line-height(20px)와 일치 */}
+        <Skeleton className="h-5 w-16" />
       </div>
-      <div className="space-y-1.5">
+      {/* 간격 없음: leading-6 텍스트 3줄(72px)과 높이 일치 */}
+      <div className="flex flex-col">
         <Skeleton className="h-6 w-full" />
         <Skeleton className="h-6 w-full" />
         <Skeleton className="h-6 w-5/6" />
