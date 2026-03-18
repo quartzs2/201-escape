@@ -60,6 +60,7 @@ export async function getApplicationDetail(
       `,
     )
     .eq("id", parsedApplicationId.data)
+    .eq("user_id", authData.user.id)
     .maybeSingle();
 
   if (error) {

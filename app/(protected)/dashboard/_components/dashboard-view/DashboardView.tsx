@@ -9,7 +9,13 @@ import { DashboardApplicationsPanel } from "./components/DashboardApplicationsPa
 import { DOCS_STATUSES } from "./constants";
 
 export async function DashboardView() {
-  const applications = await getApplications();
+  const applicationsResult = await getApplications();
+
+  if (!applicationsResult.ok) {
+    throw new Error(applicationsResult.reason);
+  }
+
+  const applications = applicationsResult.data;
 
   const stats = [
     { label: "전체", value: applications.length },
