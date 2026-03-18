@@ -89,7 +89,10 @@ export function JobDescriptionEditor({
         <span className="text-muted-foreground">
           <FileTextIcon aria-hidden="true" className="size-5" />
         </span>
-        <h2 className="text-base font-semibold tracking-[-0.01em]">
+        <h2
+          className="text-base font-semibold tracking-[-0.01em]"
+          id={`job-description-label-${applicationId}`}
+        >
           공고 설명
         </h2>
         <div className="ml-auto flex items-center">
@@ -117,6 +120,7 @@ export function JobDescriptionEditor({
       {isEditing ? (
         <>
           <textarea
+            aria-labelledby={`job-description-label-${applicationId}`}
             className="w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-[15px] leading-8 text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isSaving}
             onChange={(e) => setDraftText(e.target.value)}

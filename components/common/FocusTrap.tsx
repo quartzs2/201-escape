@@ -42,11 +42,11 @@ export function FocusTrap({
       return;
     }
 
-    // firstElement → titleElement → container 우선순위
+    // WAI-ARIA 다이얼로그 패턴: titleElement → firstElement → container
     const firstElement =
       container.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
     const titleElement = container.querySelector<HTMLElement>(TITLE_SELECTOR);
-    const focusTarget = firstElement ?? titleElement ?? container;
+    const focusTarget = titleElement ?? firstElement ?? container;
 
     const rafId = requestAnimationFrame(() => {
       focusTarget.focus();
