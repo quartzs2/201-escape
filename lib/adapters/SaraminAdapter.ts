@@ -84,7 +84,10 @@ export class SaraminAdapter extends BaseAdapter {
     });
 
     const parsed = saraminRawSchema.safeParse(rawContent);
-    const data = parsed.success ? parsed.data : {};
+    if (!parsed.success) {
+      throw new Error(`사람인 공고 파싱 실패: ${parsed.error.message}`);
+    }
+    const data = parsed.data;
 
     const id =
       (data.id?.toString() as JobId) ??

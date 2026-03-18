@@ -77,7 +77,10 @@ export class WantedAdapter extends BaseAdapter {
     });
 
     const parsed = wantedRawSchema.safeParse(rawContent);
-    const data = parsed.success ? parsed.data : {};
+    if (!parsed.success) {
+      throw new Error(`원티드 공고 파싱 실패: ${parsed.error.message}`);
+    }
+    const data = parsed.data;
 
     const id = (data.id?.toString() as JobId) ?? (crypto.randomUUID() as JobId);
     const title = data.title ?? data.job_title ?? WANTED_JOB_DEFAULTS.title;
