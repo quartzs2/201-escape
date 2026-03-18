@@ -1,10 +1,9 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import type { JobPost } from "@/lib/types/job";
-
 import { extractJobData } from "@/lib/actions/extractJobData";
 import { saveJobApplication } from "@/lib/actions/saveJobApplication";
+import { JobId, type JobPost, MANUAL_JOB_DEFAULTS } from "@/lib/types/job";
 
 export type AddJobState =
   | ExtractingState
@@ -52,6 +51,29 @@ export function useAddJob({ onSuccess }: UseAddJobProps) {
     if (state.step === "idle" && state.url !== url) {
       setState({ ...state, url });
     }
+  }
+
+  function handleManualSubmit(fields: {
+    companyName: string;
+    title: string;
+    url: string;
+  }) {
+    if (state.step !== "idle") {
+      return;
+    }
+
+    const jobData: JobPost = {
+      companyName: fields.companyName.trim() || MANUAL_JOB_DEFAULTS.companyName,
+      id: crypto.randomUUID() as JobId,
+      platform: MANUAL_JOB_DEFAULTS.platform,
+      status: MANUAL_JOB_DEFAULTS.status,
+      title: fields.title.trim() || MANUAL_JOB_DEFAULTS.title,
+      // URL 미입력 시 DB의 NOT NULL + UNIQUE (platform, origin_url) 제약을 충족하기 위해
+      // 고유 식별자를 생성합니다. Zod v4의 z.url()은 manual: 스킴을 허용합니다.
+      url: fields.url.trim() || `manual:${crypto.randomUUID()}`,
+    };
+
+    setState({ error: null, jobData, step: "review", url: fields.url.trim() });
   }
 
   async function handleExtract() {
@@ -104,5 +126,13 @@ export function useAddJob({ onSuccess }: UseAddJobProps) {
     setState({ error: null, step: "idle", url: "" });
   }
 
-  return { handleExtract, handleReset, handleSave, reset, setUrl, state };
+  return {
+    handleExtract,
+    handleManualSubmit,
+    handleReset,
+    handleSave,
+    reset,
+    setUrl,
+    state,
+  };
 }
