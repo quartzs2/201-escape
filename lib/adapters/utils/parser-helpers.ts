@@ -21,7 +21,9 @@ export function asNonEmptyString(value: unknown): string | undefined {
 /**
  * 우선순위가 높은 문자열부터 확인하여 첫 번째로 존재하는 값을 반환합니다.
  */
-export function getFirstString(values: Array<string | undefined>): string | undefined {
+export function getFirstString(
+  values: Array<string | undefined>,
+): string | undefined {
   for (const value of values) {
     if (value) {
       return value;
@@ -51,7 +53,10 @@ export function getFirstTextBySelectors(
 /**
  * 메타 태그의 content 속성 값을 가져옵니다.
  */
-export function getMetaContent($: CheerioAPI, selector: string): string | undefined {
+export function getMetaContent(
+  $: CheerioAPI,
+  selector: string,
+): string | undefined {
   return asNonEmptyString($(selector).attr("content"));
 }
 
@@ -62,14 +67,17 @@ export function hasJobPostingType(record: JsonRecord): boolean {
   const typeValue = record["@type"];
   if (typeof typeValue === "string") {
     const normalizedType = typeValue.toLowerCase();
-    return normalizedType === "jobposting" || normalizedType.endsWith("/jobposting");
+    return (
+      normalizedType === "jobposting" || normalizedType.endsWith("/jobposting")
+    );
   }
 
   if (Array.isArray(typeValue)) {
     return typeValue.some(
       (typeItem) =>
         typeof typeItem === "string" &&
-        (typeItem.toLowerCase() === "jobposting" || typeItem.toLowerCase().endsWith("/jobposting")),
+        (typeItem.toLowerCase() === "jobposting" ||
+          typeItem.toLowerCase().endsWith("/jobposting")),
     );
   }
 
@@ -80,13 +88,16 @@ export function hasJobPostingType(record: JsonRecord): boolean {
  * 값이 객체(Record)인지 확인합니다.
  */
 export function isJsonRecord(value: unknown): value is JsonRecord {
-  return typeof value === "object" && value !== null;
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /**
  * HTML 내의 application/ld+json 스크립트에서 JobPosting 정보를 추출합니다.
  */
-export function parseJobPostingJsonLd($: CheerioAPI, processor: (item: JsonRecord) => void): void {
+export function parseJobPostingJsonLd(
+  $: CheerioAPI,
+  processor: (item: JsonRecord) => void,
+): void {
   $("script[type='application/ld+json']").each((_, element) => {
     const scriptText = $(element).text();
     const parsedValue = parseJson(scriptText);
