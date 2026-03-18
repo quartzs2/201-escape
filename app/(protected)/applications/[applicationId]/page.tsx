@@ -3,19 +3,23 @@ import {
   FileTextIcon,
   ListChecksIcon,
   LockKeyholeIcon,
-  NotebookPenIcon,
 } from "lucide-react";
 
 import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
 import { Button } from "@/components/ui/button/Button";
-import { getApplicationDetail } from "@/lib/actions";
+import { deleteApplication, getApplicationDetail } from "@/lib/actions";
+import { updateApplicationNotes } from "@/lib/actions/updateApplicationNotes";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
+import { updateJobDescription } from "@/lib/actions/updateJobDescription";
 import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
 import { formatAppliedAt } from "@/lib/utils";
 
 import { BackLink } from "./_components/BackLink";
-import { DetailSection } from "./_components/DetailSection";
+import { DeleteApplicationButton } from "./_components/DeleteApplicationButton";
 import { ErrorState } from "./_components/ErrorState";
+import { InterviewSection } from "./_components/InterviewSection";
+import { JobDescriptionEditor } from "./_components/JobDescriptionEditor";
+import { MemoEditor } from "./_components/MemoEditor";
 
 type ApplicationDetailPageProps = {
   params: Promise<{
@@ -30,9 +34,9 @@ const ERROR_STATE_META = {
     title: "로그인이 필요합니다",
   },
   NOT_FOUND: {
-    description: "삭제되었거나 접근할 수 없는 공고일 수 있습니다.",
+    description: "삭제되었거나 접근할 수 없는 지원 기록일 수 있습니다.",
     icon: FileTextIcon,
-    title: "공고 상세를 찾을 수 없습니다",
+    title: "지원 기록을 찾을 수 없습니다",
   },
   QUERY_ERROR: {
     description: "잠시 후 다시 시도하거나 대시보드에서 다시 진입해 주세요.",
@@ -47,7 +51,7 @@ const ERROR_STATE_META = {
   VALIDATION_ERROR: {
     description: "잘못된 상세 경로로 접근했습니다.",
     icon: FileTextIcon,
-    title: "유효하지 않은 공고 경로입니다",
+    title: "유효하지 않은 지원 경로입니다",
   },
 } as const;
 
@@ -81,7 +85,15 @@ export default async function ApplicationDetailPage({
   return (
     <main className="px-5 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-        <BackLink />
+        <div className="flex items-center justify-between">
+          <BackLink />
+          <DeleteApplicationButton
+            applicationId={detail.id}
+            companyName={detail.companyName}
+            deleteAction={deleteApplication}
+            positionTitle={detail.positionTitle}
+          />
+        </div>
 
         <section className="space-y-5">
           <div className="space-y-4">
@@ -127,8 +139,9 @@ export default async function ApplicationDetailPage({
 
           <ApplicationStatusSelector
             applicationId={detail.id}
-            ariaLabel="공고 상태 변경"
+            ariaLabel="지원 상태 변경"
             icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
+            key={detail.id}
             label="지원 상태"
             status={detail.status}
             updateStatusAction={updateApplicationStatus}
@@ -138,15 +151,17 @@ export default async function ApplicationDetailPage({
         <div aria-hidden="true" className="h-px w-full bg-border" />
 
         <div className="grid gap-7">
-          <DetailSection
-            body={detail.description ?? "공고 설명이 없습니다"}
-            icon={<FileTextIcon aria-hidden="true" className="size-5" />}
-            title="공고 설명"
+          <InterviewSection applicationId={detail.id} />
+          <div aria-hidden="true" className="h-px w-full bg-border" />
+          <JobDescriptionEditor
+            applicationId={detail.id}
+            description={detail.description}
+            updateDescriptionAction={updateJobDescription}
           />
-          <DetailSection
-            body={detail.notes ?? "메모가 없습니다"}
-            icon={<NotebookPenIcon aria-hidden="true" className="size-5" />}
-            title="개인 메모"
+          <MemoEditor
+            applicationId={detail.id}
+            notes={detail.notes}
+            updateNotesAction={updateApplicationNotes}
           />
         </div>
       </div>

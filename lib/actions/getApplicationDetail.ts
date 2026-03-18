@@ -7,20 +7,14 @@ import {
   type GetApplicationDetailResult,
 } from "@/lib/types/application";
 
-const AUTH_ERROR_CODE = "28000";
+import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
+
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
   INVALID_RESPONSE: "지원 상세 응답을 해석하지 못했습니다.",
   NOT_FOUND: "지원 상세 정보를 찾을 수 없습니다.",
   VALIDATION_ERROR: "유효하지 않은 applicationId입니다.",
 } as const;
-
-type QueryErrorLike = {
-  code?: string;
-  details?: null | string;
-  hint?: null | string;
-  message: string;
-};
 
 export async function getApplicationDetail(
   applicationId: string,
@@ -66,6 +60,7 @@ export async function getApplicationDetail(
       `,
     )
     .eq("id", parsedApplicationId.data)
+    .eq("user_id", authData.user.id)
     .maybeSingle();
 
   if (error) {
@@ -118,14 +113,4 @@ export async function getApplicationDetail(
     data: parsedDetail.data,
     ok: true,
   };
-}
-
-function normalizeQueryError(error: QueryErrorLike): string {
-  const metadata = [error.details, error.hint].filter(Boolean).join(" | ");
-
-  if (metadata.length > 0) {
-    return `${error.message} (${metadata})`;
-  }
-
-  return error.message;
 }

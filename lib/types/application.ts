@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { nullableTextSchema } from "@/lib/types/common";
 import {
   type JobPlatform,
   jobPlatformSchema,
@@ -8,11 +9,19 @@ import {
 } from "@/lib/types/job";
 
 export const applicationIdSchema = z.uuid("applicationId must be a valid UUID");
+const applicationNotesSchema = nullableTextSchema;
 
 export const updateApplicationStatusInputSchema = z
   .object({
     applicationId: applicationIdSchema,
     status: jobStatusSchema,
+  })
+  .strict();
+
+export const updateApplicationNotesInputSchema = z
+  .object({
+    applicationId: applicationIdSchema,
+    notes: applicationNotesSchema,
   })
   .strict();
 
@@ -51,6 +60,26 @@ export type ApplicationDetail = {
   status: JobStatus;
 };
 
+export const deleteApplicationInputSchema = z
+  .object({
+    applicationId: applicationIdSchema,
+  })
+  .strict();
+
+export type DeleteApplicationErrorCode =
+  | "AUTH_REQUIRED"
+  | "NOT_FOUND"
+  | "QUERY_ERROR"
+  | "VALIDATION_ERROR";
+
+export type DeleteApplicationInput = z.infer<
+  typeof deleteApplicationInputSchema
+>;
+
+export type DeleteApplicationResult =
+  | { code: DeleteApplicationErrorCode; ok: false; reason: string }
+  | { ok: true };
+
 export type GetApplicationDetailErrorCode =
   | "AUTH_REQUIRED"
   | "NOT_FOUND"
@@ -69,6 +98,44 @@ export type GetApplicationDetailResult =
       ok: true;
     };
 
+export type GetApplicationsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
+
+export type GetApplicationsResult =
+  | { code: GetApplicationsErrorCode; ok: false; reason: string }
+  | { data: ApplicationListItem[]; ok: true };
+
+export type UpdateApplicationNotesErrorCode =
+  | "AUTH_REQUIRED"
+  | "NOT_FOUND"
+  | "QUERY_ERROR"
+  | "VALIDATION_ERROR";
+
+export type UpdateApplicationNotesInput = z.infer<
+  typeof updateApplicationNotesInputSchema
+>;
+
+export type UpdateApplicationNotesResult =
+  | {
+      code: UpdateApplicationNotesErrorCode;
+      ok: false;
+      reason: string;
+    }
+  | {
+      data: {
+        notes: null | string;
+      };
+      ok: true;
+    };
+
+const jobDescriptionSchema = nullableTextSchema;
+
+export const updateJobDescriptionInputSchema = z
+  .object({
+    applicationId: applicationIdSchema,
+    description: jobDescriptionSchema,
+  })
+  .strict();
+
 export type UpdateApplicationStatusErrorCode =
   | "AUTH_REQUIRED"
   | "NOT_FOUND"
@@ -86,5 +153,28 @@ export type UpdateApplicationStatusResult =
       reason: string;
     }
   | {
+      ok: true;
+    };
+
+export type UpdateJobDescriptionErrorCode =
+  | "AUTH_REQUIRED"
+  | "NOT_FOUND"
+  | "QUERY_ERROR"
+  | "VALIDATION_ERROR";
+
+export type UpdateJobDescriptionInput = z.infer<
+  typeof updateJobDescriptionInputSchema
+>;
+
+export type UpdateJobDescriptionResult =
+  | {
+      code: UpdateJobDescriptionErrorCode;
+      ok: false;
+      reason: string;
+    }
+  | {
+      data: {
+        description: null | string;
+      };
       ok: true;
     };

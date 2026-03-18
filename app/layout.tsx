@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import localFont from "next/font/local";
+import { Toaster } from "sonner";
 
 import { PORTAL_ROOT_ID } from "@/lib/constants/dom";
 
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className={`${pretendard.className} antialiased`}>
         {children}
         <div id={PORTAL_ROOT_ID} />
+        <Toaster position="bottom-center" richColors />
       </body>
     </html>
   );

@@ -19,7 +19,7 @@ import type {
 import type { JobStatus } from "@/lib/types/job";
 
 import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
-import { BottomSheet, Button } from "@/components/ui";
+import { BottomSheet, Button, Skeleton } from "@/components/ui";
 import { getApplicationDetail } from "@/lib/actions";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 
@@ -104,9 +104,16 @@ export function ApplicationPreviewSheet({
     void loadApplicationDetail(applicationId);
   }, [applicationId, isOpen]);
 
-  const detail = previewState.status === "ready" ? previewState.detail : null;
+  // 시트가 닫혀있을 때는 항상 idle로 파생합니다.
+  // effect 내부에서 setState를 호출하는 대신 렌더 시 파생하여 이전 데이터 플래시를 방지합니다.
+  const visiblePreviewState: ApplicationPreviewState = isOpen
+    ? previewState
+    : { status: "idle" };
+
+  const detail =
+    visiblePreviewState.status === "ready" ? visiblePreviewState.detail : null;
   const title =
-    detail?.positionTitle ?? application?.positionTitle ?? "공고 미리보기";
+    detail?.positionTitle ?? application?.positionTitle ?? "지원 미리보기";
   const companyName = detail?.companyName ?? application?.companyName ?? "";
   const platform = detail?.platform ?? application?.platform;
   const appliedAt = detail?.appliedAt ?? application?.appliedAt;
@@ -115,7 +122,7 @@ export function ApplicationPreviewSheet({
 
   const footerButtonContent = (
     <>
-      공고 상세 보기
+      지원 상세 보기
       <ChevronRightIcon aria-hidden="true" className="size-4" />
     </>
   );
@@ -157,9 +164,10 @@ export function ApplicationPreviewSheet({
           {application && (
             <ApplicationStatusSelector
               applicationId={application.id}
-              ariaLabel="공고 상태 변경"
+              ariaLabel="지원 상태 변경"
               className="mt-2"
               icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
+              key={application.id}
               label="지원 상태"
               onStatusChangeAction={(nextStatus) => {
                 onStatusChangeAction(application.id, nextStatus);
@@ -169,54 +177,61 @@ export function ApplicationPreviewSheet({
             />
           )}
 
-          {previewState.status === "loading" && (
-            <div
-              aria-live="polite"
-              className="rounded-2xl border border-dashed border-border px-4 py-5"
-              role="status"
-            >
-              <p className="text-sm text-muted-foreground">
-                공고 정보를 불러오는 중입니다.
-              </p>
-            </div>
-          )}
-
-          {previewState.status === "error" && (
-            <section
-              aria-live="polite"
-              className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700"
-            >
-              <div className="flex items-start gap-3">
-                <AlertCircleIcon
-                  aria-hidden="true"
-                  className="mt-0.5 size-5 shrink-0"
-                />
-                <div className="space-y-1">
-                  <p className="text-sm font-semibold">
-                    미리보기를 불러오지 못했습니다
-                  </p>
-                  <p className="text-sm leading-6">{previewState.summary}</p>
-                </div>
+          {/* min-h는 로딩→콘텐츠 전환 시 시트 높이 변동(레이아웃 시프트)을 방지합니다. */}
+          <div className="min-h-58">
+            {visiblePreviewState.status === "loading" && (
+              <div
+                aria-busy="true"
+                aria-label="지원 정보를 불러오는 중입니다"
+                className="space-y-4"
+                role="status"
+              >
+                <ApplicationPreviewSectionSkeleton />
+                <ApplicationPreviewSectionSkeleton />
               </div>
-            </section>
-          )}
+            )}
 
-          {detail && (
-            <>
-              <ApplicationPreviewSection
-                body={descriptionMeta.text}
-                icon={<FileTextIcon aria-hidden="true" className="size-4" />}
-                isEmpty={descriptionMeta.isEmpty}
-                title="공고 설명"
-              />
-              <ApplicationPreviewSection
-                body={notesMeta.text}
-                icon={<StickyNoteIcon aria-hidden="true" className="size-4" />}
-                isEmpty={notesMeta.isEmpty}
-                title="개인 메모"
-              />
-            </>
-          )}
+            {visiblePreviewState.status === "error" && (
+              <section
+                aria-live="polite"
+                className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700"
+              >
+                <div className="flex items-start gap-3">
+                  <AlertCircleIcon
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0"
+                  />
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold">
+                      미리보기를 불러오지 못했습니다
+                    </p>
+                    <p className="text-sm leading-6">
+                      {visiblePreviewState.summary}
+                    </p>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {detail && (
+              <>
+                <ApplicationPreviewSection
+                  body={descriptionMeta.text}
+                  icon={<FileTextIcon aria-hidden="true" className="size-4" />}
+                  isEmpty={descriptionMeta.isEmpty}
+                  title="공고 설명"
+                />
+                <ApplicationPreviewSection
+                  body={notesMeta.text}
+                  icon={
+                    <StickyNoteIcon aria-hidden="true" className="size-4" />
+                  }
+                  isEmpty={notesMeta.isEmpty}
+                  title="개인 메모"
+                />
+              </>
+            )}
+          </div>
         </BottomSheet.Body>
 
         <div className="border-t border-border bg-white px-6 py-4">
@@ -240,5 +255,23 @@ export function ApplicationPreviewSheet({
         </div>
       </BottomSheet.Content>
     </BottomSheet>
+  );
+}
+
+function ApplicationPreviewSectionSkeleton() {
+  return (
+    <section className="space-y-2 py-1">
+      <div className="flex items-center gap-2">
+        <Skeleton className="size-4" />
+        {/* h-5: text-sm(14px)의 line-height(20px)와 일치 */}
+        <Skeleton className="h-5 w-16" />
+      </div>
+      {/* 간격 없음: leading-6 텍스트 3줄(72px)과 높이 일치 */}
+      <div className="flex flex-col">
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-5/6" />
+      </div>
+    </section>
   );
 }

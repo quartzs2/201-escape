@@ -11,20 +11,14 @@ import {
   type SaveJobApplicationResult,
 } from "@/lib/types/jobApplication";
 
-const AUTH_ERROR_CODE = "28000";
-const ERROR_MESSAGES = {
-  AUTH_REQUIRED: "Authentication required.",
-  INVALID_RPC_RESPONSE: "Failed to parse save_job_application response.",
-  UNKNOWN_ERROR: "Unknown error",
-  VALIDATION_ERROR: "Invalid saveJobApplication input.",
-} as const;
+import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 
-type RpcErrorLike = {
-  code?: string;
-  details?: null | string;
-  hint?: null | string;
-  message: string;
-};
+const ERROR_MESSAGES = {
+  AUTH_REQUIRED: "로그인이 필요합니다.",
+  INVALID_RPC_RESPONSE: "지원 저장 응답을 해석하지 못했습니다.",
+  UNKNOWN_ERROR: "알 수 없는 오류가 발생했습니다.",
+  VALIDATION_ERROR: "유효하지 않은 지원 입력입니다.",
+} as const;
 
 export async function saveJobApplication(
   input: SaveJobApplicationInput,
@@ -72,7 +66,7 @@ export async function saveJobApplication(
     return {
       code: error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "RPC_ERROR",
       ok: false,
-      reason: normalizeRpcError(error),
+      reason: normalizeQueryError(error),
     };
   }
 
@@ -91,14 +85,4 @@ export async function saveJobApplication(
     data: parsedPayload.data,
     ok: true,
   };
-}
-
-function normalizeRpcError(error: RpcErrorLike): string {
-  const metadata = [error.details, error.hint].filter(Boolean).join(" | ");
-
-  if (metadata.length > 0) {
-    return `${error.message} (${metadata})`;
-  }
-
-  return error.message;
 }

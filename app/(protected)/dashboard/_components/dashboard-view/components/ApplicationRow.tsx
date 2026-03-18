@@ -16,7 +16,7 @@ export function ApplicationRow({ application, onSelect }: ApplicationRowProps) {
 
   return (
     <button
-      aria-label={`${application.companyName} ${application.positionTitle} 공고 미리보기 열기`}
+      aria-label={`${application.companyName} ${application.positionTitle} 지원 미리보기 열기`}
       className={cn(
         "flex w-full items-start justify-between gap-4 border-b border-border py-4 text-left",
         "cursor-pointer transition-colors",

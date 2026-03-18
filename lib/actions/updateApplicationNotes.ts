@@ -4,23 +4,23 @@ import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
 import {
-  type UpdateApplicationStatusInput,
-  updateApplicationStatusInputSchema,
-  type UpdateApplicationStatusResult,
+  type UpdateApplicationNotesInput,
+  updateApplicationNotesInputSchema,
+  type UpdateApplicationNotesResult,
 } from "@/lib/types/application";
 
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
-  NOT_FOUND: "상태를 변경할 지원 정보를 찾을 수 없습니다.",
-  VALIDATION_ERROR: "유효하지 않은 지원상태 변경 입력입니다.",
+  NOT_FOUND: "메모를 수정할 지원 정보를 찾을 수 없습니다.",
+  VALIDATION_ERROR: "유효하지 않은 지원 메모 수정 입력입니다.",
 } as const;
 
-export async function updateApplicationStatus(
-  input: UpdateApplicationStatusInput,
-): Promise<UpdateApplicationStatusResult> {
-  const parsedInput = updateApplicationStatusInputSchema.safeParse(input);
+export async function updateApplicationNotes(
+  input: UpdateApplicationNotesInput,
+): Promise<UpdateApplicationNotesResult> {
+  const parsedInput = updateApplicationNotesInputSchema.safeParse(input);
 
   if (!parsedInput.success) {
     const flattened = z.flattenError(parsedInput.error);
@@ -49,11 +49,11 @@ export async function updateApplicationStatus(
   const { data, error } = await supabase
     .from("applications")
     .update({
-      status: parsedInput.data.status,
+      notes: parsedInput.data.notes,
     })
     .eq("id", parsedInput.data.applicationId)
     .eq("user_id", authData.user.id)
-    .select("id")
+    .select("notes")
     .maybeSingle();
 
   if (error) {
@@ -73,6 +73,9 @@ export async function updateApplicationStatus(
   }
 
   return {
+    data: {
+      notes: data.notes,
+    },
     ok: true,
   };
 }

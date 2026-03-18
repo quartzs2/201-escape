@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { Skeleton } from "@/components/ui";
 import { getApplications } from "@/lib/actions";
 import { cn, formatKoreanDate } from "@/lib/utils";
 
@@ -9,7 +10,13 @@ import { DashboardApplicationsPanel } from "./components/DashboardApplicationsPa
 import { DOCS_STATUSES } from "./constants";
 
 export async function DashboardView() {
-  const applications = await getApplications();
+  const applicationsResult = await getApplications();
+
+  if (!applicationsResult.ok) {
+    throw new Error(applicationsResult.reason);
+  }
+
+  const applications = applicationsResult.data;
 
   const stats = [
     { label: "전체", value: applications.length },
@@ -52,11 +59,26 @@ export async function DashboardView() {
         ))}
       </div>
 
-      <Suspense>
+      <Suspense fallback={<DashboardApplicationsPanelSkeleton />}>
         <DashboardApplicationsPanel applications={applications} />
       </Suspense>
       <GoToTopFAB />
       <AddJobTrigger />
     </main>
+  );
+}
+
+function DashboardApplicationsPanelSkeleton() {
+  return (
+    <div
+      aria-busy="true"
+      aria-label="지원 목록을 불러오는 중입니다"
+      className="space-y-3 px-5 pt-4"
+      role="status"
+    >
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Skeleton className="h-16 w-full rounded-xl" key={i} />
+      ))}
+    </div>
   );
 }
