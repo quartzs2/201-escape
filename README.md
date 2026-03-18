@@ -4,12 +4,12 @@
 
 **https://201-escape.vercel.app**
 
-원티드, 사람인 공고 URL을 붙여넣으면 자동으로 정보를 파싱해 저장하고, 지원 상태를 추적할 수 있습니다.
+지원 상태를 한 곳에서 추적합니다. 회사명과 포지션을 직접 입력하거나, 로컬 환경에서는 원티드·사람인 URL을 붙여넣어 자동 파싱할 수 있습니다.
 
 ## 주요 기능
 
-- **공고 자동 파싱**: 원티드, 사람인 URL에서 회사명, 직책, 공고 내용을 자동으로 추출
-- **직접 입력**: 파싱이 지원되지 않는 플랫폼의 공고도 수동 입력 가능
+- **직접 입력**: 회사명, 포지션, URL을 직접 입력해 공고 추가
+- **공고 자동 파싱** _(로컬 전용)_: 원티드, 사람인 URL에서 회사명, 직책, 공고 내용을 자동으로 추출
 - **지원 상태 관리**: 관심 → 서류 제출 → 서류 통과 → 면접 중 → 최종 합격 / 불합격
 - **바텀 시트 프리뷰**: 목록에서 공고를 탭하면 상세 정보를 빠르게 확인
 - **탭 기반 필터링**: 지원 상태별로 목록 필터링
@@ -37,12 +37,15 @@
 cp .env.example .env.local
 ```
 
-| 변수                                   | 설명                     |
-| -------------------------------------- | ------------------------ |
-| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase 프로젝트 URL    |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Publishable Key |
+| 변수                                   | 설명                                                                |
+| -------------------------------------- | ------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase 프로젝트 URL                                               |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Publishable Key                                            |
+| `NEXT_PUBLIC_ENABLE_PARSING`           | `true`로 설정 시 URL 자동 파싱 활성화 (로컬 전용, 기본값: 비활성화) |
 
-두 값 모두 Supabase 대시보드의 **Project Settings → API** 페이지에서 확인할 수 있습니다.
+`NEXT_PUBLIC_SUPABASE_URL`과 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`는 Supabase 대시보드의 **Project Settings → API** 페이지에서 확인할 수 있습니다.
+
+> **참고**: `NEXT_PUBLIC_ENABLE_PARSING=true`는 로컬 개발 환경에서만 사용하세요. 배포 환경에서는 이 변수를 설정하지 않거나 `false`로 유지합니다.
 
 ### 설치 및 실행
 
@@ -73,9 +76,9 @@ SAVED → APPLIED → DOCS_PASSED → INTERVIEWING → OFFERED
 
 ### 지원 플랫폼
 
-- `WANTED`: 원티드 (자동 파싱)
-- `SARAMIN`: 사람인 (자동 파싱)
-- `LINKEDIN`: LinkedIn (파싱 미지원, 수동 입력)
+- `WANTED`: 원티드 (자동 파싱, 로컬 전용)
+- `SARAMIN`: 사람인 (자동 파싱, 로컬 전용)
+- `LINKEDIN`: LinkedIn (수동 입력)
 - `MANUAL`: 직접 입력
 
 ## 스크립트
