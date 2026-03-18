@@ -14,10 +14,10 @@ import {
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 
 const ERROR_MESSAGES = {
-  AUTH_REQUIRED: "Authentication required.",
-  INVALID_RPC_RESPONSE: "Failed to parse save_job_application response.",
-  UNKNOWN_ERROR: "Unknown error",
-  VALIDATION_ERROR: "Invalid saveJobApplication input.",
+  AUTH_REQUIRED: "로그인이 필요합니다.",
+  INVALID_RPC_RESPONSE: "지원 저장 응답을 해석하지 못했습니다.",
+  UNKNOWN_ERROR: "알 수 없는 오류가 발생했습니다.",
+  VALIDATION_ERROR: "유효하지 않은 지원 입력입니다.",
 } as const;
 
 export async function saveJobApplication(

@@ -109,8 +109,10 @@ export const useBottomSheetState = ({
       return;
     }
 
+    let cancelled = false;
+
     onAnimateOutRef.current(closingVelocityRef.current, () => {
-      if (phaseRef.current !== "closing") {
+      if (cancelled || phaseRef.current !== "closing") {
         return;
       }
 
@@ -118,6 +120,10 @@ export const useBottomSheetState = ({
       setPhase("idle");
       onCloseRef.current();
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [phase]);
 
   const handleClose = useCallback((velocity = 0) => {
