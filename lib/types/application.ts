@@ -107,6 +107,12 @@ export type GetApplicationDetailResult =
       ok: true;
     };
 
+export type GetApplicationsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
+
+export type GetApplicationsResult =
+  | { code: GetApplicationsErrorCode; ok: false; reason: string }
+  | { data: ApplicationListItem[]; ok: true };
+
 export type UpdateApplicationNotesErrorCode =
   | "AUTH_REQUIRED"
   | "NOT_FOUND"
