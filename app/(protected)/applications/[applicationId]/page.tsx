@@ -141,6 +141,7 @@ export default async function ApplicationDetailPage({
             applicationId={detail.id}
             ariaLabel="지원 상태 변경"
             icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
+            key={detail.id}
             label="지원 상태"
             status={detail.status}
             updateStatusAction={updateApplicationStatus}

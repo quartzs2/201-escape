@@ -104,7 +104,14 @@ export function ApplicationPreviewSheet({
     void loadApplicationDetail(applicationId);
   }, [applicationId, isOpen]);
 
-  const detail = previewState.status === "ready" ? previewState.detail : null;
+  // 시트가 닫혀있을 때는 항상 idle로 파생합니다.
+  // effect 내부에서 setState를 호출하는 대신 렌더 시 파생하여 이전 데이터 플래시를 방지합니다.
+  const visiblePreviewState: ApplicationPreviewState = isOpen
+    ? previewState
+    : { status: "idle" };
+
+  const detail =
+    visiblePreviewState.status === "ready" ? visiblePreviewState.detail : null;
   const title =
     detail?.positionTitle ?? application?.positionTitle ?? "지원 미리보기";
   const companyName = detail?.companyName ?? application?.companyName ?? "";
@@ -160,6 +167,7 @@ export function ApplicationPreviewSheet({
               ariaLabel="지원 상태 변경"
               className="mt-2"
               icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
+              key={application.id}
               label="지원 상태"
               onStatusChangeAction={(nextStatus) => {
                 onStatusChangeAction(application.id, nextStatus);
@@ -169,7 +177,7 @@ export function ApplicationPreviewSheet({
             />
           )}
 
-          {previewState.status === "loading" && (
+          {visiblePreviewState.status === "loading" && (
             <div
               aria-busy="true"
               aria-label="지원 정보를 불러오는 중입니다"
@@ -181,7 +189,7 @@ export function ApplicationPreviewSheet({
             </div>
           )}
 
-          {previewState.status === "error" && (
+          {visiblePreviewState.status === "error" && (
             <section
               aria-live="polite"
               className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700"
@@ -195,7 +203,9 @@ export function ApplicationPreviewSheet({
                   <p className="text-sm font-semibold">
                     미리보기를 불러오지 못했습니다
                   </p>
-                  <p className="text-sm leading-6">{previewState.summary}</p>
+                  <p className="text-sm leading-6">
+                    {visiblePreviewState.summary}
+                  </p>
                 </div>
               </div>
             </section>

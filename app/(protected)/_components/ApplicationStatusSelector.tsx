@@ -54,10 +54,6 @@ export function ApplicationStatusSelector({
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setCurrentStatus(status);
-  }, [status]);
-
-  useEffect(() => {
     setErrorMessage(null);
   }, [applicationId, status]);
 
