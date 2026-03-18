@@ -35,7 +35,7 @@ export function DashboardApplicationsPanel({
   const isPreviewOpen = selectedApplicationId !== null;
 
   const handleSelectApplication = (application: ApplicationListItem) => {
-    router.push(
+    router.replace(
       `${pathname}?${PREVIEW_PARAM}=${application.id}` as unknown as Route,
     );
   };
