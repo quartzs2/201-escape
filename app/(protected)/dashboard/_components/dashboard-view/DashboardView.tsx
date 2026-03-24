@@ -5,7 +5,6 @@ import { getApplications } from "@/lib/actions";
 import { cn, formatKoreanDate } from "@/lib/utils";
 
 import { AddJobTrigger } from "../add-job";
-import { GoToTopFAB } from "../go-to-top";
 import { DashboardApplicationsPanel } from "./components/DashboardApplicationsPanel";
 import { DOCS_STATUSES } from "./constants";
 
@@ -36,13 +35,13 @@ export async function DashboardView() {
   ];
 
   return (
-    <main className="flex flex-col">
-      <div className="px-5 pt-6 pb-5">
+    <main className="flex h-dvh flex-col">
+      <div className="shrink-0 px-5 pt-6 pb-5">
         <p className="text-muted-foreground">{formatKoreanDate(new Date())}</p>
         <h1 className="mt-0.5 text-3xl text-foreground">지원 현황</h1>
       </div>
 
-      <div className="grid grid-cols-4 border-y border-border">
+      <div className="grid shrink-0 grid-cols-4 border-y border-border">
         {stats.map((stat, i) => (
           <div
             className={cn(
@@ -59,10 +58,11 @@ export async function DashboardView() {
         ))}
       </div>
 
-      <Suspense fallback={<DashboardApplicationsPanelSkeleton />}>
-        <DashboardApplicationsPanel applications={applications} />
-      </Suspense>
-      <GoToTopFAB />
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <Suspense fallback={<DashboardApplicationsPanelSkeleton />}>
+          <DashboardApplicationsPanel applications={applications} />
+        </Suspense>
+      </div>
       <AddJobTrigger />
     </main>
   );

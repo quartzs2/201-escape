@@ -3,12 +3,14 @@
 import type { Route } from "next";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { JobStatus } from "@/lib/types/job";
 
 import type { ApplicationListItem } from "../types";
+import type { ApplicationTabsHandle } from "./ApplicationTabs";
 
+import { GoToTopFAB } from "../../go-to-top";
 import { ApplicationPreviewSheet } from "./ApplicationPreviewSheet";
 import { ApplicationTabs } from "./ApplicationTabs";
 
@@ -25,6 +27,8 @@ export function DashboardApplicationsPanel({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const tabsRef = useRef<ApplicationTabsHandle>(null);
+  const [isListScrolled, setIsListScrolled] = useState(false);
   const [applicationItems, setApplicationItems] = useState(applications);
 
   useEffect(() => {
@@ -65,10 +69,12 @@ export function DashboardApplicationsPanel({
     ) ?? null;
 
   return (
-    <>
+    <div className="h-full">
       <ApplicationTabs
         applications={applicationItems}
+        onRangeChange={(startIndex) => setIsListScrolled(startIndex > 0)}
         onSelectApplication={handleSelectApplication}
+        ref={tabsRef}
       />
       <ApplicationPreviewSheet
         application={selectedApplication}
@@ -76,6 +82,10 @@ export function DashboardApplicationsPanel({
         onCloseAction={handleClosePreview}
         onStatusChangeAction={handleStatusChange}
       />
-    </>
+      <GoToTopFAB
+        isVisible={isListScrolled}
+        onScrollToTop={() => tabsRef.current?.scrollToTop()}
+      />
+    </div>
   );
 }
