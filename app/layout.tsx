@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 
 import { PORTAL_ROOT_ID } from "@/lib/constants/dom";
 
+import { Providers } from "./providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,9 +27,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${pretendard.className} antialiased`}>
-        {children}
-        <div id={PORTAL_ROOT_ID} />
-        <Toaster position="bottom-center" richColors />
+        <Providers>
+          {children}
+          <div id={PORTAL_ROOT_ID} />
+          <Toaster position="bottom-center" richColors />
+        </Providers>
       </body>
     </html>
   );

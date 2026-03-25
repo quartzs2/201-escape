@@ -9,6 +9,11 @@ export const APPLICATION_STATUS_ORDER = [
   "REJECTED",
 ] as const satisfies readonly JobStatus[];
 
+export const DOCS_STATUSES = [
+  "APPLIED",
+  "DOCS_PASSED",
+] as const satisfies readonly JobStatus[];
+
 export const APPLICATION_STATUS_META: Record<
   JobStatus,
   { color: string; label: string }

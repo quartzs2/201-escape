@@ -66,6 +66,13 @@ export const deleteApplicationInputSchema = z
   })
   .strict();
 
+export type ApplicationsStats = {
+  docs: number;
+  interviewing: number;
+  offered: number;
+  total: number;
+};
+
 export type DeleteApplicationErrorCode =
   | "AUTH_REQUIRED"
   | "NOT_FOUND"
@@ -100,9 +107,20 @@ export type GetApplicationDetailResult =
 
 export type GetApplicationsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
 
+export type GetApplicationsPage = {
+  hasMore: boolean;
+  items: ApplicationListItem[];
+};
+
 export type GetApplicationsResult =
   | { code: GetApplicationsErrorCode; ok: false; reason: string }
-  | { data: ApplicationListItem[]; ok: true };
+  | { data: GetApplicationsPage; ok: true };
+
+export type GetApplicationsStatsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
+
+export type GetApplicationsStatsResult =
+  | { code: GetApplicationsStatsErrorCode; ok: false; reason: string }
+  | { data: ApplicationsStats; ok: true };
 
 export type UpdateApplicationNotesErrorCode =
   | "AUTH_REQUIRED"

@@ -3,6 +3,7 @@ import { useImperativeHandle, useRef } from "react";
 import type { VirtualListHandle } from "@/components/ui/virtual-list";
 
 import { Tabs } from "@/components/ui";
+import { cn } from "@/lib/utils";
 
 import type { ApplicationListItem } from "../types";
 
@@ -18,6 +19,9 @@ export type ApplicationTabsHandle = {
 
 type ApplicationTabsProps = {
   applications: ApplicationListItem[];
+  className?: string;
+  isFetchingNextPage?: boolean;
+  onNearEnd?: () => void;
   onRangeChange?: (startIndex: number, endIndex: number) => void;
   onSelectApplication: (application: ApplicationListItem) => void;
   ref?: React.Ref<ApplicationTabsHandle>;
@@ -25,6 +29,9 @@ type ApplicationTabsProps = {
 
 export function ApplicationTabs({
   applications,
+  className,
+  isFetchingNextPage,
+  onNearEnd,
   onRangeChange,
   onSelectApplication,
   ref,
@@ -48,7 +55,7 @@ export function ApplicationTabs({
 
   return (
     <Tabs
-      className="flex h-full flex-col"
+      className={cn("flex flex-col", className ?? "h-full")}
       defaultValue="all"
       onValueChange={() => {
         // 탭 전환 시 GoToTopFAB 상태를 즉시 초기화합니다.
@@ -72,6 +79,8 @@ export function ApplicationTabs({
         <ApplicationList
           applications={applications}
           emptyMessage="아직 지원한 곳이 없습니다"
+          isFetchingNextPage={isFetchingNextPage}
+          onNearEnd={onNearEnd}
           onRangeChange={onRangeChange}
           onSelectApplication={onSelectApplication}
           ref={listRef}
@@ -81,6 +90,8 @@ export function ApplicationTabs({
         <ApplicationList
           applications={inProgressApplications}
           emptyMessage="진행 중인 지원이 없습니다"
+          isFetchingNextPage={isFetchingNextPage}
+          onNearEnd={onNearEnd}
           onRangeChange={onRangeChange}
           onSelectApplication={onSelectApplication}
           ref={listRef}
@@ -90,6 +101,8 @@ export function ApplicationTabs({
         <ApplicationList
           applications={doneApplications}
           emptyMessage="완료된 지원이 없습니다"
+          isFetchingNextPage={isFetchingNextPage}
+          onNearEnd={onNearEnd}
           onRangeChange={onRangeChange}
           onSelectApplication={onSelectApplication}
           ref={listRef}
