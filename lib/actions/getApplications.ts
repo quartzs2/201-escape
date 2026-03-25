@@ -12,7 +12,13 @@ const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
 } as const;
 
-export async function getApplications(): Promise<GetApplicationsResult> {
+export async function getApplications({
+  limit,
+  offset,
+}: {
+  limit: number;
+  offset: number;
+}): Promise<GetApplicationsResult> {
   const supabase = await createClient();
   const { data: authData, error: authError } = await supabase.auth.getUser();
 
@@ -39,7 +45,8 @@ export async function getApplications(): Promise<GetApplicationsResult> {
     `,
     )
     .eq("user_id", authData.user.id)
-    .order("applied_at", { ascending: false });
+    .order("applied_at", { ascending: false })
+    .range(offset, offset + limit);
 
   if (error) {
     return {
@@ -68,5 +75,9 @@ export async function getApplications(): Promise<GetApplicationsResult> {
     })
     .filter((item) => item !== null);
 
-  return { data: items, ok: true };
+  // limit + 1개를 요청해 실제로 limit개만 반환하고, 초과분이 있으면 hasMore = true
+  const hasMore = items.length > limit;
+  const pageItems = hasMore ? items.slice(0, limit) : items;
+
+  return { data: { hasMore, items: pageItems }, ok: true };
 }
