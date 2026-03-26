@@ -1,38 +1,65 @@
 "use client";
 
+import type { InfiniteData } from "@tanstack/react-query";
 import type { Route } from "next";
 
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 
+import type { GetApplicationsPage } from "@/lib/types/application";
 import type { JobStatus } from "@/lib/types/job";
 
-import type { ApplicationListItem } from "../types";
+import { getApplications } from "@/lib/actions";
 
+import type { ApplicationListItem } from "../types";
+import type { ApplicationTabsHandle } from "./ApplicationTabs";
+
+import { GoToTopFAB } from "../../go-to-top";
+import {
+  APPLICATIONS_QUERY_KEY,
+  getApplicationsNextPageParam,
+  PAGE_SIZE,
+} from "../constants";
 import { ApplicationPreviewSheet } from "./ApplicationPreviewSheet";
 import { ApplicationTabs } from "./ApplicationTabs";
 
 const PREVIEW_PARAM = "preview";
 
-type DashboardApplicationsPanelProps = {
-  applications: ApplicationListItem[];
-};
-
-export function DashboardApplicationsPanel({
-  applications,
-}: DashboardApplicationsPanelProps) {
+export function DashboardApplicationsPanel() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
 
-  const [applicationItems, setApplicationItems] = useState(applications);
+  const tabsRef = useRef<ApplicationTabsHandle>(null);
+  const [isListScrolled, setIsListScrolled] = useState(false);
 
-  useEffect(() => {
-    setApplicationItems(applications);
-  }, [applications]);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      getNextPageParam: getApplicationsNextPageParam,
+      initialPageParam: 0,
+      queryFn: async ({ pageParam }: { pageParam: number }) => {
+        const result = await getApplications({
+          limit: PAGE_SIZE,
+          offset: pageParam,
+        });
+        if (!result.ok) {
+          throw new Error(result.reason);
+        }
+        return result.data;
+      },
+      queryKey: APPLICATIONS_QUERY_KEY,
+    });
+
+  const applications: ApplicationListItem[] =
+    data?.pages.flatMap((page) => page.items) ?? [];
 
   const selectedApplicationId = searchParams.get(PREVIEW_PARAM);
   const isPreviewOpen = selectedApplicationId !== null;
+
+  const selectedApplication =
+    applications.find((a) => a.id === selectedApplicationId) ?? null;
 
   const handleSelectApplication = (application: ApplicationListItem) => {
     router.replace(
@@ -45,30 +72,43 @@ export function DashboardApplicationsPanel({
   };
 
   const handleStatusChange = (applicationId: string, nextStatus: JobStatus) => {
-    setApplicationItems((currentApplications) =>
-      currentApplications.map((application) => {
-        if (application.id !== applicationId) {
-          return application;
+    queryClient.setQueryData<InfiniteData<GetApplicationsPage>>(
+      APPLICATIONS_QUERY_KEY,
+      (old) => {
+        if (!old) {
+          return old;
         }
-
         return {
-          ...application,
-          status: nextStatus,
+          ...old,
+          pages: old.pages.map((page) => ({
+            ...page,
+            items: page.items.map((item) =>
+              item.id === applicationId
+                ? { ...item, status: nextStatus }
+                : item,
+            ),
+          })),
         };
-      }),
+      },
     );
   };
 
-  const selectedApplication =
-    applicationItems.find(
-      (application) => application.id === selectedApplicationId,
-    ) ?? null;
+  const handleNearEnd = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
 
   return (
-    <>
+    <div className="flex h-full flex-col">
       <ApplicationTabs
-        applications={applicationItems}
+        applications={applications}
+        className="min-h-0 flex-1"
+        isFetchingNextPage={isFetchingNextPage}
+        onNearEnd={handleNearEnd}
+        onRangeChange={(startIndex) => setIsListScrolled(startIndex > 0)}
         onSelectApplication={handleSelectApplication}
+        ref={tabsRef}
       />
       <ApplicationPreviewSheet
         application={selectedApplication}
@@ -76,6 +116,10 @@ export function DashboardApplicationsPanel({
         onCloseAction={handleClosePreview}
         onStatusChangeAction={handleStatusChange}
       />
-    </>
+      <GoToTopFAB
+        isVisible={isListScrolled}
+        onScrollToTop={() => tabsRef.current?.scrollToTop()}
+      />
+    </div>
   );
 }

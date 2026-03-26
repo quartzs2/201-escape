@@ -1,48 +1,68 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import { Suspense } from "react";
 
 import { Skeleton } from "@/components/ui";
-import { getApplications } from "@/lib/actions";
+import { getApplications, getApplicationsStats } from "@/lib/actions";
 import { cn, formatKoreanDate } from "@/lib/utils";
 
 import { AddJobTrigger } from "../add-job";
-import { GoToTopFAB } from "../go-to-top";
 import { DashboardApplicationsPanel } from "./components/DashboardApplicationsPanel";
-import { DOCS_STATUSES } from "./constants";
+import {
+  APPLICATIONS_QUERY_KEY,
+  getApplicationsNextPageParam,
+  PAGE_SIZE,
+} from "./constants";
 
 export async function DashboardView() {
-  const applicationsResult = await getApplications();
+  const queryClient = new QueryClient();
 
-  if (!applicationsResult.ok) {
-    throw new Error(applicationsResult.reason);
+  const [, statsResult] = await Promise.all([
+    queryClient.prefetchInfiniteQuery({
+      getNextPageParam: getApplicationsNextPageParam,
+      initialPageParam: 0,
+      pages: 1,
+      queryFn: async ({ pageParam }: { pageParam: number }) => {
+        const result = await getApplications({
+          limit: PAGE_SIZE,
+          offset: pageParam,
+        });
+
+        if (!result.ok) {
+          throw new Error(result.reason);
+        }
+
+        return result.data;
+      },
+      queryKey: APPLICATIONS_QUERY_KEY,
+    }),
+    getApplicationsStats(),
+  ]);
+
+  if (!statsResult.ok) {
+    throw new Error(statsResult.reason);
   }
 
-  const applications = applicationsResult.data;
+  const { docs, interviewing, offered, total } = statsResult.data;
 
   const stats = [
-    { label: "전체", value: applications.length },
-    {
-      label: "서류",
-      value: applications.filter((a) => DOCS_STATUSES.includes(a.status))
-        .length,
-    },
-    {
-      label: "면접",
-      value: applications.filter((a) => a.status === "INTERVIEWING").length,
-    },
-    {
-      label: "합격",
-      value: applications.filter((a) => a.status === "OFFERED").length,
-    },
+    { label: "전체", value: total },
+    { label: "서류", value: docs },
+    { label: "면접", value: interviewing },
+    { label: "합격", value: offered },
   ];
 
   return (
-    <main className="flex flex-col">
-      <div className="px-5 pt-6 pb-5">
+    <main className="flex h-dvh flex-col">
+      <div className="shrink-0 px-5 pt-6 pb-5">
         <p className="text-muted-foreground">{formatKoreanDate(new Date())}</p>
         <h1 className="mt-0.5 text-3xl text-foreground">지원 현황</h1>
       </div>
 
-      <div className="grid grid-cols-4 border-y border-border">
+      <div className="grid shrink-0 grid-cols-4 border-y border-border">
         {stats.map((stat, i) => (
           <div
             className={cn(
@@ -59,16 +79,19 @@ export async function DashboardView() {
         ))}
       </div>
 
-      <Suspense fallback={<DashboardApplicationsPanelSkeleton />}>
-        <DashboardApplicationsPanel applications={applications} />
-      </Suspense>
-      <GoToTopFAB />
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          <Suspense fallback={<DashboardViewSkeleton />}>
+            <DashboardApplicationsPanel />
+          </Suspense>
+        </HydrationBoundary>
+      </div>
       <AddJobTrigger />
     </main>
   );
 }
 
-function DashboardApplicationsPanelSkeleton() {
+function DashboardViewSkeleton() {
   return (
     <div
       aria-busy="true"
