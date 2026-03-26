@@ -10,7 +10,8 @@ import type { ApplicationListItem } from "../types";
 import { ApplicationRow } from "./ApplicationRow";
 
 // ApplicationRow의 실측 전 초기 높이 추정값(px).
-const ESTIMATED_ROW_HEIGHT = 88;
+// py-4(32) + 회사명(22.5) + 직군명(21) + gap-2(8) + 상태행(21) ≈ 105
+const ESTIMATED_ROW_HEIGHT = 105;
 
 // 끝에서 몇 개 전에 다음 페이지를 미리 로드할지.
 const NEAR_END_THRESHOLD = 5;

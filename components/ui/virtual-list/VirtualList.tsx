@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { useEffect, useImperativeHandle, useRef } from "react";
+import { useImperativeHandle, useLayoutEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -154,11 +154,14 @@ function VirtualItemMeasurer({
 }: VirtualItemMeasurerProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current;
     if (!el) {
       return;
     }
+
+    // 첫 페인트 전에 실제 높이를 동기적으로 측정해 레이아웃 점프를 제거합니다.
+    onMeasure(index, el.getBoundingClientRect().height);
 
     const observer = new ResizeObserver(([entry]) => {
       onMeasure(index, entry.contentRect.height);
