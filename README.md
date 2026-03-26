@@ -11,16 +11,22 @@
 - **직접 입력**: 회사명, 포지션, URL을 직접 입력해 공고 추가
 - **공고 자동 파싱** _(로컬 전용)_: 원티드, 사람인 URL에서 회사명, 직책, 공고 내용을 자동으로 추출
 - **지원 상태 관리**: 관심 → 서류 제출 → 서류 통과 → 면접 중 → 최종 합격 / 불합격
-- **바텀 시트 프리뷰**: 목록에서 공고를 탭하면 상세 정보를 빠르게 확인
 - **탭 기반 필터링**: 지원 상태별로 목록 필터링
+- **무한 스크롤 + 가상 리스트**: 대량 공고도 부드럽게 렌더링
+- **지원 상세 페이지**: 공고 원문 편집, 메모 작성, 면접 일정 관리
+- **면접 일정 관리**: 면접 유형·회차·일시 등록 및 삭제
 
 ## 기술 스택
 
-- **Framework**: Next.js 15 (App Router, TypeScript)
+- **Framework**: Next.js 16 (App Router, TypeScript), React 19
+- **Server State**: TanStack Query v5
 - **Database & Auth**: Supabase (PostgreSQL, Google OAuth)
-- **Styling**: TailwindCSS v4
+- **Styling**: TailwindCSS v4, CVA, tailwind-merge
+- **Notifications**: Sonner
 - **Validation**: Zod
 - **Parsing**: Cheerio (서버 사이드 HTML 파싱)
+- **Test**: Vitest, Storybook
+- **Code Quality**: ESLint, Prettier, Husky, lint-staged
 
 ## 시작하기
 
@@ -84,31 +90,45 @@ SAVED → APPLIED → DOCS_PASSED → INTERVIEWING → OFFERED
 ## 스크립트
 
 ```bash
-pnpm dev           # 개발 서버 실행
-pnpm build         # 프로덕션 빌드
-pnpm start         # 프로덕션 서버 실행
-pnpm lint          # ESLint 실행
-pnpm test          # Vitest 테스트 실행
-pnpm storybook     # Storybook 실행 (포트 6006)
+pnpm dev             # 개발 서버 실행
+pnpm build           # 프로덕션 빌드
+pnpm start           # 프로덕션 서버 실행
+pnpm lint            # ESLint 실행
+pnpm test            # Vitest 테스트 실행
+pnpm storybook       # Storybook 실행 (포트 6006)
+pnpm build-storybook # Storybook 정적 빌드
 ```
 
 ## 프로젝트 구조
 
 ```
 app/
-├── (protected)/        # 인증 필요 라우트
-│   ├── dashboard/      # 지원 현황 대시보드
-│   └── applications/   # 지원 상세 페이지
-├── auth/               # OAuth 콜백 처리
-└── login/              # 로그인 페이지
+├── (protected)/            # 인증 필요 라우트
+│   ├── _components/        # 공유 컴포넌트 (ApplicationStatusSelector 등)
+│   ├── dashboard/          # 지원 현황 대시보드 (목록, 탭 필터, 공고 추가)
+│   └── applications/       # 지원 상세 페이지 (메모, 면접 일정, 공고 원문)
+├── auth/                   # OAuth 콜백 처리
+├── login/                  # 로그인 페이지
+└── providers.tsx           # 전역 Provider (TanStack Query 등)
 
 components/
-├── ui/                 # 재사용 UI 컴포넌트 (Button, Tabs, BottomSheet 등)
-└── common/             # Portal, FocusTrap 등 유틸리티 컴포넌트
+├── ui/                     # 재사용 UI 컴포넌트
+│   ├── bottom-sheet/       # 바텀 시트
+│   ├── button/             # 버튼
+│   ├── skeleton/           # 스켈레톤 로딩
+│   ├── tab-selector/       # 탭 셀렉터
+│   ├── tabs/               # 탭
+│   └── virtual-list/       # 가상 리스트
+├── common/                 # Portal, FocusTrap 등 유틸리티 컴포넌트
+└── icons/                  # SVG 아이콘 컴포넌트
+
+hooks/                      # 공유 커스텀 훅 (useDrag, useScrollLock 등)
 
 lib/
-├── actions/            # Server Actions
-├── adapters/           # 플랫폼별 공고 파서 (Adapter 패턴)
-├── types/              # 타입 정의 및 Zod 스키마
-└── supabase/           # Supabase 클라이언트 (서버/클라이언트 분리)
+├── actions/                # Server Actions
+├── adapters/               # 플랫폼별 공고 파서 (Adapter 패턴)
+├── constants/              # 상태·플랫폼·인터뷰 타입 상수
+├── types/                  # 타입 정의 및 Zod 스키마
+├── utils/                  # 순수 유틸리티 함수 (날짜 포맷, cn 등)
+└── supabase/               # Supabase 클라이언트 (서버/클라이언트 분리)
 ```
