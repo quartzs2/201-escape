@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 export type ScrollToIndexOptions = {
   align?: "center" | "end" | "start";
@@ -49,11 +55,16 @@ export function useVirtualList({
   // 측정값 변경 시 리렌더를 트리거하는 용도로만 사용합니다.
   const [, setVersion] = useState(0);
 
-  useEffect(() => {
+  // 컨테이너 높이를 페인트 전에 동기적으로 읽어, 첫 렌더에서 올바른 visible range를 계산합니다.
+  // useEffect를 쓰면 containerHeight=0으로 첫 페인트가 일어나 overscan 범위(4개)만 먼저 보이고
+  // 이후 ResizeObserver 콜백에서 나머지 아이템이 깜빡이며 나타납니다.
+  useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) {
       return;
     }
+
+    setContainerHeight(el.getBoundingClientRect().height);
 
     const observer = new ResizeObserver(([entry]) => {
       setContainerHeight(entry.contentRect.height);
