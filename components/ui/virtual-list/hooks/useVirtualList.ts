@@ -65,9 +65,15 @@ export function useVirtualList({
     }
 
     setContainerHeight(el.getBoundingClientRect().height);
+    // emptyState에서 아이템으로 복귀할 때 컨테이너가 재마운트되면
+    // 실제 scrollTop(보통 0)과 state가 어긋날 수 있으므로 동기적으로 맞춥니다.
+    setScrollTop(el.scrollTop);
 
     const observer = new ResizeObserver(([entry]) => {
-      setContainerHeight(entry.contentRect.height);
+      const height =
+        entry.borderBoxSize?.[0]?.blockSize ??
+        (entry.target as HTMLElement).getBoundingClientRect().height;
+      setContainerHeight(height);
     });
     observer.observe(el);
 
@@ -133,6 +139,14 @@ export function useVirtualList({
     [estimatedItemHeight, itemCount, paddingTop],
   );
 
+  // itemCount가 줄어든 경우 범위 밖 인덱스의 측정값을 정리합니다.
+  // 필터링 등으로 아이템 수가 줄었을 때 이전 인덱스의 높이가 새 아이템에 잘못 적용되는 것을 막습니다.
+  for (const key of measuredHeights.current.keys()) {
+    if (key >= itemCount) {
+      measuredHeights.current.delete(key);
+    }
+  }
+
   // 누적 오프셋 계산 — O(n)
   // 실측값이 있으면 사용하고, 없으면 estimatedItemHeight로 대체합니다.
   const offsets = new Array<number>(itemCount);
@@ -149,7 +163,7 @@ export function useVirtualList({
   let rawEnd = rawStart;
   while (
     rawEnd + 1 < itemCount &&
-    offsets[rawEnd + 1] < scrollTop + containerHeight
+    offsets[rawEnd + 1] <= scrollTop + containerHeight
   ) {
     rawEnd++;
   }
