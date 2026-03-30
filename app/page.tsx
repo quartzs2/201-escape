@@ -1,25 +1,26 @@
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button/Button";
-
+import { FeaturesSection } from "./_components/landing/FeaturesSection";
+import { HeroSection } from "./_components/landing/HeroSection";
 import { PublicHeader } from "./_components/PublicHeader";
 
 export default function Home() {
   return (
-    <div className="flex h-dvh flex-col">
+    <div className="flex min-h-dvh flex-col">
       <PublicHeader />
-      <div className="flex flex-1 flex-col justify-center px-5 pb-8">
-        <p className="text-sm text-muted-foreground">채용 공고 관리</p>
-        <h1 className="mt-0.5 text-3xl text-foreground">201 Escape</h1>
-        <p className="mt-2 text-muted-foreground">
-          개인 채용 공고 관리 대시보드
-        </p>
-        <div className="mt-8">
-          <Button asChild size="lg">
-            <Link href="/login">로그인</Link>
-          </Button>
-        </div>
-      </div>
+      <main>
+        <HeroSection />
+        <FeaturesSection />
+      </main>
+      <footer className="flex justify-center px-6 py-10">
+        <Link className="flex flex-col items-center gap-2" href="/login">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
+            <ArrowRight className="h-5 w-5 text-muted-foreground" />
+          </span>
+          <span className="text-sm text-muted-foreground">시작하기</span>
+        </Link>
+      </footer>
     </div>
   );
 }
