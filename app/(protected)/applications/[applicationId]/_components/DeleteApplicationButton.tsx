@@ -11,6 +11,7 @@ import type {
 
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
+import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 
 type DeleteApplicationAction = (
   input: DeleteApplicationInput,
@@ -70,10 +71,16 @@ export function DeleteApplicationButton({
 
   return (
     <>
-      <Button onClick={handleOpen} size="sm" variant="ghost">
-        <Trash2Icon aria-hidden="true" className="size-4" />
-        지원 삭제
-      </Button>
+      <Tooltip label="지원 삭제" side="bottom">
+        <Button
+          aria-label="지원 삭제"
+          onClick={handleOpen}
+          size="sm"
+          variant="ghost"
+        >
+          <Trash2Icon aria-hidden="true" className="size-4" />
+        </Button>
+      </Tooltip>
 
       <BottomSheet isOpen={isOpen} onClose={handleClose}>
         <BottomSheet.Overlay
