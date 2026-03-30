@@ -1,29 +1,26 @@
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui/button/Button";
-import { createClient } from "@/lib/supabase/server";
+import { FeaturesSection } from "./_components/landing/FeaturesSection";
+import { HeroSection } from "./_components/landing/HeroSection";
+import { PublicHeader } from "./_components/PublicHeader";
 
-export default async function Home() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    redirect("/dashboard");
-  }
-
+export default function Home() {
   return (
-    <div className="flex h-full flex-col justify-center gap-2 p-4">
-      <h1 className="flex flex-col text-4xl font-light">
-        <span>201</span>
-        <span>Escape</span>
-      </h1>
-      <p>개인 채용 공고 관리 대시보드</p>
-      <Button asChild size={"lg"}>
-        <Link href="/login">로그인</Link>
-      </Button>
+    <div className="flex min-h-dvh flex-col">
+      <PublicHeader />
+      <main>
+        <HeroSection />
+        <FeaturesSection />
+      </main>
+      <footer className="flex justify-center px-6 py-10">
+        <Link className="flex flex-col items-center gap-2" href="/login">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
+            <ArrowRight className="h-5 w-5 text-muted-foreground" />
+          </span>
+          <span className="text-sm text-muted-foreground">시작하기</span>
+        </Link>
+      </footer>
     </div>
   );
 }

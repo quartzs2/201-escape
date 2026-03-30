@@ -81,6 +81,11 @@ type VirtualListProps<T> = {
  * 부모에 반드시 고정 높이가 있어야 합니다 (className에 h-full 등 지정).
  *
  * 주의: 키보드 탭 포커스는 렌더링된 아이템(overscan 범위)까지만 이동합니다.
+ *
+ * 데이터셋 교체 시 높이 캐시 초기화:
+ * - 아이템 수가 줄어드는 경우(필터링 등): 자동으로 범위 밖 측정값을 정리합니다.
+ * - 같은 개수의 완전히 다른 데이터로 교체하는 경우: `key` prop으로 컴포넌트를 리셋하세요.
+ *   예) `<VirtualList key={activeTabId} ... />`
  */
 export function VirtualList<T>({
   "aria-label": ariaLabel,
@@ -164,7 +169,11 @@ function VirtualItemMeasurer({
     onMeasure(index, el.getBoundingClientRect().height);
 
     const observer = new ResizeObserver(([entry]) => {
-      onMeasure(index, entry.contentRect.height);
+      // getBoundingClientRect와 일치하도록 border box 기준으로 측정합니다.
+      const height =
+        entry.borderBoxSize?.[0]?.blockSize ??
+        (entry.target as HTMLElement).getBoundingClientRect().height;
+      onMeasure(index, height);
     });
     observer.observe(el);
 
