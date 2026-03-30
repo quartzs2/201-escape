@@ -34,29 +34,31 @@ const features: Feature[] = [
 
 export function FeaturesSection() {
   return (
-    <section className="px-6 py-16" id="features">
-      <header>
-        <span className="text-xs font-semibold tracking-widest text-primary uppercase">
+    <section className="px-6 py-20" id="features">
+      <header className="mb-12">
+        <span className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase">
           Features
         </span>
-        <h2 className="mt-1.5 text-2xl font-bold text-foreground">
+        <h2 className="mt-3 text-[32px] leading-tight font-extrabold tracking-tight text-foreground">
           필요한 기능만,
           <br />
           군더더기 없이
         </h2>
       </header>
 
-      <ul className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {features.map(({ description, icon: Icon, title }) => (
           <li
-            className="rounded-2xl border border-border bg-background p-5"
+            className="rounded-3xl border border-border/50 bg-background p-7 shadow-sm transition-shadow hover:shadow-md"
             key={title}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-              <Icon aria-hidden="true" className="h-5 w-5 text-primary" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/8">
+              <Icon aria-hidden="true" className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="mt-4 font-semibold text-foreground">{title}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+            <h3 className="mt-6 text-xl font-bold tracking-tight text-foreground">
+              {title}
+            </h3>
+            <p className="mt-3 text-base leading-relaxed font-medium text-muted-foreground/80">
               {description}
             </p>
           </li>

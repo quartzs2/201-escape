@@ -44,7 +44,7 @@ export function ManualFormView({ error, onSubmit }: ManualFormViewProps) {
           </label>
           <input
             className={cn(
-              "h-10 w-full rounded-md border border-input bg-background px-3 text-sm",
+              "h-10 w-full rounded-md border border-input bg-background px-3 text-base",
               "placeholder:text-muted-foreground",
               "focus:ring-1 focus:ring-ring focus:outline-none",
             )}
@@ -73,7 +73,7 @@ export function ManualFormView({ error, onSubmit }: ManualFormViewProps) {
           </label>
           <input
             className={cn(
-              "h-10 w-full rounded-md border border-input bg-background px-3 text-sm",
+              "h-10 w-full rounded-md border border-input bg-background px-3 text-base",
               "placeholder:text-muted-foreground",
               "focus:ring-1 focus:ring-ring focus:outline-none",
             )}
@@ -100,7 +100,7 @@ export function ManualFormView({ error, onSubmit }: ManualFormViewProps) {
           </label>
           <input
             className={cn(
-              "h-10 w-full rounded-md border border-input bg-background px-3 text-sm",
+              "h-10 w-full rounded-md border border-input bg-background px-3 text-base",
               "placeholder:text-muted-foreground",
               "focus:ring-1 focus:ring-ring focus:outline-none",
             )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { LogOutIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -37,7 +38,13 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/80 px-6 py-3 backdrop-blur-sm">
-      <span className="text-lg font-bold">201</span>
+      <Button
+        asChild
+        className="text-xl font-black tracking-tighter text-primary hover:bg-transparent"
+        variant="ghost"
+      >
+        <Link href="/dashboard">201</Link>
+      </Button>
       <Tooltip label={isLoggingOut ? "로그아웃 중..." : "로그아웃"}>
         <Button
           aria-label={isLoggingOut ? "로그아웃 중..." : "로그아웃"}

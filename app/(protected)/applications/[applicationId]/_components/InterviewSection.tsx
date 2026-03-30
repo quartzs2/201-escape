@@ -26,14 +26,16 @@ export async function InterviewSection({
   const result = await getInterviews(applicationId);
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center gap-2">
-        <span className="text-muted-foreground">
-          <CalendarIcon aria-hidden="true" className="size-5" />
-        </span>
-        <h2 className="text-base font-semibold tracking-[-0.01em]">
-          면접 일정
-        </h2>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-foreground">
+          <span className="text-muted-foreground">
+            <CalendarIcon aria-hidden="true" className="size-5" />
+          </span>
+          <h2 className="text-sm font-bold tracking-tight uppercase">
+            면접 일정
+          </h2>
+        </div>
         <div className="ml-auto">
           <InterviewFormSheet
             applicationId={applicationId}
@@ -45,43 +47,42 @@ export async function InterviewSection({
       </div>
 
       {!result.ok ? (
-        <p className="text-[15px] text-muted-foreground">
+        <p className="text-[15px] text-muted-foreground/60 italic">
           면접 일정을 불러오지 못했습니다.
         </p>
       ) : (
         <InterviewList applicationId={applicationId} interviews={result.data} />
       )}
-    </section>
+    </div>
   );
 }
 
 function InterviewList({ applicationId, interviews }: InterviewListProps) {
   if (interviews.length === 0) {
     return (
-      <p className="text-[15px] text-muted-foreground">
-        등록된 면접 일정이 없습니다.
-      </p>
+      <div className="rounded-xl bg-muted/30 p-4">
+        <p className="text-[15px] text-muted-foreground/60 italic">
+          등록된 면접 일정이 없습니다.
+        </p>
+      </div>
     );
   }
 
   return (
-    <ul className="space-y-2">
+    <ul className="grid gap-3">
       {interviews.map((interview) => (
         <li
-          className="space-y-1 rounded-lg border border-border px-4 py-3"
+          className="flex flex-col gap-1.5 rounded-xl border border-border bg-muted/20 px-4 py-3 transition-colors hover:bg-muted/30"
           key={interview.id}
         >
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-foreground">
-              {interview.round}차 —{" "}
-              {INTERVIEW_TYPE_LABEL[interview.interviewType]}
-            </span>
-            {interview.isDraft && (
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                임시저장
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1 text-sm font-bold text-foreground">
+                <span>{interview.round}차 —</span>
+                <span>{INTERVIEW_TYPE_LABEL[interview.interviewType]}</span>
               </span>
-            )}
-            <div className="ml-auto flex items-center gap-1">
+            </div>
+            <div className="flex items-center gap-0.5">
               <InterviewFormSheet
                 applicationId={applicationId}
                 interview={interview}
@@ -96,14 +97,16 @@ function InterviewList({ applicationId, interviews }: InterviewListProps) {
               />
             </div>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {formatScheduledAt(interview.scheduledAt)}
-          </p>
-          {interview.location !== null && (
-            <p className="text-sm text-muted-foreground">
-              {interview.location}
+          <div className="space-y-0.5">
+            <p className="text-sm font-medium text-muted-foreground">
+              {formatScheduledAt(interview.scheduledAt)}
             </p>
-          )}
+            {interview.location !== null && (
+              <p className="text-xs text-muted-foreground/80">
+                {interview.location}
+              </p>
+            )}
+          </div>
         </li>
       ))}
     </ul>
