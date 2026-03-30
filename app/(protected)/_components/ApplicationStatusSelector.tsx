@@ -107,11 +107,11 @@ export function ApplicationStatusSelector({
         </div>
       )}
       <TabSelector
-        activeItemClassName="border-foreground bg-foreground text-background"
+        activeItemClassName="border-primary bg-primary text-primary-foreground shadow-md"
         aria-label={ariaLabel}
         disabled={isSaving}
-        inactiveItemClassName="border-border bg-background text-muted-foreground hover:border-foreground/20 hover:text-foreground"
-        itemClassName="min-h-11 flex-none rounded-full border px-4 py-2 font-medium shadow-none"
+        inactiveItemClassName="border-border/50 bg-background text-muted-foreground hover:border-primary/20 hover:text-primary/70"
+        itemClassName="min-h-11 flex-none rounded-full border px-4 py-2 font-bold shadow-none"
         items={STATUS_ITEMS}
         listClassName="flex flex-wrap gap-2 rounded-none border-0 bg-transparent p-0"
         onValueChange={handleValueChange}

@@ -65,9 +65,12 @@ export default async function ApplicationDetailPage({
     const errorMeta = ERROR_STATE_META[result.code];
 
     return (
-      <main className="px-5 py-6 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-3xl">
+      <main className="min-h-screen bg-muted/30">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6">
           <BackLink />
+          <h1 className="text-sm font-semibold tracking-tight">오류</h1>
+        </header>
+        <div className="mx-auto w-full max-w-3xl px-5 py-6 sm:px-6 lg:px-8">
           <ErrorState
             description={errorMeta.description}
             icon={errorMeta.icon}
@@ -85,8 +88,8 @@ export default async function ApplicationDetailPage({
     !detail.originUrl.startsWith("manual:");
 
   return (
-    <main className="px-5 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+    <main className="min-h-screen bg-muted/30 pb-20">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <BackLink />
           <DeleteApplicationButton
@@ -97,79 +100,86 @@ export default async function ApplicationDetailPage({
           />
         </div>
 
-        <section className="space-y-5">
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <section className="space-y-6">
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-x-2 text-xs font-medium text-muted-foreground">
               {detail.platform !== "MANUAL" && (
                 <>
-                  <span className="text-sm font-medium tracking-[0.08em] text-muted-foreground uppercase">
+                  <span className="tracking-wider uppercase">
                     {PLATFORM_LABEL[detail.platform]}
                   </span>
-                  <span aria-hidden="true" className="text-muted-foreground">
+                  <span aria-hidden="true" className="opacity-40">
                     /
                   </span>
                 </>
               )}
-              <span className="flex gap-1 text-sm text-muted-foreground">
+              <span className="flex gap-1">
                 <span>{detail.status === "SAVED" ? "저장일" : "지원일"}</span>
                 <span>{formatAppliedAt(detail.appliedAt)}</span>
               </span>
             </div>
 
-            <div className="space-y-2">
-              <p className="text-base font-medium text-muted-foreground">
-                {detail.companyName}
-              </p>
-              <div className="flex items-start">
-                <h1 className="max-w-3xl flex-1 text-[28px] leading-[1.15] font-semibold tracking-[-0.02em] text-foreground sm:text-[32px]">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1.5">
+                <p className="text-lg font-medium text-muted-foreground">
+                  {detail.companyName}
+                </p>
+                <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
                   {detail.positionTitle}
                 </h1>
-                {hasOriginUrl && (
-                  <Button
-                    asChild
-                    className="ml-auto size-10 shrink-0 rounded-full border border-border px-0 text-muted-foreground hover:bg-muted hover:text-foreground"
-                    variant="ghost"
-                  >
-                    <a
-                      aria-label="원문 공고 보러가기"
-                      href={detail.originUrl!}
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    >
-                      <ExternalLinkIcon aria-hidden="true" className="size-5" />
-                    </a>
-                  </Button>
-                )}
               </div>
+              {hasOriginUrl && (
+                <Button
+                  asChild
+                  className="size-10 shrink-0 rounded-full border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                  variant="ghost"
+                >
+                  <a
+                    aria-label="원문 공고 보러가기"
+                    href={detail.originUrl!}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    <ExternalLinkIcon aria-hidden="true" className="size-5" />
+                  </a>
+                </Button>
+              )}
             </div>
           </div>
 
-          <ApplicationStatusSelector
-            applicationId={detail.id}
-            ariaLabel="지원 상태 변경"
-            icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
-            key={detail.id}
-            label="지원 상태"
-            status={detail.status}
-            updateStatusAction={updateApplicationStatus}
-          />
+          <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
+            <ApplicationStatusSelector
+              applicationId={detail.id}
+              ariaLabel="지원 상태 변경"
+              icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
+              key={detail.id}
+              label="지원 상태"
+              status={detail.status}
+              updateStatusAction={updateApplicationStatus}
+            />
+          </div>
         </section>
 
-        <div aria-hidden="true" className="h-px w-full bg-border" />
+        <div className="grid gap-6">
+          <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
+            <InterviewSection applicationId={detail.id} />
+          </div>
 
-        <div className="grid gap-7">
-          <InterviewSection applicationId={detail.id} />
-          <div aria-hidden="true" className="h-px w-full bg-border" />
-          <JobDescriptionEditor
-            applicationId={detail.id}
-            description={detail.description}
-            updateDescriptionAction={updateJobDescription}
-          />
-          <MemoEditor
-            applicationId={detail.id}
-            notes={detail.notes}
-            updateNotesAction={updateApplicationNotes}
-          />
+          <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
+            <JobDescriptionEditor
+              applicationId={detail.id}
+              description={detail.description}
+              updateDescriptionAction={updateJobDescription}
+            />
+          </div>
+
+          <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
+            <MemoEditor
+              applicationId={detail.id}
+              notes={detail.notes}
+              updateNotesAction={updateApplicationNotes}
+            />
+          </div>
         </div>
       </div>
     </main>

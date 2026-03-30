@@ -11,7 +11,7 @@ import { DONE_STATUSES, IN_PROGRESS_STATUSES } from "../constants";
 import { ApplicationList } from "./ApplicationList";
 
 const TAB_TRIGGER_CLASS =
-  "h-12 flex-1 rounded-none border-b-2 border-transparent px-0 text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary data-[state=active]:shadow-none";
+  "h-9 flex-1 rounded-full px-3 text-sm font-semibold transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md text-muted-foreground hover:text-foreground";
 
 export type ApplicationTabsHandle = {
   scrollToTop: () => void;
@@ -63,19 +63,21 @@ export function ApplicationTabs({
         onRangeChange?.(0, 0);
       }}
     >
-      <Tabs.List className="h-auto w-full shrink-0 rounded-none border-b border-border bg-transparent p-0">
-        <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="all">
-          전체
-        </Tabs.Trigger>
-        <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="active">
-          진행중
-        </Tabs.Trigger>
-        <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="done">
-          완료
-        </Tabs.Trigger>
-      </Tabs.List>
+      <div className="px-5 py-4">
+        <Tabs.List className="flex h-11 w-full items-center gap-1 rounded-2xl bg-muted/50 p-1 shadow-inner">
+          <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="all">
+            전체
+          </Tabs.Trigger>
+          <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="active">
+            진행중
+          </Tabs.Trigger>
+          <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="done">
+            완료
+          </Tabs.Trigger>
+        </Tabs.List>
+      </div>
 
-      <Tabs.Content className="mt-0 min-h-0 flex-1 px-5" value="all">
+      <Tabs.Content className="mt-0 min-h-0 flex-1 px-4" value="all">
         <ApplicationList
           applications={applications}
           emptyMessage="아직 지원한 곳이 없습니다"
@@ -86,7 +88,7 @@ export function ApplicationTabs({
           ref={listRef}
         />
       </Tabs.Content>
-      <Tabs.Content className="mt-0 min-h-0 flex-1 px-5" value="active">
+      <Tabs.Content className="mt-0 min-h-0 flex-1 px-4" value="active">
         <ApplicationList
           applications={inProgressApplications}
           emptyMessage="진행 중인 지원이 없습니다"
@@ -97,7 +99,7 @@ export function ApplicationTabs({
           ref={listRef}
         />
       </Tabs.Content>
-      <Tabs.Content className="mt-0 min-h-0 flex-1 px-5" value="done">
+      <Tabs.Content className="mt-0 min-h-0 flex-1 px-4" value="done">
         <ApplicationList
           applications={doneApplications}
           emptyMessage="완료된 지원이 없습니다"

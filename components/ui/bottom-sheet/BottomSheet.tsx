@@ -54,11 +54,11 @@ function Content({
       tabIndex={-1}
       {...props}
       className={cn(
-        "w-full max-w-md rounded-t-[20px] bg-white shadow-2xl",
+        "w-full max-w-md rounded-t-[32px] bg-background shadow-2xl",
         "pointer-events-auto relative flex flex-col",
-        "max-h-[90vh] min-h-[50vh]",
+        "max-h-[92vh] min-h-[40vh]",
         "pb-[env(safe-area-inset-bottom)]",
-        "after:absolute after:top-[calc(100%-1px)] after:right-0 after:left-0 after:h-screen after:bg-white",
+        "after:absolute after:top-[calc(100%-1px)] after:right-0 after:left-0 after:h-screen after:bg-background",
         className,
       )}
       onKeyDown={(e) => {
@@ -89,7 +89,7 @@ function Header({
     <div
       {...props}
       className={cn(
-        "flex w-full cursor-grab touch-none justify-center pt-3 pb-5 select-none active:cursor-grabbing",
+        "flex w-full cursor-grab touch-none justify-center pt-4 pb-6 select-none active:cursor-grabbing",
         className,
       )}
       ref={handleRef}
@@ -97,7 +97,7 @@ function Header({
       {children ?? (
         <div
           aria-hidden="true"
-          className="h-1.5 w-12 rounded-full bg-gray-300"
+          className="h-1.5 w-10 rounded-full bg-muted-foreground/20"
         />
       )}
     </div>
@@ -112,7 +112,7 @@ function Overlay({ className, ...props }: React.ComponentProps<"div">) {
       aria-hidden="true"
       {...props}
       className={cn(
-        "pointer-events-auto absolute inset-0 bg-black/50 transition-opacity duration-300",
+        "pointer-events-auto absolute inset-0 bg-black/40 transition-opacity duration-300",
         isVisible ? "opacity-100" : "opacity-0",
         className,
       )}

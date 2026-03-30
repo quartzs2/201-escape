@@ -40,7 +40,7 @@ export function Header() {
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/80 px-6 py-3 backdrop-blur-sm">
       <Button
         asChild
-        className="text-lg font-bold hover:bg-transparent"
+        className="text-xl font-black tracking-tighter text-primary hover:bg-transparent"
         variant="ghost"
       >
         <Link href="/dashboard">201</Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import { FileTextIcon } from "lucide-react";
+import { FileTextIcon, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -10,6 +10,7 @@ import type {
 } from "@/lib/types/application";
 
 import { Button } from "@/components/ui";
+import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 
 type JobDescriptionEditorProps = {
   applicationId: string;
@@ -84,70 +85,85 @@ export function JobDescriptionEditor({
   }
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center gap-2 text-foreground">
-        <span className="text-muted-foreground">
-          <FileTextIcon aria-hidden="true" className="size-5" />
-        </span>
-        <h2
-          className="text-base font-semibold tracking-[-0.01em]"
-          id={`job-description-label-${applicationId}`}
-        >
-          공고 설명
-        </h2>
-        <div className="ml-auto flex items-center">
-          {!isEditing && (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-foreground">
+          <span className="text-muted-foreground">
+            <FileTextIcon aria-hidden="true" className="size-5" />
+          </span>
+          <h2
+            className="text-sm font-bold tracking-tight uppercase"
+            id={`job-description-label-${applicationId}`}
+          >
+            공고 설명
+          </h2>
+        </div>
+        {!isEditing && (
+          <Tooltip label="편집" side="bottom">
             <Button
+              aria-label="편집"
+              className="size-8 rounded-full"
               onClick={handleEditStart}
               ref={editButtonRef}
-              size="sm"
               variant="ghost"
             >
-              편집
+              <PencilIcon aria-hidden="true" className="size-4" />
             </Button>
-          )}
-          <div aria-atomic="true" aria-live="polite" className="min-h-5">
-            {isEditing && isSaving && (
-              <p className="text-sm text-muted-foreground">저장하는 중...</p>
-            )}
-            {isEditing && !isSaving && errorMessage && (
-              <p className="text-sm text-red-600">{errorMessage}</p>
-            )}
-          </div>
-        </div>
+          </Tooltip>
+        )}
+      </div>
+
+      <div aria-atomic="true" aria-live="polite" className="min-h-0">
+        {isEditing && isSaving && (
+          <p className="mb-2 text-xs text-muted-foreground">저장하는 중...</p>
+        )}
+        {isEditing && !isSaving && errorMessage && (
+          <p className="mb-2 text-xs font-medium text-red-600">
+            {errorMessage}
+          </p>
+        )}
       </div>
 
       {isEditing ? (
-        <>
+        <div className="space-y-3">
           <textarea
             aria-labelledby={`job-description-label-${applicationId}`}
-            className="w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-base leading-8 text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-[200px] w-full resize-none rounded-xl border border-input bg-muted/50 px-4 py-3 text-sm leading-relaxed text-foreground transition-colors placeholder:text-muted-foreground focus:bg-background focus:ring-2 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isSaving}
             onChange={(e) => setDraftText(e.target.value)}
             placeholder="공고 설명을 입력하세요"
             ref={textareaRef}
-            rows={10}
             value={draftText}
           />
           <div className="flex justify-end gap-2">
             <Button
+              className="h-9 rounded-full px-4 text-sm font-medium"
               disabled={isSaving}
               onClick={handleCancel}
-              size="sm"
-              variant="outline"
+              variant="ghost"
             >
               취소
             </Button>
-            <Button disabled={isSaving} onClick={handleSave} size="sm">
+            <Button
+              className="h-9 rounded-full px-5 text-sm font-semibold"
+              disabled={isSaving}
+              onClick={handleSave}
+            >
               저장
             </Button>
           </div>
-        </>
+        </div>
       ) : (
-        <p className="text-[15px] leading-8 wrap-break-word whitespace-pre-wrap text-foreground">
-          {currentDescription ?? "공고 설명이 없습니다"}
-        </p>
+        <div className="rounded-xl bg-muted/30 p-4">
+          <p className="text-[15px] leading-relaxed break-words whitespace-pre-wrap text-foreground/90">
+            {currentDescription ?? (
+              <span className="text-muted-foreground/60 italic">
+                공고 설명이 없습니다
+              </span>
+            )}
+          </p>
+        </div>
       )}
-    </section>
+    </div>
   );
 }
