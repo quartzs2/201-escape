@@ -1,5 +1,6 @@
 "use client";
 
+import { PencilIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -12,6 +13,7 @@ import type {
 
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
+import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
 import { Constants } from "@/lib/types/supabase";
 import { toDatetimeLocalValue } from "@/lib/utils";
@@ -119,9 +121,20 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
 
   return (
     <>
-      <Button onClick={handleOpen} size="sm" variant="ghost">
-        {triggerLabel}
-      </Button>
+      <Tooltip label={triggerLabel} side="bottom">
+        <Button
+          aria-label={triggerLabel}
+          className="size-8 rounded-full"
+          onClick={handleOpen}
+          variant="ghost"
+        >
+          {isEditMode ? (
+            <PencilIcon aria-hidden="true" className="size-4" />
+          ) : (
+            <PlusIcon aria-hidden="true" className="size-4" />
+          )}
+        </Button>
+      </Tooltip>
 
       <BottomSheet isOpen={isOpen} onClose={handleClose}>
         <BottomSheet.Overlay

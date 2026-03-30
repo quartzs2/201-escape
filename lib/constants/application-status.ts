@@ -16,12 +16,36 @@ export const DOCS_STATUSES = [
 
 export const APPLICATION_STATUS_META: Record<
   JobStatus,
-  { color: string; label: string }
+  { badgeClassName: string; color: string; label: string }
 > = {
-  APPLIED: { color: "text-primary", label: "서류 제출" },
-  DOCS_PASSED: { color: "text-blue-700", label: "서류 통과" },
-  INTERVIEWING: { color: "text-amber-700", label: "면접 중" },
-  OFFERED: { color: "text-emerald-700", label: "최종 합격" },
-  REJECTED: { color: "text-muted-foreground", label: "불합격" },
-  SAVED: { color: "text-slate-500", label: "관심 공고" },
+  APPLIED: {
+    badgeClassName: "bg-primary/10 text-primary",
+    color: "text-primary",
+    label: "서류 제출",
+  },
+  DOCS_PASSED: {
+    badgeClassName: "bg-primary/15 text-primary",
+    color: "text-primary",
+    label: "서류 통과",
+  },
+  INTERVIEWING: {
+    badgeClassName: "bg-primary/20 text-primary",
+    color: "text-primary",
+    label: "면접 중",
+  },
+  OFFERED: {
+    badgeClassName: "bg-primary/25 text-primary",
+    color: "text-primary",
+    label: "최종 합격",
+  },
+  REJECTED: {
+    badgeClassName: "bg-muted text-muted-foreground/60",
+    color: "text-muted-foreground",
+    label: "불합격",
+  },
+  SAVED: {
+    badgeClassName: "bg-muted text-muted-foreground/60",
+    color: "text-muted-foreground",
+    label: "관심 공고",
+  },
 };

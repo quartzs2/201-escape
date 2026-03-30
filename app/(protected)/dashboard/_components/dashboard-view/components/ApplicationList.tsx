@@ -64,10 +64,13 @@ export function ApplicationList({
           <ApplicationRow application={item} onSelect={onSelectApplication} />
         )}
       />
+      {!isFetchingNextPage && <div className="h-12 shrink-0" />}
+
       {isFetchingNextPage && (
         <div
           aria-label="추가 항목을 불러오는 중입니다"
           aria-live="polite"
+          className="pb-12"
           role="status"
         >
           {Array.from({ length: 3 }).map((_, i) => (

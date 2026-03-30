@@ -7,7 +7,7 @@ import { Suspense } from "react";
 
 import { Skeleton } from "@/components/ui";
 import { getApplications, getApplicationsStats } from "@/lib/actions";
-import { cn, formatKoreanDate } from "@/lib/utils";
+import { formatKoreanDate } from "@/lib/utils";
 
 import { AddJobTrigger } from "../add-job";
 import { DashboardApplicationsPanel } from "./components/DashboardApplicationsPanel";
@@ -56,35 +56,40 @@ export async function DashboardView() {
   ];
 
   return (
-    <main className="flex h-dvh flex-col">
-      <div className="shrink-0 px-5 pt-6 pb-5">
-        <p className="text-muted-foreground">{formatKoreanDate(new Date())}</p>
-        <h1 className="mt-0.5 text-3xl text-foreground">지원 현황</h1>
-      </div>
+    <main className="min-h-screen bg-muted/30 pb-20">
+      <div className="mx-auto w-full max-w-4xl px-4 pt-8 pb-6 sm:px-6 lg:px-8">
+        <header className="mb-8 space-y-1.5 px-1">
+          <p className="text-sm font-medium text-muted-foreground/80">
+            {formatKoreanDate(new Date())}
+          </p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+            지원 현황
+          </h1>
+        </header>
 
-      <div className="grid shrink-0 grid-cols-4 border-y border-border">
-        {stats.map((stat, i) => (
-          <div
-            className={cn(
-              "flex flex-col items-center gap-1 py-5",
-              i < stats.length - 1 && "border-r border-border",
-            )}
-            key={stat.label}
-          >
-            <span className="text-xl font-bold text-foreground">
-              {stat.value}
-            </span>
-            <span className="text-sm text-muted-foreground">{stat.label}</span>
-          </div>
-        ))}
-      </div>
+        <section className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {stats.map((stat) => (
+            <div
+              className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-border/50 bg-background p-5 shadow-sm"
+              key={stat.label}
+            >
+              <span className="text-2xl font-black tracking-tight text-foreground">
+                {stat.value}
+              </span>
+              <span className="text-xs font-bold tracking-wider text-muted-foreground/70 uppercase">
+                {stat.label}
+              </span>
+            </div>
+          ))}
+        </section>
 
-      <div className="min-h-0 flex-1 overflow-hidden">
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <Suspense fallback={<DashboardViewSkeleton />}>
-            <DashboardApplicationsPanel />
-          </Suspense>
-        </HydrationBoundary>
+        <div className="h-[600px] overflow-hidden rounded-3xl border border-border/50 bg-background shadow-sm">
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <Suspense fallback={<DashboardViewSkeleton />}>
+              <DashboardApplicationsPanel />
+            </Suspense>
+          </HydrationBoundary>
+        </div>
       </div>
       <AddJobTrigger />
     </main>
@@ -96,11 +101,11 @@ function DashboardViewSkeleton() {
     <div
       aria-busy="true"
       aria-label="지원 목록을 불러오는 중입니다"
-      className="space-y-3 px-5 pt-4"
+      className="space-y-4 p-6"
       role="status"
     >
       {Array.from({ length: 5 }).map((_, i) => (
-        <Skeleton className="h-16 w-full rounded-xl" key={i} />
+        <Skeleton className="h-20 w-full rounded-2xl" key={i} />
       ))}
     </div>
   );
