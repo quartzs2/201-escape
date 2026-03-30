@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { GoogleIcon } from "@/components/icons/GoogleIcon";
+import GoogleIcon from "@/assets/google.svg";
 import { createClient } from "@/lib/supabase/client";
 
 import { PublicHeader } from "../_components/PublicHeader";
