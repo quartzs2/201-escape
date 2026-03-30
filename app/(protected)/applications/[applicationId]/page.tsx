@@ -71,7 +71,6 @@ export default async function ApplicationDetailPage({
           <ErrorState
             description={errorMeta.description}
             icon={errorMeta.icon}
-            reason={result.reason}
             title={errorMeta.title}
           />
         </div>
@@ -80,7 +79,10 @@ export default async function ApplicationDetailPage({
   }
 
   const detail = result.data;
-  const hasOriginUrl = detail.originUrl.trim() !== "";
+  const hasOriginUrl =
+    detail.originUrl !== null &&
+    detail.originUrl.trim() !== "" &&
+    !detail.originUrl.startsWith("manual:");
 
   return (
     <main className="px-5 py-6 sm:px-6 lg:px-8">
@@ -98,14 +100,19 @@ export default async function ApplicationDetailPage({
         <section className="space-y-5">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              <span className="text-sm font-medium tracking-[0.08em] text-muted-foreground uppercase">
-                {PLATFORM_LABEL[detail.platform]}
-              </span>
-              <span aria-hidden="true" className="text-muted-foreground">
-                /
-              </span>
-              <span className="text-sm text-muted-foreground">
-                지원일 {formatAppliedAt(detail.appliedAt)}
+              {detail.platform !== "MANUAL" && (
+                <>
+                  <span className="text-sm font-medium tracking-[0.08em] text-muted-foreground uppercase">
+                    {PLATFORM_LABEL[detail.platform]}
+                  </span>
+                  <span aria-hidden="true" className="text-muted-foreground">
+                    /
+                  </span>
+                </>
+              )}
+              <span className="flex gap-1 text-sm text-muted-foreground">
+                <span>{detail.status === "SAVED" ? "저장일" : "지원일"}</span>
+                <span>{formatAppliedAt(detail.appliedAt)}</span>
               </span>
             </div>
 
@@ -125,7 +132,7 @@ export default async function ApplicationDetailPage({
                   >
                     <a
                       aria-label="원문 공고 보러가기"
-                      href={detail.originUrl}
+                      href={detail.originUrl!}
                       rel="noreferrer noopener"
                       target="_blank"
                     >

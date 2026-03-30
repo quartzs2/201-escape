@@ -41,7 +41,7 @@ export const applicationDetailSchema = z
     description: z.string().nullable(),
     id: z.uuid(),
     notes: z.string().nullable(),
-    originUrl: z.string(),
+    originUrl: z.string().nullable(),
     platform: jobPlatformSchema,
     positionTitle: z.string(),
     status: jobStatusSchema,
@@ -54,7 +54,7 @@ export type ApplicationDetail = {
   description: null | string;
   id: string;
   notes: null | string;
-  originUrl: string;
+  originUrl: null | string;
   platform: JobPlatform;
   positionTitle: string;
   status: JobStatus;

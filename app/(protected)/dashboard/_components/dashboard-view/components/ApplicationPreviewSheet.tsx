@@ -117,6 +117,7 @@ export function ApplicationPreviewSheet({
   const companyName = detail?.companyName ?? application?.companyName ?? "";
   const platform = detail?.platform ?? application?.platform;
   const appliedAt = detail?.appliedAt ?? application?.appliedAt;
+  const status = detail?.status ?? application?.status;
   const descriptionMeta = getDescriptionMeta(detail);
   const notesMeta = getNotesMeta(detail);
 
@@ -135,17 +136,18 @@ export function ApplicationPreviewSheet({
         <div className="px-6 pb-4">
           {(platform || appliedAt) && (
             <div className="mb-2 flex flex-wrap items-center gap-0">
-              {platform && (
+              {platform && platform !== "MANUAL" && (
                 <span className="text-xs font-medium text-muted-foreground">
                   {PLATFORM_LABEL[platform]}
                 </span>
               )}
-              {platform && appliedAt && (
+              {platform && platform !== "MANUAL" && appliedAt && (
                 <span className="mx-2 text-xs text-muted-foreground/40">|</span>
               )}
               {appliedAt && (
-                <span className="text-xs font-medium text-muted-foreground">
-                  지원일 {formatAppliedAt(appliedAt)}
+                <span className="flex gap-1 text-xs font-medium text-muted-foreground">
+                  <span>{status === "SAVED" ? "저장일" : "지원일"}</span>
+                  <span>{formatAppliedAt(appliedAt)}</span>
                 </span>
               )}
             </div>

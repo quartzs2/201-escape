@@ -1,10 +1,11 @@
 import { ChevronRightIcon } from "lucide-react";
 
-import { cn, getTimeAgo } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 import type { ApplicationListItem } from "../types";
 
 import { PLATFORM_LABEL, STATUS_META } from "../constants";
+import { TimeAgo } from "./TimeAgo";
 
 type ApplicationRowProps = {
   application: ApplicationListItem;
@@ -40,14 +41,20 @@ export function ApplicationRow({ application, onSelect }: ApplicationRowProps) {
         </div>
         <div className="flex items-center gap-1.5">
           <span className={cn("text-sm font-medium", color)}>{label}</span>
-          <span className="text-sm text-muted-foreground">·</span>
-          <span className="text-sm text-muted-foreground">
-            {PLATFORM_LABEL[application.platform]}
-          </span>
+          {application.platform !== "MANUAL" && (
+            <>
+              <span className="text-sm text-muted-foreground">·</span>
+              <span className="text-sm text-muted-foreground">
+                {PLATFORM_LABEL[application.platform]}
+              </span>
+            </>
+          )}
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2 text-muted-foreground">
-        <span className="text-sm">{getTimeAgo(application.appliedAt)}</span>
+        <span className="text-sm">
+          <TimeAgo dateString={application.appliedAt} />
+        </span>
         <ChevronRightIcon aria-hidden="true" className="mt-0.5 size-4" />
       </div>
     </button>

@@ -7,14 +7,12 @@ import { Button } from "@/components/ui/button/Button";
 export type ErrorStateProps = {
   description: string;
   icon: LucideIcon;
-  reason: string;
   title: string;
 };
 
 export function ErrorState({
   description,
   icon: Icon,
-  reason,
   title,
 }: ErrorStateProps) {
   return (
@@ -30,7 +28,6 @@ export function ErrorState({
           <p className="text-sm leading-6 text-muted-foreground">
             {description}
           </p>
-          <p className="text-sm leading-6 text-foreground">{reason}</p>
         </div>
         <Button asChild className="h-10 px-4 text-sm">
           <Link href="/dashboard">지원 현황으로 돌아가기</Link>
