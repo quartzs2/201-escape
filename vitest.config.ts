@@ -9,11 +9,20 @@ const dirname =
     ? __dirname
     : path.dirname(fileURLToPath(import.meta.url));
 
+const pathAlias = {
+  resolve: {
+    alias: {
+      "@": path.resolve(dirname, "."),
+    },
+  },
+};
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   test: {
     projects: [
       {
+        ...pathAlias,
         test: {
           environment: "node",
           include: ["lib/utils/**/*.test.ts", "lib/adapters/**/*.test.ts"],
@@ -21,6 +30,7 @@ export default defineConfig({
         },
       },
       {
+        ...pathAlias,
         test: {
           environment: "jsdom",
           include: ["hooks/**/*.test.ts"],
