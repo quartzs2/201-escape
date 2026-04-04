@@ -25,7 +25,11 @@ export default defineConfig({
         ...pathAlias,
         test: {
           environment: "node",
-          include: ["lib/utils/**/*.test.ts", "lib/adapters/**/*.test.ts"],
+          include: [
+            "lib/utils/**/*.test.ts",
+            "lib/adapters/**/*.test.ts",
+            "lib/actions/**/*.test.ts",
+          ],
           name: "unit",
         },
       },
