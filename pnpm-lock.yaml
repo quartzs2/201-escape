@@ -20,6 +20,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.95.0
         version: 2.95.0
+      '@suspensive/react':
+        specifier: ^3.20.2
+        version: 3.20.2(react@19.2.3)
       '@tanstack/react-query':
         specifier: ^5.95.2
         version: 5.95.2(react@19.2.3)
@@ -1820,6 +1823,11 @@ packages:
   '@supabase/supabase-js@2.95.0':
     resolution: {integrity: sha512-fO5O650mkPIgUOZ/s86RZ19ZZhvxTBbatQmECGUtB5/sUb6DtIyoR7rFBBMV9oLbtyDCi1UU4wv3Jd6EY3d03Q==}
     engines: {node: '>=20.0.0'}
+
+  '@suspensive/react@3.20.2':
+    resolution: {integrity: sha512-BSh7PidCZlfpW8aXgldNf9n70PTTFw4yo4Zzev+yYSWya6SbR3v8DXsQnA7lJILNztnw22iYnjV6Nmumhhn9rA==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@svgr/babel-plugin-add-jsx-attribute@8.0.0':
     resolution: {integrity: sha512-b9MIk7yhdS1pMCZM8VeNfUlSKVRhsHZNMl5O9SfaX0l0t5wjdgu4IDzGB8bpnGBBOjGST3rRFVsaaEtI4W6f7g==}
@@ -6314,6 +6322,10 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+
+  '@suspensive/react@3.20.2(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
 
   '@svgr/babel-plugin-add-jsx-attribute@8.0.0(@babel/core@7.28.6)':
     dependencies:

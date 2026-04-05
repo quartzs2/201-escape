@@ -25,6 +25,10 @@ export async function InterviewSection({
 }: InterviewSectionProps) {
   const result = await getInterviews(applicationId);
 
+  if (!result.ok) {
+    throw new Error(result.reason);
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -39,20 +43,14 @@ export async function InterviewSection({
         <div className="ml-auto">
           <InterviewFormSheet
             applicationId={applicationId}
-            defaultRound={result.ok ? result.data.length + 1 : 1}
+            defaultRound={result.data.length + 1}
             mode="add"
             upsertAction={upsertInterview}
           />
         </div>
       </div>
 
-      {!result.ok ? (
-        <p className="text-[15px] text-muted-foreground/60 italic">
-          면접 일정을 불러오지 못했습니다.
-        </p>
-      ) : (
-        <InterviewList applicationId={applicationId} interviews={result.data} />
-      )}
+      <InterviewList applicationId={applicationId} interviews={result.data} />
     </div>
   );
 }
