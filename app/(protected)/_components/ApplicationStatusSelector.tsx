@@ -2,8 +2,9 @@
 
 import type { ReactNode } from "react";
 
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type {
   UpdateApplicationStatusInput,
@@ -50,15 +51,51 @@ export function ApplicationStatusSelector({
 }: ApplicationStatusSelectorProps) {
   const router = useRouter();
   const [currentStatus, setCurrentStatus] = useState(status);
-  const [errorMessage, setErrorMessage] = useState<null | string>(null);
-  const [isSaving, setIsSaving] = useState(false);
+  // status prop 기준으로 에러를 추적 — prop이 바뀌면 이전 에러는 무효
+  const [errorState, setErrorState] = useState<null | {
+    message: string;
+    status: JobStatus;
+  }>(null);
 
-  useEffect(() => {
-    setErrorMessage(null);
-  }, [applicationId, status]);
+  const errorMessage =
+    errorState?.status === status ? errorState.message : null;
 
-  async function handleValueChange(nextStatus: string) {
-    if (isSaving || nextStatus === currentStatus) {
+  const mutation = useMutation<
+    void,
+    Error,
+    JobStatus,
+    { previousStatus: JobStatus }
+  >({
+    mutationFn: async (nextStatus) => {
+      const result = await updateStatusAction({
+        applicationId,
+        status: nextStatus,
+      });
+      if (!result.ok) {
+        throw new Error(result.reason);
+      }
+    },
+    onError: (error, _, context) => {
+      if (context) {
+        setCurrentStatus(context.previousStatus);
+        onStatusChangeAction?.(context.previousStatus);
+      }
+      setErrorState({ message: error.message, status });
+    },
+    onMutate: (nextStatus) => {
+      const previousStatus = currentStatus;
+      setCurrentStatus(nextStatus);
+      setErrorState(null);
+      onStatusChangeAction?.(nextStatus);
+      return { previousStatus };
+    },
+    onSuccess: () => {
+      router.refresh();
+    },
+  });
+
+  function handleValueChange(nextStatus: string) {
+    if (mutation.isPending || nextStatus === currentStatus) {
       return;
     }
 
@@ -66,28 +103,7 @@ export function ApplicationStatusSelector({
       return;
     }
 
-    const parsedStatus = nextStatus as JobStatus;
-
-    setIsSaving(true);
-    setErrorMessage(null);
-
-    try {
-      const result = await updateStatusAction({
-        applicationId,
-        status: parsedStatus,
-      });
-
-      if (!result.ok) {
-        setErrorMessage(result.reason);
-        return;
-      }
-
-      setCurrentStatus(parsedStatus);
-      onStatusChangeAction?.(parsedStatus);
-      router.refresh();
-    } finally {
-      setIsSaving(false);
-    }
+    mutation.mutate(nextStatus as JobStatus);
   }
 
   return (
@@ -97,10 +113,10 @@ export function ApplicationStatusSelector({
           {icon && <span className="text-muted-foreground">{icon}</span>}
           {label && <h3 className="text-sm font-semibold">{label}</h3>}
           <div aria-live="polite" className="min-h-5">
-            {isSaving && (
+            {mutation.isPending && (
               <p className="text-sm text-muted-foreground">저장하는 중...</p>
             )}
-            {!isSaving && errorMessage && (
+            {!mutation.isPending && errorMessage && (
               <p className="text-sm text-red-600">{errorMessage}</p>
             )}
           </div>
@@ -109,7 +125,7 @@ export function ApplicationStatusSelector({
       <TabSelector
         activeItemClassName="border-primary bg-primary text-primary-foreground shadow-md"
         aria-label={ariaLabel}
-        disabled={isSaving}
+        disabled={mutation.isPending}
         inactiveItemClassName="border-border/50 bg-background text-muted-foreground hover:border-primary/20 hover:text-primary/70"
         itemClassName="min-h-11 flex-none rounded-full border px-4 py-2 font-bold shadow-none"
         items={STATUS_ITEMS}
