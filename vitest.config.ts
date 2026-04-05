@@ -44,7 +44,12 @@ export default defineConfig({
       {
         extends: true,
         optimizeDeps: {
-          include: ["react", "react-dom", "next/navigation"],
+          include: [
+            "react",
+            "react-dom",
+            "next/navigation",
+            "@tanstack/react-query",
+          ],
         },
         plugins: [
           // The plugin will run tests for the stories defined in your Storybook config

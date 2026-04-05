@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
 import type {
@@ -14,6 +15,10 @@ type UpdateStatusAction = (
   input: UpdateApplicationStatusInput,
 ) => Promise<UpdateApplicationStatusResult>;
 
+const queryClient = new QueryClient({
+  defaultOptions: { mutations: { retry: false } },
+});
+
 const meta = {
   args: {
     applicationId: "0d3adf78-c8a0-4da4-a5d0-6a557e5e7af1",
@@ -22,6 +27,13 @@ const meta = {
     updateStatusAction: async () => ({ ok: true as const }),
   },
   component: ApplicationStatusSelector,
+  decorators: [
+    (Story: () => React.ReactNode) => (
+      <QueryClientProvider client={queryClient}>
+        <Story />
+      </QueryClientProvider>
+    ),
+  ],
   parameters: {
     nextjs: {
       appDirectory: true,
