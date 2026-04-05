@@ -3,7 +3,10 @@
 import type { InfiniteData } from "@tanstack/react-query";
 import type { Route } from "next";
 
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useQueryClient,
+  useSuspenseInfiniteQuery,
+} from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 
@@ -36,7 +39,7 @@ export function DashboardApplicationsPanel() {
   const [isListScrolled, setIsListScrolled] = useState(false);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
+    useSuspenseInfiniteQuery({
       getNextPageParam: getApplicationsNextPageParam,
       initialPageParam: 0,
       queryFn: async ({ pageParam }: { pageParam: number }) => {
@@ -52,8 +55,9 @@ export function DashboardApplicationsPanel() {
       queryKey: APPLICATIONS_QUERY_KEY,
     });
 
-  const applications: ApplicationListItem[] =
-    data?.pages.flatMap((page) => page.items) ?? [];
+  const applications: ApplicationListItem[] = data.pages.flatMap(
+    (page) => page.items,
+  );
 
   const selectedApplicationId = searchParams.get(PREVIEW_PARAM);
   const isPreviewOpen = selectedApplicationId !== null;
