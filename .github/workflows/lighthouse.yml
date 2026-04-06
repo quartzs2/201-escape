@@ -101,14 +101,14 @@ jobs:
               ? JSON.parse(fs.readFileSync(linksPath, 'utf8'))
               : {};
 
-            const emoji = (v) => v >= 0.9 ? '🟢' : v >= 0.8 ? '🟡' : '🔴';
+            const emoji = (v) => v >= 0.9 ? '🟢' : v >= 0.5 ? '🟡' : '🔴';
             const score = (v) => Math.round(v * 100);
             const pagePath = (url) => url.replace('http://localhost:3000', '') || '/';
             const pageCell = (url) => {
               const p = pagePath(url);
               return links[url] ? `[\`${p}\`](${links[url]})` : `\`${p}\``;
             };
-            const metric = (audit) => audit?.displayValue ?? '-';
+            const metric = (audit) => audit ? `${emoji(audit.score)}${audit.displayValue}` : '-';
 
             const perfRows = representativeRuns.map(({ url, lhr }) => {
               const c = lhr.categories;
@@ -134,7 +134,19 @@ jobs:
               '|---|:---:|:---:|:---:|',
               categoryRows,
               '',
-              '> 카테고리 점수 기준: 🟢 90점 이상 · 🟡 80점 이상 · 🔴 80점 미만',
+              '<details><summary>점수 기준</summary>',
+              '',
+              '**카테고리 점수** 🟢 ≥90 · 🟡 ≥50 · 🔴 <50',
+              '',
+              '| 지표 | 🟢 Good | 🟡 Needs Improvement | 🔴 Poor |',
+              '|---|:---:|:---:|:---:|',
+              '| FCP | <1.8s | <3s | ≥3s |',
+              '| LCP | <2.5s | <4s | ≥4s |',
+              '| TBT | <200ms | <600ms | ≥600ms |',
+              '| CLS | <0.1 | <0.25 | ≥0.25 |',
+              '| Speed Index | <3.4s | <5.8s | ≥5.8s |',
+              '',
+              '</details>',
             ].join('\n');
 
             const { data: comments } = await github.rest.issues.listComments({
