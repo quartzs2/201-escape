@@ -12,6 +12,9 @@ module.exports = {
     collect: {
       chromePath: process.env.CHROMIUM_PATH,
       numberOfRuns: 3,
+      outputDir: process.env.GITHUB_WORKSPACE
+        ? `${process.env.GITHUB_WORKSPACE}/.lighthouseci`
+        : ".lighthouseci",
       puppeteerLaunchOptions: {
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
       },
