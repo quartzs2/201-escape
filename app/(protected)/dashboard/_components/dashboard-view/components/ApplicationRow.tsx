@@ -21,7 +21,7 @@ export function ApplicationRow({ application, onSelect }: ApplicationRowProps) {
         aria-label={`${application.companyName} ${application.positionTitle} 지원 미리보기 열기`}
         className={cn(
           "flex w-full items-center justify-between gap-4 rounded-2xl border border-transparent bg-background p-4 text-left shadow-sm transition-all",
-          "cursor-pointer hover:border-primary/20 hover:bg-primary/[0.02] hover:shadow-md",
+          "cursor-pointer hover:border-primary/20 hover:bg-primary/2 hover:shadow-md",
           "focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:outline-none",
         )}
         onClick={() => {
@@ -34,7 +34,7 @@ export function ApplicationRow({ application, onSelect }: ApplicationRowProps) {
             <span className="text-[15px] font-bold tracking-tight text-foreground">
               {application.companyName}
             </span>
-            <span className="truncate text-sm font-medium text-muted-foreground/80">
+            <span className="truncate text-sm font-medium text-muted-foreground">
               {application.positionTitle}
             </span>
           </div>
@@ -48,13 +48,13 @@ export function ApplicationRow({ application, onSelect }: ApplicationRowProps) {
               {label}
             </span>
             {application.platform !== "MANUAL" && (
-              <span className="text-[11px] font-semibold tracking-wide text-muted-foreground/60 uppercase">
+              <span className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
                 {PLATFORM_LABEL[application.platform]}
               </span>
             )}
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2 text-muted-foreground/30">
+        <div className="flex shrink-0 items-center gap-2 text-muted-foreground/60">
           <span className="text-xs font-medium">
             <TimeAgo dateString={application.appliedAt} />
           </span>

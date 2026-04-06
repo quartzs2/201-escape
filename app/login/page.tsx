@@ -45,7 +45,7 @@ export default function LoginPage() {
             <h1 className="mt-3 text-[32px] font-extrabold tracking-tight text-foreground">
               로그인
             </h1>
-            <p className="mt-2 text-sm font-medium text-muted-foreground/80">
+            <p className="mt-2 text-sm font-medium text-muted-foreground">
               201 escape에 오신 것을 환영합니다.
             </p>
           </header>
