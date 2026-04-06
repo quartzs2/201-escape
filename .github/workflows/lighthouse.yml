@@ -4,12 +4,16 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+permissions:
+  pull-requests: write
+
 jobs:
   lighthouse:
     name: Lighthouse Audit
     runs-on: ubuntu-latest
 
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       NEXT_PUBLIC_SUPABASE_URL: https://${{ secrets.SUPABASE_PROJECT_REF }}.supabase.co
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
 
@@ -55,3 +59,107 @@ jobs:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_TEST_EMAIL: ${{ secrets.LHCI_TEST_EMAIL }}
           LHCI_TEST_PASSWORD: ${{ secrets.LHCI_TEST_PASSWORD }}
+
+      - name: Post Lighthouse results as PR comment
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const nodePath = require('path');
+
+            const lhciDir = nodePath.join(process.env.GITHUB_WORKSPACE, '.lighthouseci');
+
+            if (!fs.existsSync(lhciDir)) {
+              core.warning(`${lhciDir} not found — Lighthouse CI may have failed before producing results.`);
+              return;
+            }
+
+            const lhrFiles = fs.readdirSync(lhciDir).filter(f => f.startsWith('lhr-') && f.endsWith('.json'));
+
+            if (lhrFiles.length === 0) {
+              core.warning('No lhr-*.json files found — Lighthouse CI may have failed before producing results.');
+              return;
+            }
+
+            // URL별로 실행 결과를 그룹화한 뒤 성능 점수 중앙값 run을 대표로 선택
+            const byUrl = {};
+            for (const file of lhrFiles) {
+              const lhr = JSON.parse(fs.readFileSync(nodePath.join(lhciDir, file), 'utf8'));
+              const url = lhr.finalUrl || lhr.requestedUrl;
+              if (!byUrl[url]) byUrl[url] = [];
+              byUrl[url].push(lhr);
+            }
+
+            const representativeRuns = Object.entries(byUrl).map(([url, runs]) => {
+              const sorted = [...runs].sort((a, b) => a.categories.performance.score - b.categories.performance.score);
+              return { url, lhr: sorted[Math.floor(sorted.length / 2)] };
+            });
+
+            const linksPath = nodePath.join(lhciDir, 'links.json');
+            const links = fs.existsSync(linksPath)
+              ? JSON.parse(fs.readFileSync(linksPath, 'utf8'))
+              : {};
+
+            const emoji = (v) => v >= 0.9 ? '🟢' : v >= 0.8 ? '🟡' : '🔴';
+            const score = (v) => Math.round(v * 100);
+            const pagePath = (url) => url.replace('http://localhost:3000', '') || '/';
+            const pageCell = (url) => {
+              const p = pagePath(url);
+              return links[url] ? `[\`${p}\`](${links[url]})` : `\`${p}\``;
+            };
+            const metric = (audit) => audit?.displayValue ?? '-';
+
+            const perfRows = representativeRuns.map(({ url, lhr }) => {
+              const c = lhr.categories;
+              const a = lhr.audits;
+              return `| ${pageCell(url)} | ${emoji(c.performance.score)}${score(c.performance.score)} | ${metric(a['first-contentful-paint'])} | ${metric(a['largest-contentful-paint'])} | ${metric(a['total-blocking-time'])} | ${metric(a['cumulative-layout-shift'])} | ${metric(a['speed-index'])} |`;
+            }).join('\n');
+
+            const categoryRows = representativeRuns.map(({ url, lhr }) => {
+              const c = lhr.categories;
+              return `| ${pageCell(url)} | ${emoji(c.accessibility.score)}${score(c.accessibility.score)} | ${emoji(c['best-practices'].score)}${score(c['best-practices'].score)} | ${emoji(c.seo.score)}${score(c.seo.score)} |`;
+            }).join('\n');
+
+            const body = [
+              '## Lighthouse CI 결과',
+              '',
+              '### Performance',
+              '| 페이지 | Score | First Contentful Paint | Largest Contentful Paint | Total Blocking Time | Cumulative Layout Shift | Speed Index |',
+              '|---|:---:|:---:|:---:|:---:|:---:|:---:|',
+              perfRows,
+              '',
+              '### Categories',
+              '| 페이지 | Accessibility | Best Practices | SEO |',
+              '|---|:---:|:---:|:---:|',
+              categoryRows,
+              '',
+              '> 카테고리 점수 기준: 🟢 90점 이상 · 🟡 80점 이상 · 🔴 80점 미만',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.startsWith('## Lighthouse CI 결과')
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
