@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { VirtualListHandle } from "./VirtualList";
 
@@ -265,6 +265,113 @@ export const WithScrollToIndex: Story = {
           ref={listRef}
           renderItem={(item) => <SimpleRow label={item.label} />}
         />
+      </div>
+    );
+  },
+};
+
+const COMPARISON_ITEM_COUNT = 500;
+const COMPARISON_ITEMS = makeItems(COMPARISON_ITEM_COUNT);
+
+type ComparisonPanelProps = {
+  children: React.ReactNode;
+  domCount: number;
+  label: string;
+  variant: "after" | "before";
+};
+
+function ComparisonPanel({
+  children,
+  domCount,
+  label,
+  variant,
+}: ComparisonPanelProps) {
+  const badgeClass =
+    variant === "before"
+      ? "bg-red-100 text-red-700"
+      : "bg-green-100 text-green-700";
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <span className={`rounded px-2 py-0.5 font-mono text-xs ${badgeClass}`}>
+          DOM {domCount}개
+        </span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+/**
+ * 500개 아이템 기준으로 일반 목록과 가상화 목록의 DOM 노드 수를 나란히 비교합니다.
+ *
+ * - 일반 목록: 전체 500개 노드가 항상 DOM에 존재합니다.
+ * - 가상화 목록: 화면에 보이는 아이템만 렌더링하며, 스크롤해도 DOM 노드 수가 일정하게 유지됩니다.
+ *
+ * 스크롤 시 가상화 목록의 카운터가 실시간으로 변하는 것을 확인할 수 있습니다.
+ */
+export const BeforeAfterComparison: Story = {
+  render: () => {
+    const [virtualDomCount, setVirtualDomCount] = useState(0);
+    const virtualWrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const wrapper = virtualWrapperRef.current;
+      if (!wrapper) {
+        return;
+      }
+
+      const updateCount = () => {
+        setVirtualDomCount(
+          wrapper.querySelectorAll('[role="listitem"]').length,
+        );
+      };
+
+      updateCount();
+
+      const observer = new MutationObserver(updateCount);
+      // listitem은 wrapper 3단계 아래에 있으므로 subtree가 필요합니다.
+      observer.observe(wrapper, { childList: true, subtree: true });
+
+      return () => {
+        observer.disconnect();
+      };
+    }, []);
+
+    return (
+      <div className="flex gap-6">
+        <ComparisonPanel
+          domCount={COMPARISON_ITEM_COUNT}
+          label="일반 목록 (Before)"
+          variant="before"
+        >
+          <div
+            className="h-100 w-72 overflow-y-auto rounded-lg border border-gray-200"
+            role="list"
+          >
+            {COMPARISON_ITEMS.map((item) => (
+              <SimpleRow key={item.id} label={item.label} />
+            ))}
+          </div>
+        </ComparisonPanel>
+
+        <ComparisonPanel
+          domCount={virtualDomCount}
+          label="가상화 목록 (After)"
+          variant="after"
+        >
+          <div ref={virtualWrapperRef}>
+            <VirtualList<SimpleItem>
+              className="h-100 w-72 rounded-lg border border-gray-200"
+              estimatedItemHeight={45}
+              items={COMPARISON_ITEMS}
+              keyExtractor={(item) => item.id}
+              renderItem={(item) => <SimpleRow label={item.label} />}
+            />
+          </div>
+        </ComparisonPanel>
       </div>
     );
   },
