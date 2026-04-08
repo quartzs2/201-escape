@@ -19,7 +19,7 @@ export default function LoginPage() {
       const supabase = createClient();
 
       const url = new URL("/auth/callback", window.location.origin);
-      url.searchParams.set("next", "/");
+      url.searchParams.set("next", "/dashboard");
 
       const { error } = await supabase.auth.signInWithOAuth({
         options: {
