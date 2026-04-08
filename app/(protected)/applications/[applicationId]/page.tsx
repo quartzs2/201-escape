@@ -4,8 +4,10 @@ import {
   ListChecksIcon,
   LockKeyholeIcon,
 } from "lucide-react";
+import { Suspense } from "react";
 
 import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
+import { Skeleton } from "@/components/ui";
 import { Button } from "@/components/ui/button/Button";
 import { deleteApplication, getApplicationDetail } from "@/lib/actions";
 import { updateApplicationNotes } from "@/lib/actions/updateApplicationNotes";
@@ -20,6 +22,7 @@ import { ErrorState } from "./_components/ErrorState";
 import { InterviewSection } from "./_components/InterviewSection";
 import { JobDescriptionEditor } from "./_components/JobDescriptionEditor";
 import { MemoEditor } from "./_components/MemoEditor";
+import { SectionErrorBoundary } from "./_components/SectionErrorBoundary";
 
 type ApplicationDetailPageProps = {
   params: Promise<{
@@ -162,7 +165,11 @@ export default async function ApplicationDetailPage({
 
         <div className="grid gap-6">
           <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
-            <InterviewSection applicationId={detail.id} />
+            <SectionErrorBoundary>
+              <Suspense fallback={<InterviewSectionSkeleton />}>
+                <InterviewSection applicationId={detail.id} />
+              </Suspense>
+            </SectionErrorBoundary>
           </div>
 
           <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
@@ -183,5 +190,25 @@ export default async function ApplicationDetailPage({
         </div>
       </div>
     </main>
+  );
+}
+
+function InterviewSectionSkeleton() {
+  return (
+    <div
+      aria-busy="true"
+      aria-label="면접 일정을 불러오는 중입니다"
+      className="space-y-4"
+      role="status"
+    >
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-5 w-20" />
+        <Skeleton className="h-8 w-16" />
+      </div>
+      <div className="space-y-3">
+        <Skeleton className="h-16 w-full rounded-xl" />
+        <Skeleton className="h-16 w-full rounded-xl" />
+      </div>
+    </div>
   );
 }

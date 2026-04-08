@@ -59,7 +59,7 @@ export async function DashboardView() {
     <main className="min-h-screen bg-muted/30 pb-20">
       <div className="mx-auto w-full max-w-4xl px-4 pt-8 pb-6 sm:px-6 lg:px-8">
         <header className="mb-8 space-y-1.5 px-1">
-          <p className="text-sm font-medium text-muted-foreground/80">
+          <p className="text-sm font-medium text-muted-foreground">
             {formatKoreanDate(new Date())}
           </p>
           <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
@@ -76,14 +76,14 @@ export async function DashboardView() {
               <span className="text-2xl font-black tracking-tight text-foreground">
                 {stat.value}
               </span>
-              <span className="text-xs font-bold tracking-wider text-muted-foreground/70 uppercase">
+              <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
                 {stat.label}
               </span>
             </div>
           ))}
         </section>
 
-        <div className="h-[600px] overflow-hidden rounded-3xl border border-border/50 bg-background shadow-sm">
+        <div className="h-150 overflow-hidden rounded-3xl border border-border/50 bg-background shadow-sm">
           <HydrationBoundary state={dehydrate(queryClient)}>
             <Suspense fallback={<DashboardViewSkeleton />}>
               <DashboardApplicationsPanel />

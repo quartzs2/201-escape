@@ -21,6 +21,7 @@ export function GoToTopFAB({ isVisible, onScrollToTop }: GoToTopFABProps) {
       )}
       onClick={onScrollToTop}
       size="fab"
+      tabIndex={isVisible ? undefined : -1}
       variant="outline"
     >
       <ArrowUpIcon />

@@ -9,12 +9,51 @@ const dirname =
     ? __dirname
     : path.dirname(fileURLToPath(import.meta.url));
 
+const pathAlias = {
+  resolve: {
+    alias: {
+      "@": path.resolve(dirname, "."),
+    },
+  },
+};
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   test: {
+    benchmark: {
+      include: [],
+    },
     projects: [
       {
+        ...pathAlias,
+        test: {
+          environment: "node",
+          include: [
+            "lib/utils/**/*.test.ts",
+            "lib/adapters/**/*.test.ts",
+            "lib/actions/**/*.test.ts",
+          ],
+          name: "unit",
+        },
+      },
+      {
+        ...pathAlias,
+        test: {
+          environment: "jsdom",
+          include: ["hooks/**/*.test.ts"],
+          name: "dom",
+        },
+      },
+      {
         extends: true,
+        optimizeDeps: {
+          include: [
+            "react",
+            "react-dom",
+            "next/navigation",
+            "@tanstack/react-query",
+          ],
+        },
         plugins: [
           // The plugin will run tests for the stories defined in your Storybook config
           // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest

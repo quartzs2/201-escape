@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -32,8 +33,25 @@ export function DeleteApplicationButton({
 }: DeleteApplicationButtonProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const result = await deleteAction({ applicationId });
+      if (!result.ok) {
+        throw new Error(result.reason);
+      }
+    },
+    onError: (error) => {
+      setErrorMessage(error.message);
+    },
+    onMutate: () => {
+      setErrorMessage(null);
+    },
+    onSuccess: () => {
+      router.push("/dashboard");
+    },
+  });
 
   function handleOpen() {
     setErrorMessage(null);
@@ -41,32 +59,17 @@ export function DeleteApplicationButton({
   }
 
   function handleClose() {
-    if (isDeleting) {
+    if (mutation.isPending) {
       return;
     }
     setIsOpen(false);
   }
 
-  async function handleConfirm() {
-    if (isDeleting) {
+  function handleConfirm() {
+    if (mutation.isPending) {
       return;
     }
-
-    setIsDeleting(true);
-    setErrorMessage(null);
-
-    try {
-      const result = await deleteAction({ applicationId });
-
-      if (!result.ok) {
-        setErrorMessage(result.reason);
-        return;
-      }
-
-      router.push("/dashboard");
-    } finally {
-      setIsDeleting(false);
-    }
+    mutation.mutate();
   }
 
   return (
@@ -85,7 +88,7 @@ export function DeleteApplicationButton({
       <BottomSheet isOpen={isOpen} onClose={handleClose}>
         <BottomSheet.Overlay
           onClick={(e) => {
-            if (isDeleting) {
+            if (mutation.isPending) {
               e.preventDefault();
             }
           }}
@@ -114,7 +117,7 @@ export function DeleteApplicationButton({
 
             <div className="flex justify-end gap-2">
               <Button
-                disabled={isDeleting}
+                disabled={mutation.isPending}
                 onClick={handleClose}
                 type="button"
                 variant="outline"
@@ -122,12 +125,12 @@ export function DeleteApplicationButton({
                 취소
               </Button>
               <Button
-                disabled={isDeleting}
+                disabled={mutation.isPending}
                 onClick={handleConfirm}
                 type="button"
                 variant="destructive"
               >
-                {isDeleting ? "삭제하는 중..." : "삭제"}
+                {mutation.isPending ? "삭제하는 중..." : "삭제"}
               </Button>
             </div>
           </BottomSheet.Body>

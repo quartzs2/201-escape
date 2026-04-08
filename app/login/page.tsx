@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import GoogleIcon from "@/assets/google.svg";
-import { createClient } from "@/lib/supabase/client";
 
 import { PublicHeader } from "../_components/PublicHeader";
 
@@ -15,21 +14,27 @@ export default function LoginPage() {
     setIsLoading(true);
     setErrorMessage(null);
 
-    const supabase = createClient();
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
 
-    const url = new URL("/auth/callback", window.location.origin);
-    url.searchParams.set("next", "/");
+      const url = new URL("/auth/callback", window.location.origin);
+      url.searchParams.set("next", "/");
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      options: {
-        redirectTo: url.toString(),
-      },
-      provider: "google",
-    });
+      const { error } = await supabase.auth.signInWithOAuth({
+        options: {
+          redirectTo: url.toString(),
+        },
+        provider: "google",
+      });
 
-    if (error) {
+      if (error) {
+        setErrorMessage(error.message);
+      }
+    } catch {
+      setErrorMessage("로그인을 시작할 수 없습니다. 다시 시도해 주세요.");
+    } finally {
       setIsLoading(false);
-      setErrorMessage(error.message);
     }
   };
 
@@ -45,7 +50,7 @@ export default function LoginPage() {
             <h1 className="mt-3 text-[32px] font-extrabold tracking-tight text-foreground">
               로그인
             </h1>
-            <p className="mt-2 text-sm font-medium text-muted-foreground/80">
+            <p className="mt-2 text-sm font-medium text-muted-foreground">
               201 escape에 오신 것을 환영합니다.
             </p>
           </header>

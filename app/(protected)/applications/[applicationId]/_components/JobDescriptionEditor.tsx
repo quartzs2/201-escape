@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { FileTextIcon, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -29,22 +30,66 @@ export function JobDescriptionEditor({
   const [currentDescription, setCurrentDescription] = useState(description);
   const [draftText, setDraftText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
   const editButtonRef = useRef<HTMLButtonElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
+  // prop이 바뀌면 렌더 중에 바로 동기화 — effect 없이 이전 값 추적으로 처리
+  const [syncedProps, setSyncedProps] = useState({
+    applicationId,
+    description,
+  });
+  if (
+    syncedProps.applicationId !== applicationId ||
+    syncedProps.description !== description
+  ) {
+    setSyncedProps({ applicationId, description });
     setCurrentDescription(description);
     setErrorMessage(null);
-  }, [applicationId, description]);
+  }
 
   useEffect(() => {
     if (isEditing) {
       textareaRef.current?.focus();
     }
   }, [isEditing]);
+
+  const mutation = useMutation<
+    { description: null | string },
+    Error,
+    null | string,
+    { previousDescription: null | string }
+  >({
+    mutationFn: async (nextDescription) => {
+      const result = await updateDescriptionAction({
+        applicationId,
+        description: nextDescription,
+      });
+      if (!result.ok) {
+        throw new Error(result.reason);
+      }
+      return result.data;
+    },
+    onError: (error, variables, context) => {
+      if (context) {
+        setCurrentDescription(context.previousDescription);
+      }
+      setDraftText(variables ?? "");
+      setIsEditing(true);
+      setErrorMessage(error.message);
+    },
+    onMutate: (nextDescription) => {
+      const previousDescription = currentDescription;
+      setCurrentDescription(nextDescription);
+      setErrorMessage(null);
+      setIsEditing(false);
+      return { previousDescription };
+    },
+    onSuccess: () => {
+      router.refresh();
+    },
+  });
 
   function handleEditStart() {
     setDraftText(currentDescription ?? "");
@@ -53,35 +98,16 @@ export function JobDescriptionEditor({
   }
 
   function handleCancel() {
+    setErrorMessage(null);
     setIsEditing(false);
     editButtonRef.current?.focus();
   }
 
-  async function handleSave() {
-    if (isSaving) {
+  function handleSave() {
+    if (mutation.isPending) {
       return;
     }
-
-    setIsSaving(true);
-    setErrorMessage(null);
-
-    try {
-      const result = await updateDescriptionAction({
-        applicationId,
-        description: draftText.trim() === "" ? null : draftText,
-      });
-
-      if (!result.ok) {
-        setErrorMessage(result.reason);
-        return;
-      }
-
-      setCurrentDescription(result.data.description);
-      setIsEditing(false);
-      router.refresh();
-    } finally {
-      setIsSaving(false);
-    }
+    mutation.mutate(draftText.trim() === "" ? null : draftText);
   }
 
   return (
@@ -103,6 +129,7 @@ export function JobDescriptionEditor({
             <Button
               aria-label="편집"
               className="size-8 rounded-full"
+              disabled={mutation.isPending}
               onClick={handleEditStart}
               ref={editButtonRef}
               variant="ghost"
@@ -114,10 +141,7 @@ export function JobDescriptionEditor({
       </div>
 
       <div aria-atomic="true" aria-live="polite" className="min-h-0">
-        {isEditing && isSaving && (
-          <p className="mb-2 text-xs text-muted-foreground">저장하는 중...</p>
-        )}
-        {isEditing && !isSaving && errorMessage && (
+        {isEditing && errorMessage && (
           <p className="mb-2 text-xs font-medium text-red-600">
             {errorMessage}
           </p>
@@ -128,8 +152,8 @@ export function JobDescriptionEditor({
         <div className="space-y-3">
           <textarea
             aria-labelledby={`job-description-label-${applicationId}`}
-            className="min-h-[200px] w-full resize-none rounded-xl border border-input bg-muted/50 px-4 py-3 text-sm leading-relaxed text-foreground transition-colors placeholder:text-muted-foreground focus:bg-background focus:ring-2 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={isSaving}
+            className="min-h-50 w-full resize-none rounded-xl border border-input bg-muted/50 px-4 py-3 text-sm leading-relaxed text-foreground transition-colors placeholder:text-muted-foreground focus:bg-background focus:ring-2 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={mutation.isPending}
             onChange={(e) => setDraftText(e.target.value)}
             placeholder="공고 설명을 입력하세요"
             ref={textareaRef}
@@ -138,7 +162,7 @@ export function JobDescriptionEditor({
           <div className="flex justify-end gap-2">
             <Button
               className="h-9 rounded-full px-4 text-sm font-medium"
-              disabled={isSaving}
+              disabled={mutation.isPending}
               onClick={handleCancel}
               variant="ghost"
             >
@@ -146,7 +170,7 @@ export function JobDescriptionEditor({
             </Button>
             <Button
               className="h-9 rounded-full px-5 text-sm font-semibold"
-              disabled={isSaving}
+              disabled={mutation.isPending}
               onClick={handleSave}
             >
               저장
@@ -155,7 +179,7 @@ export function JobDescriptionEditor({
         </div>
       ) : (
         <div className="rounded-xl bg-muted/30 p-4">
-          <p className="text-[15px] leading-relaxed break-words whitespace-pre-wrap text-foreground/90">
+          <p className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-wrap text-foreground/90">
             {currentDescription ?? (
               <span className="text-muted-foreground/60 italic">
                 공고 설명이 없습니다
