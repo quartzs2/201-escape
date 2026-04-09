@@ -1,6 +1,9 @@
 import { getApplicationsStats } from "@/lib/actions";
 import { formatKoreanDate } from "@/lib/utils";
 
+import { FunnelChart } from "./FunnelChart";
+import { MonthlyTrendChart } from "./MonthlyTrendChart";
+
 export async function DashboardView() {
   const statsResult = await getApplicationsStats();
 
@@ -8,9 +11,10 @@ export async function DashboardView() {
     throw new Error(statsResult.reason);
   }
 
-  const { docs, interviewing, offered, total } = statsResult.data;
+  const { docs, funnel, interviewing, monthly, offered, total } =
+    statsResult.data;
 
-  const stats = [
+  const cards = [
     { label: "전체", value: total },
     { label: "서류", value: docs },
     { label: "면접", value: interviewing },
@@ -29,20 +33,34 @@ export async function DashboardView() {
           </h1>
         </header>
 
-        <section className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {stats.map((stat) => (
+        <section className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {cards.map((card) => (
             <div
               className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-border/50 bg-background p-5 shadow-sm"
-              key={stat.label}
+              key={card.label}
             >
               <span className="text-2xl font-black tracking-tight text-foreground">
-                {stat.value}
+                {card.value}
               </span>
               <span className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
-                {stat.label}
+                {card.label}
               </span>
             </div>
           ))}
+        </section>
+
+        <section className="mb-6 rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
+          <h2 className="mb-4 text-sm font-bold tracking-wide text-muted-foreground uppercase">
+            월별 지원 추이
+          </h2>
+          <MonthlyTrendChart data={monthly} />
+        </section>
+
+        <section className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
+          <h2 className="mb-4 text-sm font-bold tracking-wide text-muted-foreground uppercase">
+            단계별 현황
+          </h2>
+          <FunnelChart data={funnel} />
         </section>
       </div>
     </main>
