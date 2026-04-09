@@ -14,6 +14,12 @@ export const DOCS_STATUSES = [
   "DOCS_PASSED",
 ] as const satisfies readonly JobStatus[];
 
+export const DOCS_PASSED_STATUSES = [
+  "DOCS_PASSED",
+  "INTERVIEWING",
+  "OFFERED",
+] as const satisfies readonly JobStatus[];
+
 export const APPLICATION_STATUS_META: Record<
   JobStatus,
   { badgeClassName: string; color: string; label: string }

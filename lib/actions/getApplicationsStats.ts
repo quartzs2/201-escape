@@ -2,7 +2,10 @@
 
 import type { GetApplicationsStatsResult } from "@/lib/types/application";
 
-import { DOCS_STATUSES } from "@/lib/constants/application-status";
+import {
+  DOCS_PASSED_STATUSES,
+  DOCS_STATUSES,
+} from "@/lib/constants/application-status";
 
 import { createClient } from "../supabase/server";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
@@ -32,7 +35,7 @@ export async function getApplicationsStats(): Promise<GetApplicationsStatsResult
 
   const { data, error } = await supabase
     .from("applications")
-    .select("status")
+    .select("applied_at, status")
     .eq("user_id", userId);
 
   if (error) {
@@ -45,12 +48,51 @@ export async function getApplicationsStats(): Promise<GetApplicationsStatsResult
     return { code, ok: false, reason };
   }
 
-  const total = data.length;
-  const docs = data.filter((r) =>
-    (DOCS_STATUSES as readonly string[]).includes(r.status),
-  ).length;
-  const interviewing = data.filter((r) => r.status === "INTERVIEWING").length;
-  const offered = data.filter((r) => r.status === "OFFERED").length;
+  let docs = 0;
+  let interviewing = 0;
+  let offered = 0;
+  let applied = 0;
+  let docsPassed = 0;
+  const monthlyMap = new Map<string, number>();
 
-  return { data: { docs, interviewing, offered, total }, ok: true };
+  for (const row of data) {
+    const { applied_at, status } = row;
+    if (status !== "SAVED") {
+      applied++;
+    }
+    if ((DOCS_STATUSES as readonly string[]).includes(status)) {
+      docs++;
+    }
+    if (status === "INTERVIEWING") {
+      interviewing++;
+    }
+    if (status === "OFFERED") {
+      offered++;
+    }
+    if ((DOCS_PASSED_STATUSES as readonly string[]).includes(status)) {
+      docsPassed++;
+    }
+    if (applied_at) {
+      const month = applied_at.slice(0, 7);
+      monthlyMap.set(month, (monthlyMap.get(month) ?? 0) + 1);
+    }
+  }
+
+  const total = data.length;
+  const monthly = Array.from(monthlyMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .slice(-12)
+    .map(([month, count]) => ({ count, month }));
+
+  const funnel = [
+    { count: applied, label: "지원" },
+    { count: docsPassed, label: "서류 통과" },
+    { count: interviewing + offered, label: "면접" },
+    { count: offered, label: "합격" },
+  ];
+
+  return {
+    data: { docs, funnel, interviewing, monthly, offered, total },
+    ok: true,
+  };
 }
