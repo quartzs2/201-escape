@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import type {
@@ -13,6 +14,7 @@ import type {
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 type DeleteApplicationAction = (
   input: DeleteApplicationInput,
@@ -32,6 +34,7 @@ export function DeleteApplicationButton({
   positionTitle,
 }: DeleteApplicationButtonProps) {
   const router = useRouter();
+  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
@@ -49,6 +52,7 @@ export function DeleteApplicationButton({
       setErrorMessage(null);
     },
     onSuccess: () => {
+      posthog.capture(POSTHOG_EVENTS.APPLICATION_DELETED);
       router.push("/dashboard");
     },
   });

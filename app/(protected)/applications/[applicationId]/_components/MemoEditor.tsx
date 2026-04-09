@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { NotebookPenIcon, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import { useEffect, useRef, useState } from "react";
 
 import type {
@@ -12,6 +13,7 @@ import type {
 
 import { Button } from "@/components/ui";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 type MemoEditorProps = {
   applicationId: string;
@@ -27,6 +29,7 @@ export function MemoEditor({
   updateNotesAction,
 }: MemoEditorProps) {
   const router = useRouter();
+  const posthog = usePostHog();
   const [currentNotes, setCurrentNotes] = useState(notes);
   const [draftText, setDraftText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -84,6 +87,7 @@ export function MemoEditor({
       return { previousNotes };
     },
     onSuccess: () => {
+      posthog.capture(POSTHOG_EVENTS.MEMO_SAVED);
       router.refresh();
     },
   });

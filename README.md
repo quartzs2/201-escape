@@ -25,6 +25,8 @@
 - **Notifications**: Sonner
 - **Validation**: Zod
 - **Parsing**: Cheerio (서버 사이드 HTML 파싱)
+- **Analytics**: PostHog (이벤트 트래킹, 사용자 식별)
+- **Error Tracking**: Sentry
 - **Test**: Vitest, Storybook
 - **Code Quality**: ESLint, Prettier, Husky, lint-staged
 
@@ -98,6 +100,43 @@ pnpm test            # Vitest 테스트 실행
 pnpm storybook       # Storybook 실행 (포트 6006)
 pnpm build-storybook # Storybook 정적 빌드
 ```
+
+## 이벤트 트래킹
+
+[PostHog](https://posthog.com)를 사용해 핵심 사용자 행동을 측정합니다. 페이지뷰는 자동 수집되며, 아래 이벤트는 코드에서 명시적으로 발송합니다.
+
+### 이벤트 목록
+
+| 이벤트명                     | 발생 시점                      | 프로퍼티                           |
+| ---------------------------- | ------------------------------ | ---------------------------------- |
+| `login_attempted`            | Google 로그인 버튼 클릭        | -                                  |
+| `logout_clicked`             | 로그아웃 버튼 클릭             | -                                  |
+| `application_add_opened`     | 공고 추가 FAB 클릭             | -                                  |
+| `application_add_submitted`  | 수동 폼 제출 → 리뷰 단계 진입  | `has_url: boolean`                 |
+| `application_add_saved`      | 공고 저장 완료                 | -                                  |
+| `application_add_reset`      | 리뷰 단계에서 "다시 입력" 클릭 | -                                  |
+| `application_preview_opened` | 대시보드에서 지원 행 클릭      | -                                  |
+| `application_status_changed` | 지원 상태 변경 성공            | `from_status`, `to_status`         |
+| `application_deleted`        | 지원 삭제 완료                 | -                                  |
+| `interview_added`            | 면접 일정 추가 완료            | `interview_type`, `round`          |
+| `interview_edited`           | 면접 일정 수정 완료            | `interview_type`, `round`          |
+| `interview_deleted`          | 면접 일정 삭제 완료            | -                                  |
+| `job_description_saved`      | 공고 설명 저장 완료            | -                                  |
+| `memo_saved`                 | 개인 메모 저장 완료            | -                                  |
+| `dashboard_tab_changed`      | 대시보드 탭 전환               | `tab: 'all' \| 'active' \| 'done'` |
+
+### 공고 추가 퍼널 설정 (PostHog 대시보드)
+
+1. PostHog → **Insights** → **New insight** → **Funnels**
+2. Step 1: `application_add_opened`
+3. Step 2: `application_add_submitted`
+4. Step 3: `application_add_saved`
+
+이 퍼널로 FAB 클릭 → 폼 제출 → 저장 완료 각 단계의 이탈률을 확인할 수 있습니다.
+
+### 사용자 식별
+
+로그인 시 Supabase user ID를 PostHog `distinct_id`로 사용합니다(`PostHogUserSync` 컴포넌트). 로그아웃 시 `posthog.reset()`으로 세션을 초기화합니다.
 
 ## 프로젝트 구조
 
