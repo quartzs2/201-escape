@@ -12,6 +12,7 @@ import {
 } from "@/lib/types/jobApplication";
 
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
+import { reportQueryError } from "./_reportQueryError";
 
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
@@ -63,11 +64,12 @@ export async function saveJobApplication(
   });
 
   if (error) {
-    return {
-      code: error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "RPC_ERROR",
-      ok: false,
-      reason: normalizeQueryError(error),
-    };
+    const code = error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "RPC_ERROR";
+    const reason = normalizeQueryError(error);
+    if (code === "RPC_ERROR") {
+      reportQueryError("saveJobApplication", reason);
+    }
+    return { code, ok: false, reason };
   }
 
   const payload = Array.isArray(data) ? data[0] : data;

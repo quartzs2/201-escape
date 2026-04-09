@@ -8,6 +8,7 @@ import {
 } from "@/lib/types/application";
 
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
+import { reportQueryError } from "./_reportQueryError";
 
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
@@ -64,11 +65,13 @@ export async function getApplicationDetail(
     .maybeSingle();
 
   if (error) {
-    return {
-      code: error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR",
-      ok: false,
-      reason: normalizeQueryError(error),
-    };
+    const code =
+      error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR";
+    const reason = normalizeQueryError(error);
+    if (code === "QUERY_ERROR") {
+      reportQueryError("getApplicationDetail", reason);
+    }
+    return { code, ok: false, reason };
   }
 
   if (!data) {

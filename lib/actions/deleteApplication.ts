@@ -9,6 +9,7 @@ import {
 } from "@/lib/types/application";
 
 import { normalizeQueryError } from "./_queryError";
+import { reportQueryError } from "./_reportQueryError";
 import { verifyApplicationOwnership } from "./_verifyApplicationOwnership";
 
 export async function deleteApplication(
@@ -45,11 +46,9 @@ export async function deleteApplication(
     .eq("id", parsedInput.data.applicationId);
 
   if (error) {
-    return {
-      code: "QUERY_ERROR",
-      ok: false,
-      reason: normalizeQueryError(error),
-    };
+    const reason = normalizeQueryError(error);
+    reportQueryError("deleteApplication", reason);
+    return { code: "QUERY_ERROR", ok: false, reason };
   }
 
   return { ok: true };

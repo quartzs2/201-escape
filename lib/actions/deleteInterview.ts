@@ -9,6 +9,7 @@ import {
 } from "@/lib/types/interview";
 
 import { normalizeQueryError } from "./_queryError";
+import { reportQueryError } from "./_reportQueryError";
 import { verifyApplicationOwnership } from "./_verifyApplicationOwnership";
 
 export async function deleteInterview(
@@ -46,11 +47,9 @@ export async function deleteInterview(
     .eq("application_id", parsedInput.data.applicationId);
 
   if (error) {
-    return {
-      code: "QUERY_ERROR",
-      ok: false,
-      reason: normalizeQueryError(error),
-    };
+    const reason = normalizeQueryError(error);
+    reportQueryError("deleteInterview", reason);
+    return { code: "QUERY_ERROR", ok: false, reason };
   }
 
   return { ok: true };
