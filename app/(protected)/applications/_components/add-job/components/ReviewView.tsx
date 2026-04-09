@@ -1,8 +1,7 @@
 import type { JobPlatform, JobPost } from "@/lib/types/job";
 
 import { Button } from "@/components/ui";
-
-import { PLATFORM_LABEL } from "../../dashboard-view/constants";
+import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
 
 type ReviewFieldProps = {
   label: string;

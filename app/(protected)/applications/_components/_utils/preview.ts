@@ -18,10 +18,7 @@ export type PreviewTextMeta = {
 export function getDescriptionMeta(
   detail: ApplicationDetail | null,
 ): PreviewTextMeta {
-  return {
-    isEmpty: !detail?.description?.trim(),
-    text: detail?.description?.trim() || EMPTY_DESCRIPTION,
-  };
+  return getTextMeta(detail?.description, EMPTY_DESCRIPTION);
 }
 
 export function getErrorSummary(
@@ -43,8 +40,16 @@ export function getErrorSummary(
 export function getNotesMeta(
   detail: ApplicationDetail | null,
 ): PreviewTextMeta {
+  return getTextMeta(detail?.notes, EMPTY_NOTES);
+}
+
+function getTextMeta(
+  text: null | string | undefined,
+  emptyPlaceholder: string,
+): PreviewTextMeta {
+  const trimmed = text?.trim();
   return {
-    isEmpty: !detail?.notes?.trim(),
-    text: detail?.notes?.trim() || EMPTY_NOTES,
+    isEmpty: !trimmed,
+    text: trimmed || emptyPlaceholder,
   };
 }
