@@ -1,5 +1,8 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
+import { useEffect, useRef } from "react";
+
 export default function GlobalError({
   error,
   reset,
@@ -7,6 +10,16 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const captured = useRef(false);
+
+  useEffect(() => {
+    if (captured.current) {
+      return;
+    }
+    captured.current = true;
+    Sentry.captureException(error);
+  }, [error]);
+
   return (
     <html lang="ko">
       <body>
@@ -22,9 +35,7 @@ export default function GlobalError({
           </p>
           <button
             className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
-            onClick={() => {
-              reset();
-            }}
+            onClick={reset}
           >
             다시 시도
           </button>
