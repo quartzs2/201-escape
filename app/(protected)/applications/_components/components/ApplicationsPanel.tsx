@@ -18,18 +18,18 @@ import { getApplications } from "@/lib/actions";
 import type { ApplicationListItem } from "../types";
 import type { ApplicationTabsHandle } from "./ApplicationTabs";
 
-import { GoToTopFAB } from "../../go-to-top";
 import {
   APPLICATIONS_QUERY_KEY,
   getApplicationsNextPageParam,
   PAGE_SIZE,
 } from "../constants";
+import { GoToTopFAB } from "../go-to-top";
 import { ApplicationPreviewSheet } from "./ApplicationPreviewSheet";
 import { ApplicationTabs } from "./ApplicationTabs";
 
 const PREVIEW_PARAM = "preview";
 
-export function DashboardApplicationsPanel() {
+export function ApplicationsPanel() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

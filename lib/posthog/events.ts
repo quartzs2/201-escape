@@ -10,6 +10,8 @@ export const POSTHOG_EVENTS = {
   APPLICATION_PREVIEW_OPENED: "application_preview_opened",
 
   APPLICATION_STATUS_CHANGED: "application_status_changed",
+  // 지원 목록 UX
+  APPLICATIONS_TAB_CHANGED: "applications_tab_changed",
   // 대시보드 UX
   DASHBOARD_TAB_CHANGED: "dashboard_tab_changed",
   // 면접 관리

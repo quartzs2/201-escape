@@ -64,7 +64,9 @@ export function ApplicationTabs({
       className={cn("flex flex-col", className ?? "h-full")}
       defaultValue="all"
       onValueChange={(value) => {
-        posthog.capture(POSTHOG_EVENTS.DASHBOARD_TAB_CHANGED, { tab: value });
+        posthog.capture(POSTHOG_EVENTS.APPLICATIONS_TAB_CHANGED, {
+          tab: value,
+        });
         // 탭 전환 시 GoToTopFAB 상태를 즉시 초기화합니다.
         // 새 탭의 VirtualList가 마운트되면 onRangeChange(0, N)이 다시 호출됩니다.
         onRangeChange?.(0, 0);

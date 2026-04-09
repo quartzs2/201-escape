@@ -104,7 +104,6 @@ export function ApplicationPreviewSheet({
     void loadApplicationDetail(applicationId);
   }, [applicationId, isOpen]);
 
-  // 시트가 닫혀있을 때는 항상 idle로 파생합니다.
   // effect 내부에서 setState를 호출하는 대신 렌더 시 파생하여 이전 데이터 플래시를 방지합니다.
   const visiblePreviewState: ApplicationPreviewState = isOpen
     ? previewState
