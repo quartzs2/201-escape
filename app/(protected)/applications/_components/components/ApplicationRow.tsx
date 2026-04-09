@@ -13,10 +13,13 @@ import { TimeAgo } from "./TimeAgo";
 
 type ApplicationRowProps = {
   application: ApplicationListItem;
-  onSelect: (application: ApplicationListItem) => void;
+  onSelectAction: (application: ApplicationListItem) => void;
 };
 
-export function ApplicationRow({ application, onSelect }: ApplicationRowProps) {
+export function ApplicationRow({
+  application,
+  onSelectAction,
+}: ApplicationRowProps) {
   const posthog = usePostHog();
   const { badgeClassName, label } = STATUS_META[application.status];
 
@@ -31,7 +34,7 @@ export function ApplicationRow({ application, onSelect }: ApplicationRowProps) {
         )}
         onClick={() => {
           posthog.capture(POSTHOG_EVENTS.APPLICATION_PREVIEW_OPENED);
-          onSelect(application);
+          onSelectAction(application);
         }}
         type="button"
       >

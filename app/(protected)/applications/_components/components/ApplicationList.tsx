@@ -61,7 +61,10 @@ export function ApplicationList({
         onRangeChange={handleRangeChange}
         ref={ref}
         renderItem={(item) => (
-          <ApplicationRow application={item} onSelect={onSelectApplication} />
+          <ApplicationRow
+            application={item}
+            onSelectAction={onSelectApplication}
+          />
         )}
       />
       {!isFetchingNextPage && <div className="h-12 shrink-0" />}

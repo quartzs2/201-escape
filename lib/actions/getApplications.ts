@@ -16,9 +16,17 @@ const ERROR_MESSAGES = {
 export async function getApplications({
   limit,
   offset,
+  periodEnd,
+  periodStart,
+  search,
+  sort = "applied_at_desc",
 }: {
   limit: number;
   offset: number;
+  periodEnd?: string;
+  periodStart?: string;
+  search?: string;
+  sort?: "applied_at_asc" | "applied_at_desc";
 }): Promise<GetApplicationsResult> {
   const supabase = await createClient();
   const { data: authData, error: authError } = await supabase.auth.getUser();
@@ -31,14 +39,14 @@ export async function getApplications({
     };
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("applications")
     .select(
       `
       id,
       applied_at,
       status,
-      jobs (
+      jobs!inner (
         company_name,
         position_title,
         platform
@@ -46,8 +54,20 @@ export async function getApplications({
     `,
     )
     .eq("user_id", authData.user.id)
-    .order("applied_at", { ascending: false })
+    .order("applied_at", { ascending: sort === "applied_at_asc" })
     .range(offset, offset + limit);
+
+  if (search) {
+    query = query.ilike("jobs.company_name", `%${search}%`);
+  }
+  if (periodStart) {
+    query = query.gte("applied_at", periodStart);
+  }
+  if (periodEnd) {
+    query = query.lte("applied_at", periodEnd);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     const code =
