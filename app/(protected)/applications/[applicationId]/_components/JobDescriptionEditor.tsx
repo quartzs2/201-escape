@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { FileTextIcon, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import { useEffect, useRef, useState } from "react";
 
 import type {
@@ -12,6 +13,7 @@ import type {
 
 import { Button } from "@/components/ui";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 type JobDescriptionEditorProps = {
   applicationId: string;
@@ -27,6 +29,7 @@ export function JobDescriptionEditor({
   updateDescriptionAction,
 }: JobDescriptionEditorProps) {
   const router = useRouter();
+  const posthog = usePostHog();
   const [currentDescription, setCurrentDescription] = useState(description);
   const [draftText, setDraftText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -87,6 +90,7 @@ export function JobDescriptionEditor({
       return { previousDescription };
     },
     onSuccess: () => {
+      posthog.capture(POSTHOG_EVENTS.JOB_DESCRIPTION_SAVED);
       router.refresh();
     },
   });

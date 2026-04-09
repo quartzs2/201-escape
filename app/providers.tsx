@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { TooltipProvider } from "@/components/ui/tooltip/Tooltip";
+import { PostHogProvider } from "@/lib/posthog/PostHogProvider";
+import { PostHogUserSync } from "@/lib/posthog/PostHogUserSync";
 import { SentryUserSync } from "@/lib/sentry/SentryUserSync";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -19,9 +21,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SentryUserSync />
-      <TooltipProvider>{children}</TooltipProvider>
-    </QueryClientProvider>
+    <PostHogProvider>
+      <QueryClientProvider client={queryClient}>
+        <SentryUserSync />
+        <PostHogUserSync />
+        <TooltipProvider>{children}</TooltipProvider>
+      </QueryClientProvider>
+    </PostHogProvider>
   );
 }

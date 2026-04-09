@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import type {
@@ -17,6 +18,7 @@ import {
   APPLICATION_STATUS_META,
   APPLICATION_STATUS_ORDER,
 } from "@/lib/constants/application-status";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { cn } from "@/lib/utils";
 
 export type ApplicationStatusSelectorProps = {
@@ -50,6 +52,7 @@ export function ApplicationStatusSelector({
   updateStatusAction,
 }: ApplicationStatusSelectorProps) {
   const router = useRouter();
+  const posthog = usePostHog();
   const [currentStatus, setCurrentStatus] = useState(status);
   // status prop 기준으로 에러를 추적 — prop이 바뀌면 이전 에러는 무효
   const [errorState, setErrorState] = useState<null | {
@@ -89,7 +92,11 @@ export function ApplicationStatusSelector({
       onStatusChangeAction?.(nextStatus);
       return { previousStatus };
     },
-    onSuccess: () => {
+    onSuccess: (_, nextStatus, context) => {
+      posthog.capture(POSTHOG_EVENTS.APPLICATION_STATUS_CHANGED, {
+        from_status: context?.previousStatus,
+        to_status: nextStatus,
+      });
       router.refresh();
     },
   });

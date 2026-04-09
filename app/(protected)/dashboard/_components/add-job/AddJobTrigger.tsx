@@ -1,9 +1,11 @@
 "use client";
 
 import { Plus as PlusIcon } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import { BottomSheet, Button } from "@/components/ui";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 import { ManualFormView } from "./components/ManualFormView";
 import { ReviewView } from "./components/ReviewView";
@@ -13,6 +15,7 @@ import { useAddJob } from "./hooks/useAddJob";
 const PARSING_ENABLED = process.env.NEXT_PUBLIC_ENABLE_PARSING === "true";
 
 export function AddJobTrigger() {
+  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
   const {
     handleExtract,
@@ -36,7 +39,10 @@ export function AddJobTrigger() {
       <Button
         aria-label="공고 추가"
         className="fixed right-5 bottom-[calc(env(safe-area-inset-bottom)+2rem)] z-40 shadow-lg transition-transform active:scale-95"
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          posthog.capture(POSTHOG_EVENTS.APPLICATION_ADD_OPENED);
+          setIsOpen(true);
+        }}
         size="fab"
       >
         <PlusIcon />

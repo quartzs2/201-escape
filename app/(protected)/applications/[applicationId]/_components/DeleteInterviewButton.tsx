@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import type {
@@ -10,6 +11,7 @@ import type {
 
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 type DeleteInterviewAction = (
   input: DeleteInterviewInput,
@@ -29,6 +31,7 @@ export function DeleteInterviewButton({
   round,
 }: DeleteInterviewButtonProps) {
   const router = useRouter();
+  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
@@ -61,6 +64,7 @@ export function DeleteInterviewButton({
         return;
       }
 
+      posthog.capture(POSTHOG_EVENTS.INTERVIEW_DELETED);
       setIsOpen(false);
       router.refresh();
     } finally {

@@ -1,16 +1,20 @@
 "use client";
 
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import GoogleIcon from "@/assets/google.svg";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 import { PublicHeader } from "../_components/PublicHeader";
 
 export default function LoginPage() {
+  const posthog = usePostHog();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
   const handleGoogleLogin = async () => {
+    posthog.capture(POSTHOG_EVENTS.LOGIN_ATTEMPTED);
     setIsLoading(true);
     setErrorMessage(null);
 

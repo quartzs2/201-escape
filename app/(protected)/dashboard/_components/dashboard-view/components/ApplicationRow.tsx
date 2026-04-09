@@ -1,5 +1,9 @@
-import { ChevronRightIcon } from "lucide-react";
+"use client";
 
+import { ChevronRightIcon } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
+
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { cn } from "@/lib/utils";
 
 import type { ApplicationListItem } from "../types";
@@ -13,6 +17,7 @@ type ApplicationRowProps = {
 };
 
 export function ApplicationRow({ application, onSelect }: ApplicationRowProps) {
+  const posthog = usePostHog();
   const { badgeClassName, label } = STATUS_META[application.status];
 
   return (
@@ -25,6 +30,7 @@ export function ApplicationRow({ application, onSelect }: ApplicationRowProps) {
           "focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:outline-none",
         )}
         onClick={() => {
+          posthog.capture(POSTHOG_EVENTS.APPLICATION_PREVIEW_OPENED);
           onSelect(application);
         }}
         type="button"

@@ -1,8 +1,12 @@
+"use client";
+
+import { usePostHog } from "posthog-js/react";
 import { useImperativeHandle, useRef } from "react";
 
 import type { VirtualListHandle } from "@/components/ui/virtual-list";
 
 import { Tabs } from "@/components/ui";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { cn } from "@/lib/utils";
 
 import type { ApplicationListItem } from "../types";
@@ -36,6 +40,8 @@ export function ApplicationTabs({
   onSelectApplication,
   ref,
 }: ApplicationTabsProps) {
+  const posthog = usePostHog();
+
   /**
    * TabsContent의 forceMount 기본값이 false이므로 활성 탭 하나만 렌더링됩니다.
    * 따라서 listRef 하나로 현재 활성 탭의 VirtualList를 참조할 수 있습니다.
@@ -57,7 +63,8 @@ export function ApplicationTabs({
     <Tabs
       className={cn("flex flex-col", className ?? "h-full")}
       defaultValue="all"
-      onValueChange={() => {
+      onValueChange={(value) => {
+        posthog.capture(POSTHOG_EVENTS.DASHBOARD_TAB_CHANGED, { tab: value });
         // 탭 전환 시 GoToTopFAB 상태를 즉시 초기화합니다.
         // 새 탭의 VirtualList가 마운트되면 onRangeChange(0, N)이 다시 호출됩니다.
         onRangeChange?.(0, 0);

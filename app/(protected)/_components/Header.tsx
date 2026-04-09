@@ -3,15 +3,18 @@
 import { LogOutIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button/Button";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { createClient } from "@/lib/supabase/client";
 
 export function Header() {
   const router = useRouter();
+  const posthog = usePostHog();
   const supabase = createClient();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -20,6 +23,7 @@ export function Header() {
       return;
     }
 
+    posthog.capture(POSTHOG_EVENTS.LOGOUT_CLICKED);
     setIsLoggingOut(true);
 
     try {
