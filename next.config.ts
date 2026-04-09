@@ -4,7 +4,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  reactCompiler: false,
+  reactCompiler: true,
   turbopack: {
     rules: {
       "*.svg": {

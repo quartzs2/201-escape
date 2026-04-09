@@ -11,12 +11,31 @@ import { getApplications } from "@/lib/actions";
 import { AddJobTrigger } from "./add-job";
 import { ApplicationsPanel } from "./components/ApplicationsPanel";
 import {
-  APPLICATIONS_QUERY_KEY,
+  buildApplicationsQueryKey,
   getApplicationsNextPageParam,
+  getPeriodDateRange,
   PAGE_SIZE,
+  parsePeriodParam,
+  parseSortParam,
+  PERIOD_PARAM,
+  SEARCH_PARAM,
+  SORT_PARAM,
 } from "./constants";
 
-export async function ApplicationsView() {
+type SearchParams = Record<string, string | string[] | undefined>;
+
+export async function ApplicationsView({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const search = getString(searchParams[SEARCH_PARAM]);
+  const period = parsePeriodParam(
+    getString(searchParams[PERIOD_PARAM]) || null,
+  );
+  const sort = parseSortParam(getString(searchParams[SORT_PARAM]) || null);
+  const dateRange = getPeriodDateRange(period);
+
   const queryClient = new QueryClient();
 
   await queryClient.prefetchInfiniteQuery({
@@ -27,6 +46,10 @@ export async function ApplicationsView() {
       const result = await getApplications({
         limit: PAGE_SIZE,
         offset: pageParam,
+        periodEnd: dateRange?.end,
+        periodStart: dateRange?.start,
+        search: search || undefined,
+        sort,
       });
 
       if (!result.ok) {
@@ -35,7 +58,7 @@ export async function ApplicationsView() {
 
       return result.data;
     },
-    queryKey: APPLICATIONS_QUERY_KEY,
+    queryKey: buildApplicationsQueryKey({ period, search, sort }),
   });
 
   return (
@@ -47,7 +70,7 @@ export async function ApplicationsView() {
           </h1>
         </header>
 
-        <div className="h-150 overflow-hidden rounded-3xl border border-border/50 bg-background shadow-sm">
+        <div className="h-200 overflow-hidden rounded-3xl border border-border/50 bg-background shadow-sm">
           <HydrationBoundary state={dehydrate(queryClient)}>
             <Suspense fallback={<ApplicationsViewSkeleton />}>
               <ApplicationsPanel />
@@ -73,4 +96,8 @@ function ApplicationsViewSkeleton() {
       ))}
     </div>
   );
+}
+
+function getString(value: string | string[] | undefined): string {
+  return typeof value === "string" ? value : "";
 }

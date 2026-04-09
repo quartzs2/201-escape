@@ -9,13 +9,17 @@ import { Tabs } from "@/components/ui";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { cn } from "@/lib/utils";
 
+import type { TabValue } from "../constants";
 import type { ApplicationListItem } from "../types";
 
 import { DONE_STATUSES, IN_PROGRESS_STATUSES } from "../constants";
 import { ApplicationList } from "./ApplicationList";
 
 const TAB_TRIGGER_CLASS =
-  "h-9 flex-1 rounded-full px-3 text-sm font-semibold transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md text-muted-foreground hover:text-foreground";
+  "group relative flex items-center gap-1.5 rounded-none px-1 pb-3 text-sm font-semibold transition-colors text-muted-foreground hover:text-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:rounded-full after:bg-transparent data-[state=active]:after:bg-primary";
+
+const BADGE_CLASS =
+  "rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground transition-colors group-data-[state=active]:bg-primary/10 group-data-[state=active]:text-primary";
 
 export type ApplicationTabsHandle = {
   scrollToTop: () => void;
@@ -25,20 +29,24 @@ type ApplicationTabsProps = {
   applications: ApplicationListItem[];
   className?: string;
   isFetchingNextPage?: boolean;
-  onNearEnd?: () => void;
-  onRangeChange?: (startIndex: number, endIndex: number) => void;
-  onSelectApplication: (application: ApplicationListItem) => void;
+  onNearEndAction?: () => void;
+  onRangeChangeAction?: (startIndex: number, endIndex: number) => void;
+  onSelectApplicationAction: (application: ApplicationListItem) => void;
+  onTabChangeAction: (tab: TabValue) => void;
   ref?: React.Ref<ApplicationTabsHandle>;
+  tab: TabValue;
 };
 
 export function ApplicationTabs({
   applications,
   className,
   isFetchingNextPage,
-  onNearEnd,
-  onRangeChange,
-  onSelectApplication,
+  onNearEndAction,
+  onRangeChangeAction,
+  onSelectApplicationAction,
+  onTabChangeAction,
   ref,
+  tab,
 }: ApplicationTabsProps) {
   const posthog = usePostHog();
 
@@ -62,26 +70,30 @@ export function ApplicationTabs({
   return (
     <Tabs
       className={cn("flex flex-col", className ?? "h-full")}
-      defaultValue="all"
       onValueChange={(value) => {
         posthog.capture(POSTHOG_EVENTS.APPLICATIONS_TAB_CHANGED, {
           tab: value,
         });
         // 탭 전환 시 GoToTopFAB 상태를 즉시 초기화합니다.
-        // 새 탭의 VirtualList가 마운트되면 onRangeChange(0, N)이 다시 호출됩니다.
-        onRangeChange?.(0, 0);
+        // 새 탭의 VirtualList가 마운트되면 onRangeChangeAction(0, N)이 다시 호출됩니다.
+        onRangeChangeAction?.(0, 0);
+        onTabChangeAction(value as TabValue);
       }}
+      value={tab}
     >
-      <div className="px-5 py-4">
-        <Tabs.List className="flex h-11 w-full items-center gap-1 rounded-2xl bg-muted/50 p-1 shadow-inner">
+      <div className="border-b border-border px-5">
+        <Tabs.List className="flex h-auto items-end gap-5 rounded-none bg-transparent p-0">
           <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="all">
             전체
+            <span className={BADGE_CLASS}>{applications.length}</span>
           </Tabs.Trigger>
           <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="active">
             진행중
+            <span className={BADGE_CLASS}>{inProgressApplications.length}</span>
           </Tabs.Trigger>
           <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="done">
             완료
+            <span className={BADGE_CLASS}>{doneApplications.length}</span>
           </Tabs.Trigger>
         </Tabs.List>
       </div>
@@ -91,9 +103,9 @@ export function ApplicationTabs({
           applications={applications}
           emptyMessage="아직 지원한 곳이 없습니다"
           isFetchingNextPage={isFetchingNextPage}
-          onNearEnd={onNearEnd}
-          onRangeChange={onRangeChange}
-          onSelectApplication={onSelectApplication}
+          onNearEnd={onNearEndAction}
+          onRangeChange={onRangeChangeAction}
+          onSelectApplication={onSelectApplicationAction}
           ref={listRef}
         />
       </Tabs.Content>
@@ -102,9 +114,9 @@ export function ApplicationTabs({
           applications={inProgressApplications}
           emptyMessage="진행 중인 지원이 없습니다"
           isFetchingNextPage={isFetchingNextPage}
-          onNearEnd={onNearEnd}
-          onRangeChange={onRangeChange}
-          onSelectApplication={onSelectApplication}
+          onNearEnd={onNearEndAction}
+          onRangeChange={onRangeChangeAction}
+          onSelectApplication={onSelectApplicationAction}
           ref={listRef}
         />
       </Tabs.Content>
@@ -113,9 +125,9 @@ export function ApplicationTabs({
           applications={doneApplications}
           emptyMessage="완료된 지원이 없습니다"
           isFetchingNextPage={isFetchingNextPage}
-          onNearEnd={onNearEnd}
-          onRangeChange={onRangeChange}
-          onSelectApplication={onSelectApplication}
+          onNearEnd={onNearEndAction}
+          onRangeChange={onRangeChangeAction}
+          onSelectApplication={onSelectApplicationAction}
           ref={listRef}
         />
       </Tabs.Content>
