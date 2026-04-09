@@ -10,6 +10,7 @@ import {
 } from "@/lib/types/application";
 
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
+import { reportQueryError } from "./_reportQueryError";
 
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
@@ -55,14 +56,15 @@ export async function updateJobDescription(
     .maybeSingle();
 
   if (applicationError) {
-    return {
-      code:
-        applicationError.code === AUTH_ERROR_CODE
-          ? "AUTH_REQUIRED"
-          : "QUERY_ERROR",
-      ok: false,
-      reason: normalizeQueryError(applicationError),
-    };
+    const code =
+      applicationError.code === AUTH_ERROR_CODE
+        ? "AUTH_REQUIRED"
+        : "QUERY_ERROR";
+    const reason = normalizeQueryError(applicationError);
+    if (code === "QUERY_ERROR") {
+      reportQueryError("updateJobDescription/fetchApplication", reason);
+    }
+    return { code, ok: false, reason };
   }
 
   if (!applicationData) {
@@ -81,11 +83,13 @@ export async function updateJobDescription(
     .maybeSingle();
 
   if (error) {
-    return {
-      code: error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR",
-      ok: false,
-      reason: normalizeQueryError(error),
-    };
+    const code =
+      error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR";
+    const reason = normalizeQueryError(error);
+    if (code === "QUERY_ERROR") {
+      reportQueryError("updateJobDescription/updateJob", reason);
+    }
+    return { code, ok: false, reason };
   }
 
   if (!data) {

@@ -7,6 +7,7 @@ import type {
 
 import { createClient } from "../supabase/server";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
+import { reportQueryError } from "./_reportQueryError";
 
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
@@ -49,11 +50,13 @@ export async function getApplications({
     .range(offset, offset + limit);
 
   if (error) {
-    return {
-      code: error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR",
-      ok: false,
-      reason: normalizeQueryError(error),
-    };
+    const code =
+      error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR";
+    const reason = normalizeQueryError(error);
+    if (code === "QUERY_ERROR") {
+      reportQueryError("getApplications", reason);
+    }
+    return { code, ok: false, reason };
   }
 
   const items: ApplicationListItem[] = data
