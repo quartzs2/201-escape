@@ -1,21 +1,40 @@
-// This file configures the initialization of Sentry on the client.
-// The added config here will be used whenever a users loads a page in their browser.
-// https://docs.sentry.io/platforms/javascript/guides/nextjs/
-
-import * as Sentry from "@sentry/nextjs";
-
 const isProd = process.env.NODE_ENV === "production";
+const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+const shouldEnableBrowserSentry =
+  process.env.NEXT_PUBLIC_ENABLE_BROWSER_SENTRY === "true" &&
+  typeof window !== "undefined" &&
+  typeof sentryDsn === "string" &&
+  sentryDsn.length > 0;
 
-Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+if (shouldEnableBrowserSentry) {
+  const initializeBrowserSentry = () => {
+    void import("@sentry/nextjs").then((Sentry) => {
+      Sentry.init({
+        dsn: sentryDsn,
+        enableLogs: !isProd,
+        tracesSampleRate: isProd ? 0.1 : 1.0,
+      });
+    });
+  };
 
-  enableLogs: true,
+  if (document.readyState === "complete") {
+    const requestIdle = window.requestIdleCallback;
 
-  integrations: [Sentry.replayIntegration()],
-  replaysOnErrorSampleRate: 1.0,
-  replaysSessionSampleRate: isProd ? 0.1 : 0,
+    if (requestIdle) {
+      requestIdle(
+        () => {
+          initializeBrowserSentry();
+        },
+        { timeout: 2000 },
+      );
+    } else {
+      window.setTimeout(() => {
+        initializeBrowserSentry();
+      }, 500);
+    }
+  } else {
+    window.addEventListener("load", initializeBrowserSentry, { once: true });
+  }
+}
 
-  tracesSampleRate: isProd ? 0.1 : 1.0,
-});
-
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+export function onRouterTransitionStart() {}

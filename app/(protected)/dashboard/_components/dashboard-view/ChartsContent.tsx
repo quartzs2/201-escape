@@ -1,6 +1,6 @@
 import { getChartData } from "@/lib/actions";
 
-import { DashboardCharts } from "./DashboardCharts";
+import { DeferredDashboardCharts } from "./DeferredDashboardCharts";
 
 export async function ChartsContent() {
   const result = await getChartData();
@@ -11,5 +11,5 @@ export async function ChartsContent() {
 
   const { funnel, monthly } = result.data;
 
-  return <DashboardCharts funnel={funnel} monthly={monthly} />;
+  return <DeferredDashboardCharts funnel={funnel} monthly={monthly} />;
 }

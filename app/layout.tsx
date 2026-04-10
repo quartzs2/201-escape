@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
 import localFont from "next/font/local";
-import { Toaster } from "sonner";
 
 import { PORTAL_ROOT_ID } from "@/lib/constants/dom";
 
+import { DeferredToaster } from "./_components/DeferredToaster";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -27,11 +27,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${pretendard.className} antialiased`}>
-        <Providers>
-          {children}
-          <div id={PORTAL_ROOT_ID} />
-          <Toaster position="bottom-center" richColors />
-        </Providers>
+        <Providers>{children}</Providers>
+        <div id={PORTAL_ROOT_ID} />
+        <DeferredToaster />
       </body>
     </html>
   );

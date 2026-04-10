@@ -50,6 +50,10 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_SUPABASE_URL`             | Supabase 프로젝트 URL                                               |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Publishable Key                                            |
 | `NEXT_PUBLIC_ENABLE_PARSING`           | `true`로 설정 시 URL 자동 파싱 활성화 (로컬 전용, 기본값: 비활성화) |
+| `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN`    | PostHog 프로젝트 API Key                                            |
+| `NEXT_PUBLIC_POSTHOG_HOST`             | PostHog API Host                                                    |
+| `NEXT_PUBLIC_SENTRY_DSN`               | Sentry DSN                                                          |
+| `NEXT_PUBLIC_ENABLE_BROWSER_SENTRY`    | `true`로 설정 시 브라우저 Sentry 활성화 (기본값: `false`)           |
 
 `NEXT_PUBLIC_SUPABASE_URL`과 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`는 Supabase 대시보드의 **Project Settings → API** 페이지에서 확인할 수 있습니다.
 
@@ -103,14 +107,13 @@ pnpm build-storybook # Storybook 정적 빌드
 
 ## 이벤트 트래킹
 
-[PostHog](https://posthog.com)를 사용해 핵심 사용자 행동을 측정합니다. 페이지뷰는 자동 수집되며, 아래 이벤트는 코드에서 명시적으로 발송합니다.
+[PostHog](https://posthog.com)를 사용해 핵심 사용자 행동을 측정합니다. 페이지뷰는 `PostHogProvider`가 적용된 화면에서 수동으로 수집하며, 아래 이벤트는 코드에서 명시적으로 발송합니다.
 
 ### 이벤트 목록
 
 | 이벤트명                     | 발생 시점                      | 프로퍼티                           |
 | ---------------------------- | ------------------------------ | ---------------------------------- |
 | `login_attempted`            | Google 로그인 버튼 클릭        | -                                  |
-| `logout_clicked`             | 로그아웃 버튼 클릭             | -                                  |
 | `application_add_opened`     | 공고 추가 FAB 클릭             | -                                  |
 | `application_add_submitted`  | 수동 폼 제출 → 리뷰 단계 진입  | `has_url: boolean`                 |
 | `application_add_saved`      | 공고 저장 완료                 | -                                  |
@@ -123,7 +126,7 @@ pnpm build-storybook # Storybook 정적 빌드
 | `interview_deleted`          | 면접 일정 삭제 완료            | -                                  |
 | `job_description_saved`      | 공고 설명 저장 완료            | -                                  |
 | `memo_saved`                 | 개인 메모 저장 완료            | -                                  |
-| `dashboard_tab_changed`      | 대시보드 탭 전환               | `tab: 'all' \| 'active' \| 'done'` |
+| `applications_tab_changed`   | 지원 목록 탭 전환              | `tab: 'all' \| 'active' \| 'done'` |
 
 ### 공고 추가 퍼널 설정 (PostHog 대시보드)
 
@@ -136,7 +139,7 @@ pnpm build-storybook # Storybook 정적 빌드
 
 ### 사용자 식별
 
-로그인 시 Supabase user ID를 PostHog `distinct_id`로 사용합니다(`PostHogUserSync` 컴포넌트). 로그아웃 시 `posthog.reset()`으로 세션을 초기화합니다.
+`applications` 라우트에서는 로그인한 Supabase user ID를 PostHog `distinct_id`로 사용합니다(`PostHogUserSync` 컴포넌트). 세션이 해제되면 `posthog.reset()`으로 식별 정보를 초기화합니다.
 
 ## 프로젝트 구조
 
@@ -148,7 +151,7 @@ app/
 │   └── applications/       # 지원 상세 페이지 (메모, 면접 일정, 공고 원문)
 ├── auth/                   # OAuth 콜백 처리
 ├── login/                  # 로그인 페이지
-└── providers.tsx           # 전역 Provider (TanStack Query 등)
+└── providers.tsx           # 루트 래퍼
 
 components/
 ├── ui/                     # 재사용 UI 컴포넌트
