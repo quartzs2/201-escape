@@ -96,6 +96,8 @@ pnpm dev
 
 Supabase 프로젝트에 아래 테이블이 필요합니다. `supabase/migrations/` 폴더의 마이그레이션 파일로 적용할 수 있습니다.
 
+스키마를 왜 이렇게 나눴는지, 어떤 인덱스와 RLS 정책이 있는지, 마이그레이션이 어떤 순서로 진화했는지는 [`docs/database-schema.md`](/Users/hyeon/Documents/projects/201-escape/docs/database-schema.md)에서 설명합니다.
+
 | 테이블          | 설명                                            |
 | --------------- | ----------------------------------------------- |
 | `jobs`          | 채용 공고 원본 정보 (회사명, 직책, URL, 플랫폼) |
