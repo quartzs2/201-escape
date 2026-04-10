@@ -11,13 +11,15 @@ import {
 
 import type { FunnelStep } from "@/lib/types/application";
 
+import { FUNNEL_CHART_HEIGHT } from "./constants";
+
 type Props = {
   data: FunnelStep[];
 };
 
 export function FunnelChart({ data }: Props) {
   return (
-    <ResponsiveContainer height={160} width="100%">
+    <ResponsiveContainer height={FUNNEL_CHART_HEIGHT} width="100%">
       <BarChart
         data={data}
         layout="vertical"

@@ -1,0 +1,2 @@
+export const MONTHLY_CHART_HEIGHT = 200;
+export const FUNNEL_CHART_HEIGHT = 160;

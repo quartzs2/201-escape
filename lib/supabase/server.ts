@@ -27,3 +27,18 @@ export async function createClient() {
     },
   );
 }
+
+/**
+ * unstable_cache 내부처럼 cookies()를 사용할 수 없는 컨텍스트에서
+ * access token을 직접 주입해 Supabase 클라이언트를 생성합니다.
+ */
+export function createClientWithToken(accessToken: string) {
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: { getAll: () => [], setAll: () => {} },
+      global: { headers: { Authorization: `Bearer ${accessToken}` } },
+    },
+  );
+}
