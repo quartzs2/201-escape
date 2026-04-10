@@ -1,5 +1,8 @@
 "use client";
 
+import type { Route } from "next";
+
+import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
@@ -8,6 +11,8 @@ import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { PostHogProvider } from "@/lib/posthog/PostHogProvider";
 
 import { PublicHeader } from "../_components/PublicHeader";
+
+const PRIVACY_PAGE_HREF = "/privacy" as Route;
 
 export default function LoginPage() {
   return (
@@ -84,6 +89,19 @@ function LoginPageContent() {
                 {errorMessage}
               </p>
             )}
+
+            <div className="flex justify-center px-1">
+              <p className="inline-flex flex-wrap items-center justify-center gap-x-1 text-center text-xs leading-5 text-muted-foreground">
+                <span>계속 진행하면</span>
+                <Link
+                  className="font-semibold text-primary underline underline-offset-4"
+                  href={PRIVACY_PAGE_HREF}
+                >
+                  개인정보처리방침
+                </Link>
+                <span>에 동의한 것으로 간주됩니다.</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>

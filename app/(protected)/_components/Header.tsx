@@ -26,6 +26,7 @@ export function Header() {
           aria-label="로그아웃"
           size="icon"
           title="로그아웃"
+          type="submit"
           variant="ghost"
         >
           <LogOutIcon aria-hidden="true" />
