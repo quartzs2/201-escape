@@ -5,10 +5,19 @@ import { useState } from "react";
 
 import GoogleIcon from "@/assets/google.svg";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
+import { PostHogProvider } from "@/lib/posthog/PostHogProvider";
 
 import { PublicHeader } from "../_components/PublicHeader";
 
 export default function LoginPage() {
+  return (
+    <PostHogProvider>
+      <LoginPageContent />
+    </PostHogProvider>
+  );
+}
+
+function LoginPageContent() {
   const posthog = usePostHog();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);

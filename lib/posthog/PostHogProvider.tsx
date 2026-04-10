@@ -7,9 +7,15 @@ import { Suspense, useEffect } from "react";
 
 if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN!, {
+    advanced_disable_decide: true,
+    advanced_disable_feature_flags: true,
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    capture_pageleave: true,
+    autocapture: false,
+    capture_pageleave: false,
     capture_pageview: false,
+    disable_external_dependency_loading: true,
+    disable_session_recording: true,
+    disable_surveys: true,
   });
 }
 

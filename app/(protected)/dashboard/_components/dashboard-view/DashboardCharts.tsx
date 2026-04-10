@@ -1,35 +1,9 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
 import type { FunnelStep, MonthlyCount } from "@/lib/types/application";
 
-import { Skeleton } from "@/components/ui";
-
-import { FUNNEL_CHART_HEIGHT, MONTHLY_CHART_HEIGHT } from "./constants";
-
-const FunnelChart = dynamic(
-  () => import("./FunnelChart").then((m) => ({ default: m.FunnelChart })),
-  {
-    loading: () => (
-      <Skeleton className="w-full" style={{ height: FUNNEL_CHART_HEIGHT }} />
-    ),
-    ssr: false,
-  },
-);
-
-const MonthlyTrendChart = dynamic(
-  () =>
-    import("./MonthlyTrendChart").then((m) => ({
-      default: m.MonthlyTrendChart,
-    })),
-  {
-    loading: () => (
-      <Skeleton className="w-full" style={{ height: MONTHLY_CHART_HEIGHT }} />
-    ),
-    ssr: false,
-  },
-);
+import { FunnelChart } from "./FunnelChart";
+import { MonthlyTrendChart } from "./MonthlyTrendChart";
 
 type Props = {
   funnel: FunnelStep[];
