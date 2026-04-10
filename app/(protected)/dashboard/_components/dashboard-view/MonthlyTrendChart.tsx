@@ -12,6 +12,8 @@ import {
 
 import type { MonthlyCount } from "@/lib/types/application";
 
+import { MONTHLY_CHART_HEIGHT } from "./constants";
+
 type Props = {
   data: MonthlyCount[];
 };
@@ -20,7 +22,7 @@ export function MonthlyTrendChart({ data }: Props) {
   const chartData = data.map((d) => ({ ...d, label: formatMonth(d.month) }));
 
   return (
-    <ResponsiveContainer height={200} width="100%">
+    <ResponsiveContainer height={MONTHLY_CHART_HEIGHT} width="100%">
       <LineChart
         data={chartData}
         margin={{ bottom: 0, left: -20, right: 8, top: 4 }}

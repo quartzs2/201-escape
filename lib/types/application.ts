@@ -75,6 +75,11 @@ export type ApplicationsStats = {
   total: number;
 };
 
+export type ChartData = {
+  funnel: FunnelStep[];
+  monthly: MonthlyCount[];
+};
+
 export type DeleteApplicationErrorCode =
   | "AUTH_REQUIRED"
   | "NOT_FOUND"
@@ -129,9 +134,28 @@ export type GetApplicationsStatsResult =
   | { code: GetApplicationsStatsErrorCode; ok: false; reason: string }
   | { data: ApplicationsStats; ok: true };
 
+export type GetChartDataErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
+
+export type GetChartDataResult =
+  | { code: GetChartDataErrorCode; ok: false; reason: string }
+  | { data: ChartData; ok: true };
+
+export type GetStatCountsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
+
+export type GetStatCountsResult =
+  | { code: GetStatCountsErrorCode; ok: false; reason: string }
+  | { data: StatCounts; ok: true };
+
 export type MonthlyCount = {
   count: number;
   month: string; // "YYYY-MM" 형식
+};
+
+export type StatCounts = {
+  docs: number;
+  interviewing: number;
+  offered: number;
+  total: number;
 };
 
 export type UpdateApplicationNotesErrorCode =
