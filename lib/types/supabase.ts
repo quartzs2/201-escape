@@ -62,7 +62,6 @@ export type Database = {
           created_at?: string;
           description?: null | string;
           id?: string;
-          job_id: string;
           notes?: null | string;
           origin_url: string;
           platform: Database["public"]["Enums"]["job_platform"];
@@ -72,22 +71,13 @@ export type Database = {
           updated_at?: string;
           user_id: string;
         };
-        Relationships: [
-          {
-            columns: ["job_id"];
-            foreignKeyName: "applications_job_id_fkey";
-            isOneToOne: false;
-            referencedColumns: ["id"];
-            referencedRelation: "jobs";
-          },
-        ];
+        Relationships: [];
         Row: {
           applied_at: string;
           company_name: string;
           created_at: string;
           description: null | string;
           id: string;
-          job_id: string;
           notes: null | string;
           origin_url: string;
           platform: Database["public"]["Enums"]["job_platform"];
@@ -103,7 +93,6 @@ export type Database = {
           created_at?: string;
           description?: null | string;
           id?: string;
-          job_id?: string;
           notes?: null | string;
           origin_url?: string;
           platform?: Database["public"]["Enums"]["job_platform"];
@@ -159,71 +148,6 @@ export type Database = {
           scheduled_at?: string;
           scratchpad?: null | string;
           updated_at?: string;
-        };
-      };
-      job_snapshots: {
-        Insert: {
-          created_at?: string;
-          id?: string;
-          job_id: string;
-          raw_data?: Json | null;
-          updated_at?: string;
-          user_id: string;
-        };
-        Relationships: [
-          {
-            columns: ["job_id"];
-            foreignKeyName: "job_snapshots_job_id_fkey";
-            isOneToOne: false;
-            referencedColumns: ["id"];
-            referencedRelation: "jobs";
-          },
-        ];
-        Row: {
-          created_at: string;
-          id: string;
-          job_id: string;
-          raw_data: Json | null;
-          updated_at: string;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string;
-          id?: string;
-          job_id?: string;
-          raw_data?: Json | null;
-          updated_at?: string;
-          user_id?: string;
-        };
-      };
-      jobs: {
-        Insert: {
-          company_name: string;
-          created_at?: string;
-          description?: null | string;
-          id?: string;
-          origin_url: string;
-          platform: Database["public"]["Enums"]["job_platform"];
-          position_title: string;
-        };
-        Relationships: [];
-        Row: {
-          company_name: string;
-          created_at: string;
-          description: null | string;
-          id: string;
-          origin_url: string;
-          platform: Database["public"]["Enums"]["job_platform"];
-          position_title: string;
-        };
-        Update: {
-          company_name?: string;
-          created_at?: string;
-          description?: null | string;
-          id?: string;
-          origin_url?: string;
-          platform?: Database["public"]["Enums"]["job_platform"];
-          position_title?: string;
         };
       };
     };
