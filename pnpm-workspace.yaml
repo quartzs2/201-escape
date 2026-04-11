@@ -3,4 +3,7 @@ ignoredBuiltDependencies:
   - unrs-resolver
 
 onlyBuiltDependencies:
+  - "@sentry/cli"
+  - core-js
+  - protobufjs
   - supabase

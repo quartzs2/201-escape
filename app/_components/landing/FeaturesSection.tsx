@@ -16,7 +16,7 @@ const features: Feature[] = [
     description:
       "지원한 모든 공고를 상태별로 정리. 서류·면접·최종 단계를 한 곳에서 관리하세요.",
     icon: Briefcase,
-    title: "공고 한눈에",
+    title: "공고를 한눈에",
   },
   {
     description:

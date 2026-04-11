@@ -8,6 +8,7 @@ import {
 } from "@/lib/types/application";
 
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
+import { reportQueryError } from "./_reportQueryError";
 
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
@@ -45,30 +46,20 @@ export async function getApplicationDetail(
   const { data, error } = await supabase
     .from("applications")
     .select(
-      `
-        id,
-        applied_at,
-        notes,
-        status,
-        jobs (
-          company_name,
-          description,
-          origin_url,
-          platform,
-          position_title
-        )
-      `,
+      "id, applied_at, company_name, description, notes, origin_url, platform, position_title, status",
     )
     .eq("id", parsedApplicationId.data)
     .eq("user_id", authData.user.id)
     .maybeSingle();
 
   if (error) {
-    return {
-      code: error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR",
-      ok: false,
-      reason: normalizeQueryError(error),
-    };
+    const code =
+      error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR";
+    const reason = normalizeQueryError(error);
+    if (code === "QUERY_ERROR") {
+      reportQueryError("getApplicationDetail", reason);
+    }
+    return { code, ok: false, reason };
   }
 
   if (!data) {
@@ -79,25 +70,15 @@ export async function getApplicationDetail(
     };
   }
 
-  const job = Array.isArray(data.jobs) ? data.jobs[0] : data.jobs;
-
-  if (!job) {
-    return {
-      code: "UNKNOWN_ERROR",
-      ok: false,
-      reason: ERROR_MESSAGES.INVALID_RESPONSE,
-    };
-  }
-
   const parsedDetail = applicationDetailSchema.safeParse({
     appliedAt: data.applied_at,
-    companyName: job.company_name,
-    description: job.description,
+    companyName: data.company_name,
+    description: data.description,
     id: data.id,
     notes: data.notes,
-    originUrl: job.origin_url,
-    platform: job.platform,
-    positionTitle: job.position_title,
+    originUrl: data.origin_url,
+    platform: data.platform,
+    positionTitle: data.position_title,
     status: data.status,
   });
 

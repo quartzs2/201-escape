@@ -2,6 +2,7 @@
 
 import { PencilIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import type {
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { Constants } from "@/lib/types/supabase";
 import { toDatetimeLocalValue } from "@/lib/utils";
 
@@ -53,6 +55,7 @@ type UpsertAction = (
 
 export function InterviewFormSheet(props: InterviewFormSheetProps) {
   const router = useRouter();
+  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
   const [values, setValues] = useState<FormValues>(() =>
     getInitialValues(props),
@@ -112,6 +115,12 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
         return;
       }
 
+      posthog.capture(
+        props.mode === "add"
+          ? POSTHOG_EVENTS.INTERVIEW_ADDED
+          : POSTHOG_EVENTS.INTERVIEW_EDITED,
+        { interview_type: values.interviewType, round: values.round },
+      );
       setIsOpen(false);
       router.refresh();
     } finally {

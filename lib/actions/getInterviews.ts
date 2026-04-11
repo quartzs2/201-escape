@@ -9,6 +9,7 @@ import {
 } from "@/lib/types/interview";
 
 import { normalizeQueryError } from "./_queryError";
+import { reportQueryError } from "./_reportQueryError";
 import { verifyApplicationOwnership } from "./_verifyApplicationOwnership";
 
 export async function getInterviews(
@@ -46,11 +47,9 @@ export async function getInterviews(
     .order("round", { ascending: true });
 
   if (error) {
-    return {
-      code: "QUERY_ERROR",
-      ok: false,
-      reason: normalizeQueryError(error),
-    };
+    const reason = normalizeQueryError(error);
+    reportQueryError("getInterviews", reason);
+    return { code: "QUERY_ERROR", ok: false, reason };
   }
 
   return {

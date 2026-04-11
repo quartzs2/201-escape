@@ -1,1 +1,2 @@
-export { DashboardView } from "./DashboardView";
+export { ChartsContent } from "./ChartsContent";
+export { StatCardsContent } from "./StatCardsContent";

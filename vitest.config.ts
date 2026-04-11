@@ -52,6 +52,7 @@ export default defineConfig({
             "react-dom",
             "next/navigation",
             "@tanstack/react-query",
+            "posthog-js/react",
           ],
         },
         plugins: [

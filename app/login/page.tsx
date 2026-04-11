@@ -1,16 +1,34 @@
 "use client";
 
+import type { Route } from "next";
+
+import Link from "next/link";
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import GoogleIcon from "@/assets/google.svg";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
+import { PostHogProvider } from "@/lib/posthog/PostHogProvider";
 
 import { PublicHeader } from "../_components/PublicHeader";
 
+const PRIVACY_PAGE_HREF = "/privacy" as Route;
+
 export default function LoginPage() {
+  return (
+    <PostHogProvider>
+      <LoginPageContent />
+    </PostHogProvider>
+  );
+}
+
+function LoginPageContent() {
+  const posthog = usePostHog();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
   const handleGoogleLogin = async () => {
+    posthog.capture(POSTHOG_EVENTS.LOGIN_ATTEMPTED);
     setIsLoading(true);
     setErrorMessage(null);
 
@@ -19,7 +37,7 @@ export default function LoginPage() {
       const supabase = createClient();
 
       const url = new URL("/auth/callback", window.location.origin);
-      url.searchParams.set("next", "/");
+      url.searchParams.set("next", "/dashboard");
 
       const { error } = await supabase.auth.signInWithOAuth({
         options: {
@@ -71,6 +89,19 @@ export default function LoginPage() {
                 {errorMessage}
               </p>
             )}
+
+            <div className="flex justify-center px-1">
+              <p className="inline-flex flex-wrap items-center justify-center gap-x-1 text-center text-xs leading-5 text-muted-foreground">
+                <span>계속 진행하면</span>
+                <Link
+                  className="font-semibold text-primary underline underline-offset-4"
+                  href={PRIVACY_PAGE_HREF}
+                >
+                  개인정보처리방침
+                </Link>
+                <span>에 동의한 것으로 간주됩니다.</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
-export const dynamic = "force-dynamic";
-
+import { BottomTabBar } from "./_components/BottomTabBar";
 import { Header } from "./_components/Header";
+import { ProtectedProviders } from "./ProtectedProviders";
 
 export default function ProtectedLayout({
   children,
@@ -10,7 +10,9 @@ export default function ProtectedLayout({
   return (
     <>
       <Header />
-      {children}
+      <main className="pb-16 md:pb-0">{children}</main>
+      <BottomTabBar />
+      <ProtectedProviders />
     </>
   );
 }

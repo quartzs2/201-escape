@@ -1,61 +1,37 @@
-"use client";
-
 import { LogOutIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button/Button";
-import { Tooltip } from "@/components/ui/tooltip/Tooltip";
-import { createClient } from "@/lib/supabase/client";
+import { signOut } from "@/lib/actions/signOut";
+
+import { HeaderNavLinks } from "./HeaderNavLinks";
 
 export function Header() {
-  const router = useRouter();
-  const supabase = createClient();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  async function handleLogout() {
-    if (isLoggingOut) {
-      return;
-    }
-
-    setIsLoggingOut(true);
-
-    try {
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        toast.error("로그아웃에 실패했습니다. 다시 시도해 주세요.");
-        return;
-      }
-
-      router.push("/");
-    } finally {
-      setIsLoggingOut(false);
-    }
-  }
-
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/80 px-6 py-3 backdrop-blur-sm">
-      <Button
-        asChild
-        className="text-xl font-black tracking-tighter text-primary hover:bg-transparent"
-        variant="ghost"
-      >
-        <Link href="/dashboard">201</Link>
-      </Button>
-      <Tooltip label={isLoggingOut ? "로그아웃 중..." : "로그아웃"}>
+      <div className="flex items-center gap-6">
         <Button
-          aria-label={isLoggingOut ? "로그아웃 중..." : "로그아웃"}
-          disabled={isLoggingOut}
-          onClick={handleLogout}
+          asChild
+          className="text-xl font-black tracking-tighter text-primary hover:bg-transparent"
+          variant="ghost"
+        >
+          <Link href="/dashboard">201</Link>
+        </Button>
+        <nav aria-label="주 내비게이션" className="hidden md:flex">
+          <HeaderNavLinks />
+        </nav>
+      </div>
+      <form action={signOut}>
+        <Button
+          aria-label="로그아웃"
           size="icon"
+          title="로그아웃"
+          type="submit"
           variant="ghost"
         >
           <LogOutIcon aria-hidden="true" />
         </Button>
-      </Tooltip>
+      </form>
     </header>
   );
 }

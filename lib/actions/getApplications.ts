@@ -7,6 +7,7 @@ import type {
 
 import { createClient } from "../supabase/server";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
+import { reportQueryError } from "./_reportQueryError";
 
 const ERROR_MESSAGES = {
   AUTH_REQUIRED: "로그인이 필요합니다.",
@@ -15,9 +16,17 @@ const ERROR_MESSAGES = {
 export async function getApplications({
   limit,
   offset,
+  periodEnd,
+  periodStart,
+  search,
+  sort = "applied_at_desc",
 }: {
   limit: number;
   offset: number;
+  periodEnd?: string;
+  periodStart?: string;
+  search?: string;
+  sort?: "applied_at_asc" | "applied_at_desc";
 }): Promise<GetApplicationsResult> {
   const supabase = await createClient();
   const { data: authData, error: authError } = await supabase.auth.getUser();
@@ -30,46 +39,43 @@ export async function getApplications({
     };
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("applications")
-    .select(
-      `
-      id,
-      applied_at,
-      status,
-      jobs (
-        company_name,
-        position_title,
-        platform
-      )
-    `,
-    )
+    .select("id, applied_at, company_name, platform, position_title, status")
     .eq("user_id", authData.user.id)
-    .order("applied_at", { ascending: false })
+    .order("applied_at", { ascending: sort === "applied_at_asc" })
     .range(offset, offset + limit);
 
+  if (search) {
+    query = query.ilike("company_name", `%${search}%`);
+  }
+  if (periodStart) {
+    query = query.gte("applied_at", periodStart);
+  }
+  if (periodEnd) {
+    query = query.lte("applied_at", periodEnd);
+  }
+
+  const { data, error } = await query;
+
   if (error) {
-    return {
-      code: error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR",
-      ok: false,
-      reason: normalizeQueryError(error),
-    };
+    const code =
+      error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR";
+    const reason = normalizeQueryError(error);
+    if (code === "QUERY_ERROR") {
+      reportQueryError("getApplications", reason);
+    }
+    return { code, ok: false, reason };
   }
 
   const items: ApplicationListItem[] = data
     .map((row) => {
-      const job = Array.isArray(row.jobs) ? row.jobs[0] : row.jobs;
-
-      if (!job) {
-        return null;
-      }
-
       return {
         appliedAt: row.applied_at,
-        companyName: job.company_name,
+        companyName: row.company_name,
         id: row.id,
-        platform: job.platform,
-        positionTitle: job.position_title,
+        platform: row.platform,
+        positionTitle: row.position_title,
         status: row.status,
       };
     })

@@ -68,9 +68,16 @@ export const deleteApplicationInputSchema = z
 
 export type ApplicationsStats = {
   docs: number;
+  funnel: FunnelStep[];
   interviewing: number;
+  monthly: MonthlyCount[];
   offered: number;
   total: number;
+};
+
+export type ChartData = {
+  funnel: FunnelStep[];
+  monthly: MonthlyCount[];
 };
 
 export type DeleteApplicationErrorCode =
@@ -86,6 +93,11 @@ export type DeleteApplicationInput = z.infer<
 export type DeleteApplicationResult =
   | { code: DeleteApplicationErrorCode; ok: false; reason: string }
   | { ok: true };
+
+export type FunnelStep = {
+  count: number;
+  label: string;
+};
 
 export type GetApplicationDetailErrorCode =
   | "AUTH_REQUIRED"
@@ -121,6 +133,30 @@ export type GetApplicationsStatsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
 export type GetApplicationsStatsResult =
   | { code: GetApplicationsStatsErrorCode; ok: false; reason: string }
   | { data: ApplicationsStats; ok: true };
+
+export type GetChartDataErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
+
+export type GetChartDataResult =
+  | { code: GetChartDataErrorCode; ok: false; reason: string }
+  | { data: ChartData; ok: true };
+
+export type GetStatCountsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
+
+export type GetStatCountsResult =
+  | { code: GetStatCountsErrorCode; ok: false; reason: string }
+  | { data: StatCounts; ok: true };
+
+export type MonthlyCount = {
+  count: number;
+  month: string; // "YYYY-MM" 형식
+};
+
+export type StatCounts = {
+  docs: number;
+  interviewing: number;
+  offered: number;
+  total: number;
+};
 
 export type UpdateApplicationNotesErrorCode =
   | "AUTH_REQUIRED"
