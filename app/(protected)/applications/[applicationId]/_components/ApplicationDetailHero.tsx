@@ -37,6 +37,7 @@ type UpdateStatusAction = (
 ) => Promise<UpdateApplicationStatusResult>;
 
 const MANUAL_PLATFORM_LABEL = "직접 입력";
+const STATUS_PANEL_ANIMATION_DELAY = "120ms";
 
 export function ApplicationDetailHero({
   deleteAction,
@@ -146,7 +147,7 @@ export function ApplicationDetailHero({
 
         <div
           className="motion-safe:animate-fade-up"
-          style={{ animationDelay: "120ms" }}
+          style={{ animationDelay: STATUS_PANEL_ANIMATION_DELAY }}
         >
           <div className="rounded-[28px] border border-border/60 bg-background/90 p-5 shadow-[0_24px_60px_-40px_rgba(23,23,23,0.28)] backdrop-blur-sm sm:p-6">
             <div className="space-y-2">

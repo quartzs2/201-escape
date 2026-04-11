@@ -22,6 +22,12 @@ type ApplicationDetailPageProps = {
   }>;
 };
 
+const DETAIL_PANEL_ANIMATION_DELAYS = {
+  interview: "200ms",
+  jobDescription: "160ms",
+  memo: "220ms",
+} as const;
+
 const ERROR_STATE_META = {
   AUTH_REQUIRED: {
     description: "상세 내용을 보려면 로그인 상태가 필요합니다.",
@@ -91,7 +97,9 @@ export default async function ApplicationDetailPage({
           <div className="order-2 grid gap-6 lg:order-1">
             <DetailSectionPanel
               className="motion-safe:animate-fade-up"
-              style={{ animationDelay: "160ms" }}
+              style={{
+                animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.jobDescription,
+              }}
             >
               <JobDescriptionEditor
                 applicationId={detail.id}
@@ -102,7 +110,7 @@ export default async function ApplicationDetailPage({
 
             <DetailSectionPanel
               className="motion-safe:animate-fade-up"
-              style={{ animationDelay: "220ms" }}
+              style={{ animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.memo }}
             >
               <MemoEditor
                 applicationId={detail.id}
@@ -115,7 +123,9 @@ export default async function ApplicationDetailPage({
           <div className="order-1 grid gap-6 lg:sticky lg:top-6 lg:order-2 lg:self-start">
             <DetailSectionPanel
               className="motion-safe:animate-fade-up"
-              style={{ animationDelay: "200ms" }}
+              style={{
+                animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.interview,
+              }}
             >
               <SectionErrorBoundary>
                 <Suspense fallback={<InterviewSectionSkeleton />}>
