@@ -4,7 +4,10 @@ import { unstable_cache } from "next/cache";
 
 import type { GetStatCountsResult, StatCounts } from "@/lib/types/application";
 
-import { DOCS_STATUSES } from "@/lib/constants/application-status";
+import {
+  DOCS_PASSED_STATUSES,
+  DOCS_STATUSES,
+} from "@/lib/constants/application-status";
 
 import { createClient, createClientWithToken } from "../supabase/server";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
@@ -19,49 +22,62 @@ const getCachedStatCounts = unstable_cache(
   async (userId: string, accessToken: string): Promise<StatCounts> => {
     const supabase = createClientWithToken(accessToken);
 
-    const [totalRes, docsRes, interviewingRes, offeredRes] = await Promise.all([
-      supabase
-        .from("applications")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", userId),
-      supabase
-        .from("applications")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .in("status", DOCS_STATUSES),
-      supabase
-        .from("applications")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .eq("status", "INTERVIEWING"),
-      supabase
-        .from("applications")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .eq("status", "OFFERED"),
-    ]);
+    const { data, error } = await supabase
+      .from("applications")
+      .select("status")
+      .eq("user_id", userId);
 
-    const firstError =
-      totalRes.error ??
-      docsRes.error ??
-      interviewingRes.error ??
-      offeredRes.error;
-
-    if (firstError) {
+    if (error) {
       const code =
-        firstError.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR";
-      const reason = normalizeQueryError(firstError);
+        error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR";
+      const reason = normalizeQueryError(error);
       if (code === "QUERY_ERROR") {
         reportQueryError("getStatCounts", reason);
       }
       throw new Error(reason);
     }
 
+    let applied = 0;
+    let docs = 0;
+    let docsPassed = 0;
+    let interviewing = 0;
+    let offered = 0;
+    let saved = 0;
+
+    for (const row of data ?? []) {
+      const { status } = row;
+
+      if (status === "SAVED") {
+        saved++;
+      } else {
+        applied++;
+      }
+
+      if ((DOCS_STATUSES as readonly string[]).includes(status)) {
+        docs++;
+      }
+
+      if ((DOCS_PASSED_STATUSES as readonly string[]).includes(status)) {
+        docsPassed++;
+      }
+
+      if (status === "INTERVIEWING") {
+        interviewing++;
+      }
+
+      if (status === "OFFERED") {
+        offered++;
+      }
+    }
+
     return {
-      docs: docsRes.count ?? 0,
-      interviewing: interviewingRes.count ?? 0,
-      offered: offeredRes.count ?? 0,
-      total: totalRes.count ?? 0,
+      applied,
+      docs,
+      docsPassed,
+      interviewing,
+      offered,
+      saved,
+      total: (data ?? []).length,
     };
   },
   ["stat-counts"],

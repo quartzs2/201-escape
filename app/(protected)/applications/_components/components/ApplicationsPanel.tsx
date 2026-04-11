@@ -19,6 +19,7 @@ import type { PeriodPreset, SortValue, TabValue } from "../constants";
 import type { ApplicationListItem } from "../types";
 import type { ApplicationTabsHandle } from "./ApplicationTabs";
 
+import { ApplicationsPageHeader } from "../ApplicationsPageHeader";
 import {
   buildApplicationsQueryKey,
   getApplicationsNextPageParam,
@@ -38,7 +39,11 @@ import { ApplicationFilters } from "./ApplicationFilters";
 import { ApplicationPreviewSheet } from "./ApplicationPreviewSheet";
 import { ApplicationTabs } from "./ApplicationTabs";
 
-export function ApplicationsPanel() {
+type ApplicationsPanelProps = {
+  dateLabel: string;
+};
+
+export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -113,7 +118,18 @@ export function ApplicationsPanel() {
 
   const handleSortChange = (nextSort: SortValue) => {
     updateParams({
+      [PREVIEW_PARAM]: "",
       [SORT_PARAM]: nextSort === "applied_at_desc" ? "" : nextSort,
+    });
+  };
+
+  const handleResetFilters = () => {
+    updateParams({
+      [PERIOD_PARAM]: "",
+      [PREVIEW_PARAM]: "",
+      [SEARCH_PARAM]: "",
+      [SORT_PARAM]: "",
+      [TAB_PARAM]: "",
     });
   };
 
@@ -161,29 +177,43 @@ export function ApplicationsPanel() {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <ApplicationFilters
-        onPeriodChangeAction={handlePeriodChange}
-        onSearchSubmitAction={handleSearchSubmit}
-        onSortChangeAction={handleSortChange}
+    <div className="flex flex-col gap-6">
+      <ApplicationsPageHeader
+        applications={applications}
+        dateLabel={dateLabel}
+        hasNextPage={hasNextPage ?? false}
         period={period}
-        resultCount={applications.length}
         search={search}
         sort={sort}
-      />
-      <ApplicationTabs
-        applications={applications}
-        className="min-h-0 flex-1"
-        isFetchingNextPage={isFetchingNextPage}
-        onNearEndAction={handleNearEnd}
-        onRangeChangeAction={(startIndex: number) =>
-          setIsListScrolled(startIndex > 0)
-        }
-        onSelectApplicationAction={handleSelectApplication}
-        onTabChangeAction={handleTabChange}
-        ref={tabsRef}
         tab={tab}
       />
+
+      <section className="flex flex-col overflow-hidden rounded-3xl border border-border/70 bg-background">
+        <ApplicationFilters
+          onPeriodChangeAction={handlePeriodChange}
+          onResetFiltersAction={handleResetFilters}
+          onSearchSubmitAction={handleSearchSubmit}
+          onSortChangeAction={handleSortChange}
+          period={period}
+          resultCount={applications.length}
+          search={search}
+          sort={sort}
+        />
+        <ApplicationTabs
+          applications={applications}
+          className="h-[32rem] min-h-0 sm:h-[36rem] lg:h-[40rem]"
+          isFetchingNextPage={isFetchingNextPage}
+          onNearEndAction={handleNearEnd}
+          onRangeChangeAction={(startIndex: number) =>
+            setIsListScrolled(startIndex > 0)
+          }
+          onSelectApplicationAction={handleSelectApplication}
+          onTabChangeAction={handleTabChange}
+          ref={tabsRef}
+          tab={tab}
+        />
+      </section>
+
       <ApplicationPreviewSheet
         application={selectedApplication}
         isOpen={isPreviewOpen}
@@ -191,6 +221,7 @@ export function ApplicationsPanel() {
         onStatusChangeAction={handleStatusChange}
       />
       <GoToTopFAB
+        className="md:bottom-24"
         isVisible={isListScrolled}
         onScrollToTop={() => tabsRef.current?.scrollToTop()}
       />

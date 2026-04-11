@@ -43,7 +43,7 @@ export function ApplicationList({
   };
 
   const emptyState = (
-    <div className="flex flex-col items-center gap-3 py-16 text-muted-foreground">
+    <div className="flex flex-col items-center gap-3 py-20 text-muted-foreground">
       <InboxIcon className="size-8 stroke-[1.5]" />
       <p className="text-sm">{emptyMessage}</p>
     </div>
@@ -53,7 +53,7 @@ export function ApplicationList({
     <div className="flex h-full flex-col">
       <VirtualList
         aria-label="지원서 목록"
-        className="flex-1"
+        className="flex-1 pt-2"
         emptyState={emptyState}
         estimatedItemHeight={ESTIMATED_ROW_HEIGHT}
         items={applications}
@@ -67,13 +67,13 @@ export function ApplicationList({
           />
         )}
       />
-      {!isFetchingNextPage && <div className="h-12 shrink-0" />}
+      {!isFetchingNextPage && <div className="h-10 shrink-0" />}
 
       {isFetchingNextPage && (
         <div
           aria-label="추가 항목을 불러오는 중입니다"
           aria-live="polite"
-          className="pb-12"
+          className="pb-10"
           role="status"
         >
           {Array.from({ length: 3 }).map((_, i) => (
@@ -87,20 +87,23 @@ export function ApplicationList({
 
 function ApplicationRowSkeleton() {
   return (
-    <div className="flex w-full items-start justify-between gap-4 border-b border-border py-4">
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-1">
+    <div className="border-b border-border/70 py-4">
+      <div className="flex w-full items-start justify-between gap-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-4.5 w-24" />
+            <Skeleton className="h-4 w-40" />
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Skeleton className="h-6 w-16 rounded-full" />
+            <Skeleton className="h-4 w-14" />
+            <Skeleton className="h-4 w-12" />
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-2">
           <Skeleton className="h-4.5 w-24" />
-          <Skeleton className="h-4 w-40" />
+          <Skeleton className="size-4" />
         </div>
-        <div className="flex items-center gap-1.5">
-          <Skeleton className="h-4 w-10" />
-          <Skeleton className="h-4 w-16" />
-        </div>
-      </div>
-      <div className="flex shrink-0 items-center gap-2">
-        <Skeleton className="h-4 w-12" />
-        <Skeleton className="size-4" />
       </div>
     </div>
   );

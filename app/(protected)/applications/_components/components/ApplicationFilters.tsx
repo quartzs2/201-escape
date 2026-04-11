@@ -3,6 +3,7 @@
 import { ChevronDownIcon, SearchIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 import type { PeriodPreset, SortValue } from "../constants";
@@ -16,6 +17,7 @@ import {
 
 type ApplicationFiltersProps = {
   onPeriodChangeAction: (period: PeriodPreset) => void;
+  onResetFiltersAction: () => void;
   onSearchSubmitAction: (search: string) => void;
   onSortChangeAction: (sort: SortValue) => void;
   period: PeriodPreset;
@@ -26,6 +28,7 @@ type ApplicationFiltersProps = {
 
 export function ApplicationFilters({
   onPeriodChangeAction,
+  onResetFiltersAction,
   onSearchSubmitAction,
   onSortChangeAction,
   period,
@@ -40,7 +43,8 @@ export function ApplicationFilters({
     setInputValue(search);
   }, [search]);
 
-  const isFiltered = search !== "" || period !== "all";
+  const isFiltered =
+    search !== "" || period !== "all" || sort !== "applied_at_desc";
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,81 +65,106 @@ export function ApplicationFilters({
   }
 
   return (
-    <div className="flex flex-col gap-3 px-5 pt-4 pb-2">
-      {/* 1행: 검색 */}
-      <form onSubmit={handleSubmit} role="search">
-        <div className="relative">
-          <SearchIcon
-            aria-hidden="true"
-            className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-          />
-          <input
-            aria-label="회사명 검색"
-            className="w-full rounded-xl border border-border bg-muted/50 py-2 pr-9 pl-9 text-sm placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/10 focus:outline-none"
-            onChange={handleChange}
-            placeholder="회사명 검색"
-            type="text"
-            value={inputValue}
-          />
-          {inputValue !== "" && (
-            <button
-              aria-label="검색어 지우기"
-              className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              onClick={handleClear}
-              type="button"
+    <section className="bg-background/95 px-5 py-5 backdrop-blur-sm sm:px-6">
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-end">
+          {isFiltered && (
+            <Button
+              className="self-start rounded-full px-4"
+              onClick={onResetFiltersAction}
+              size="sm"
+              variant="outline"
             >
-              <XIcon aria-hidden="true" className="size-4" />
-            </button>
+              필터 초기화
+            </Button>
           )}
         </div>
-      </form>
 
-      {/* 2행: 기간 필터 + 정렬 */}
-      <div className="flex items-center justify-between gap-2">
-        <div aria-label="기간 필터" className="flex gap-2" role="group">
-          {PERIOD_PRESETS.map((preset) => (
-            <button
-              aria-pressed={period === preset}
-              className={cn(
-                "rounded-full px-3 py-1 text-xs font-semibold transition-colors",
-                period === preset
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground",
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <form onSubmit={handleSubmit} role="search">
+            <div className="relative">
+              <SearchIcon
+                aria-hidden="true"
+                className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                aria-label="회사명 검색"
+                className="w-full rounded-2xl border border-border bg-muted/40 py-3 pr-11 pl-11 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/10 focus:outline-none"
+                id="applications-company-search"
+                onChange={handleChange}
+                placeholder="회사명으로 현재 목록 좁히기"
+                type="text"
+                value={inputValue}
+              />
+              {inputValue !== "" && (
+                <button
+                  aria-label="검색어 지우기"
+                  className="absolute top-1/2 right-4 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                  onClick={handleClear}
+                  type="button"
+                >
+                  <XIcon aria-hidden="true" className="size-4" />
+                </button>
               )}
-              key={preset}
-              onClick={() => onPeriodChangeAction(preset)}
-              type="button"
-            >
-              {PERIOD_PRESET_LABELS[preset]}
-            </button>
-          ))}
+            </div>
+          </form>
+
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-end">
+            <div>
+              <div
+                aria-label="기간 필터"
+                className="flex flex-wrap gap-2"
+                role="group"
+              >
+                {PERIOD_PRESETS.map((preset) => (
+                  <button
+                    aria-pressed={period === preset}
+                    className={cn(
+                      "rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors",
+                      period === preset
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-foreground",
+                    )}
+                    key={preset}
+                    onClick={() => onPeriodChangeAction(preset)}
+                    type="button"
+                  >
+                    {PERIOD_PRESET_LABELS[preset]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="relative inline-flex shrink-0">
+                <select
+                  aria-label="정렬"
+                  className="appearance-none rounded-full border border-border bg-background py-2 pr-8 pl-3.5 text-sm font-semibold text-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/10 focus:outline-none sm:min-w-28 sm:pr-10 sm:pl-4"
+                  id="applications-sort"
+                  onChange={(e) =>
+                    onSortChangeAction(e.target.value as SortValue)
+                  }
+                  value={sort}
+                >
+                  {SORT_VALUES.map((value) => (
+                    <option key={value} value={value}>
+                      {SORT_LABELS[value]}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDownIcon
+                  aria-hidden="true"
+                  className="pointer-events-none absolute top-1/2 right-3 size-3.5 -translate-y-1/2 text-muted-foreground sm:right-4"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="relative shrink-0">
-          <select
-            aria-label="정렬"
-            className="appearance-none bg-transparent py-1 pr-6 pl-0 text-sm font-semibold text-muted-foreground focus:outline-none"
-            onChange={(e) => onSortChangeAction(e.target.value as SortValue)}
-            value={sort}
-          >
-            {SORT_VALUES.map((value) => (
-              <option key={value} value={value}>
-                {SORT_LABELS[value]}
-              </option>
-            ))}
-          </select>
-          <ChevronDownIcon
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
-          />
-        </div>
-      </div>
-
-      {isFiltered && (
         <p aria-atomic="true" aria-live="polite" className="sr-only">
           {resultCount}개의 지원 내역이 있습니다
         </p>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }
