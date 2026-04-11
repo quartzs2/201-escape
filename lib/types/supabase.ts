@@ -37,16 +37,37 @@ export type Database = {
         | "SAVED";
     };
     Functions: {
-      [_ in never]: never;
+      save_application: {
+        Args: {
+          p_applied_at?: null | string;
+          p_company_name: string;
+          p_description?: null | string;
+          p_notes?: null | string;
+          p_origin_url: string;
+          p_platform: Database["public"]["Enums"]["job_platform"];
+          p_position_title: string;
+          p_raw_data?: Json | null;
+          p_status?: Database["public"]["Enums"]["job_status"] | null;
+        };
+        Returns: {
+          applicationId: string;
+        }[];
+      };
     };
     Tables: {
       applications: {
         Insert: {
           applied_at?: string;
+          company_name: string;
           created_at?: string;
+          description?: null | string;
           id?: string;
           job_id: string;
           notes?: null | string;
+          origin_url: string;
+          platform: Database["public"]["Enums"]["job_platform"];
+          position_title: string;
+          raw_data?: Json | null;
           status?: Database["public"]["Enums"]["job_status"];
           updated_at?: string;
           user_id: string;
@@ -62,20 +83,32 @@ export type Database = {
         ];
         Row: {
           applied_at: string;
+          company_name: string;
           created_at: string;
+          description: null | string;
           id: string;
           job_id: string;
           notes: null | string;
+          origin_url: string;
+          platform: Database["public"]["Enums"]["job_platform"];
+          position_title: string;
+          raw_data: Json | null;
           status: Database["public"]["Enums"]["job_status"];
           updated_at: string;
           user_id: string;
         };
         Update: {
           applied_at?: string;
+          company_name?: string;
           created_at?: string;
+          description?: null | string;
           id?: string;
           job_id?: string;
           notes?: null | string;
+          origin_url?: string;
+          platform?: Database["public"]["Enums"]["job_platform"];
+          position_title?: string;
+          raw_data?: Json | null;
           status?: Database["public"]["Enums"]["job_status"];
           updated_at?: string;
           user_id?: string;
