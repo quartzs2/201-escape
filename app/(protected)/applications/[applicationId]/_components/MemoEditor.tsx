@@ -15,6 +15,8 @@ import { Button } from "@/components/ui";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
+import { DetailSectionHeader } from "./DetailSectionHeader";
+
 type MemoEditorProps = {
   applicationId: string;
   notes: null | string;
@@ -113,33 +115,28 @@ export function MemoEditor({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-foreground">
-          <span className="text-muted-foreground">
-            <NotebookPenIcon aria-hidden="true" className="size-5" />
-          </span>
-          <h2
-            className="text-sm font-bold tracking-tight uppercase"
-            id={`memo-label-${applicationId}`}
-          >
-            개인 메모
-          </h2>
-        </div>
-        {!isEditing && (
-          <Tooltip label="편집" side="bottom">
-            <Button
-              aria-label="편집"
-              className="size-8 rounded-full"
-              disabled={mutation.isPending}
-              onClick={handleEditStart}
-              ref={editButtonRef}
-              variant="ghost"
-            >
-              <PencilIcon aria-hidden="true" className="size-4" />
-            </Button>
-          </Tooltip>
-        )}
-      </div>
+      <DetailSectionHeader
+        action={
+          !isEditing ? (
+            <Tooltip label="편집" side="bottom">
+              <Button
+                aria-label="편집"
+                className="size-9 rounded-full"
+                disabled={mutation.isPending}
+                onClick={handleEditStart}
+                ref={editButtonRef}
+                variant="ghost"
+              >
+                <PencilIcon aria-hidden="true" className="size-4" />
+              </Button>
+            </Tooltip>
+          ) : null
+        }
+        description="다음 액션, 인상, 비교 포인트를 남겨 두는 작업 공간입니다."
+        headingId={`memo-label-${applicationId}`}
+        icon={<NotebookPenIcon aria-hidden="true" className="size-5" />}
+        title="개인 메모"
+      />
 
       <div aria-atomic="true" aria-live="polite" className="min-h-0">
         {isEditing && errorMessage && (
@@ -153,7 +150,7 @@ export function MemoEditor({
         <div className="space-y-3">
           <textarea
             aria-labelledby={`memo-label-${applicationId}`}
-            className="min-h-30 w-full resize-none rounded-xl border border-input bg-muted/50 px-4 py-3 text-sm leading-relaxed text-foreground transition-colors placeholder:text-muted-foreground focus:bg-background focus:ring-2 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-40 w-full resize-none rounded-2xl border border-input bg-background px-4 py-3 text-sm leading-relaxed text-foreground transition-colors placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             disabled={mutation.isPending}
             onChange={(e) => setDraftText(e.target.value)}
             placeholder="메모를 입력하세요"
@@ -179,12 +176,10 @@ export function MemoEditor({
           </div>
         </div>
       ) : (
-        <div className="rounded-xl bg-muted/30 p-4">
+        <div className="min-h-40 rounded-2xl border border-border/60 bg-muted/10 px-4 py-4 sm:px-5">
           <p className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-wrap text-foreground/90">
             {currentNotes ?? (
-              <span className="text-muted-foreground/60 italic">
-                메모가 없습니다
-              </span>
+              <span className="text-muted-foreground">메모가 없습니다</span>
             )}
           </p>
         </div>

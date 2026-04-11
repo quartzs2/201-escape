@@ -9,6 +9,7 @@ import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
 import { formatScheduledAt } from "@/lib/utils";
 
 import { DeleteInterviewButton } from "./DeleteInterviewButton";
+import { DetailSectionHeader } from "./DetailSectionHeader";
 import { InterviewFormSheet } from "./InterviewFormSheet";
 
 type InterviewListProps = {
@@ -31,24 +32,19 @@ export async function InterviewSection({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-foreground">
-          <span className="text-muted-foreground">
-            <CalendarIcon aria-hidden="true" className="size-5" />
-          </span>
-          <h2 className="text-sm font-bold tracking-tight uppercase">
-            면접 일정
-          </h2>
-        </div>
-        <div className="ml-auto">
+      <DetailSectionHeader
+        action={
           <InterviewFormSheet
             applicationId={applicationId}
             defaultRound={result.data.length + 1}
             mode="add"
             upsertAction={upsertInterview}
           />
-        </div>
-      </div>
+        }
+        description="다음 면접 일정을 추가하고 기존 일정을 수정합니다."
+        icon={<CalendarIcon aria-hidden="true" className="size-5" />}
+        title="면접 일정"
+      />
 
       <InterviewList applicationId={applicationId} interviews={result.data} />
     </div>
@@ -58,8 +54,8 @@ export async function InterviewSection({
 function InterviewList({ applicationId, interviews }: InterviewListProps) {
   if (interviews.length === 0) {
     return (
-      <div className="rounded-xl bg-muted/30 p-4">
-        <p className="text-[15px] text-muted-foreground/60 italic">
+      <div className="rounded-2xl border border-dashed border-border/80 bg-muted/10 p-5">
+        <p className="text-[15px] leading-relaxed text-muted-foreground">
           등록된 면접 일정이 없습니다.
         </p>
       </div>
@@ -67,18 +63,32 @@ function InterviewList({ applicationId, interviews }: InterviewListProps) {
   }
 
   return (
-    <ul className="grid gap-3">
+    <ul className="divide-y divide-border/60 overflow-hidden rounded-2xl border border-border/60 bg-muted/10">
       {interviews.map((interview) => (
         <li
-          className="flex flex-col gap-1.5 rounded-xl border border-border bg-muted/20 px-4 py-3 transition-colors hover:bg-muted/30"
+          className="flex flex-col gap-3 px-4 py-4 sm:px-5"
           key={interview.id}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1 text-sm font-bold text-foreground">
-                <span>{interview.round}차 —</span>
-                <span>{INTERVIEW_TYPE_LABEL[interview.interviewType]}</span>
-              </span>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                  {interview.round}차
+                </span>
+                <span className="text-sm font-semibold text-foreground">
+                  {INTERVIEW_TYPE_LABEL[interview.interviewType]}
+                </span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">
+                  {formatScheduledAt(interview.scheduledAt)}
+                </p>
+                {interview.location !== null ? (
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {interview.location}
+                  </p>
+                ) : null}
+              </div>
             </div>
             <div className="flex items-center gap-0.5">
               <InterviewFormSheet
@@ -94,16 +104,6 @@ function InterviewList({ applicationId, interviews }: InterviewListProps) {
                 round={interview.round}
               />
             </div>
-          </div>
-          <div className="space-y-0.5">
-            <p className="text-sm font-medium text-muted-foreground">
-              {formatScheduledAt(interview.scheduledAt)}
-            </p>
-            {interview.location !== null && (
-              <p className="text-xs text-muted-foreground/80">
-                {interview.location}
-              </p>
-            )}
           </div>
         </li>
       ))}

@@ -53,7 +53,7 @@ export function DeleteApplicationButton({
     },
     onSuccess: () => {
       posthog.capture(POSTHOG_EVENTS.APPLICATION_DELETED);
-      router.push("/dashboard");
+      router.replace("/applications");
     },
   });
 

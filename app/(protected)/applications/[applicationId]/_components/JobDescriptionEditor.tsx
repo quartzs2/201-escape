@@ -15,6 +15,8 @@ import { Button } from "@/components/ui";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
+import { DetailSectionHeader } from "./DetailSectionHeader";
+
 type JobDescriptionEditorProps = {
   applicationId: string;
   description: null | string;
@@ -116,33 +118,28 @@ export function JobDescriptionEditor({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-foreground">
-          <span className="text-muted-foreground">
-            <FileTextIcon aria-hidden="true" className="size-5" />
-          </span>
-          <h2
-            className="text-sm font-bold tracking-tight uppercase"
-            id={`job-description-label-${applicationId}`}
-          >
-            공고 설명
-          </h2>
-        </div>
-        {!isEditing && (
-          <Tooltip label="편집" side="bottom">
-            <Button
-              aria-label="편집"
-              className="size-8 rounded-full"
-              disabled={mutation.isPending}
-              onClick={handleEditStart}
-              ref={editButtonRef}
-              variant="ghost"
-            >
-              <PencilIcon aria-hidden="true" className="size-4" />
-            </Button>
-          </Tooltip>
-        )}
-      </div>
+      <DetailSectionHeader
+        action={
+          !isEditing ? (
+            <Tooltip label="편집" side="bottom">
+              <Button
+                aria-label="편집"
+                className="size-9 rounded-full"
+                disabled={mutation.isPending}
+                onClick={handleEditStart}
+                ref={editButtonRef}
+                variant="ghost"
+              >
+                <PencilIcon aria-hidden="true" className="size-4" />
+              </Button>
+            </Tooltip>
+          ) : null
+        }
+        description="원문 공고 내용을 저장해 두고 이후에도 같은 기준으로 비교합니다."
+        headingId={`job-description-label-${applicationId}`}
+        icon={<FileTextIcon aria-hidden="true" className="size-5" />}
+        title="공고 설명"
+      />
 
       <div aria-atomic="true" aria-live="polite" className="min-h-0">
         {isEditing && errorMessage && (
@@ -156,7 +153,7 @@ export function JobDescriptionEditor({
         <div className="space-y-3">
           <textarea
             aria-labelledby={`job-description-label-${applicationId}`}
-            className="min-h-50 w-full resize-none rounded-xl border border-input bg-muted/50 px-4 py-3 text-sm leading-relaxed text-foreground transition-colors placeholder:text-muted-foreground focus:bg-background focus:ring-2 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-56 w-full resize-none rounded-2xl border border-input bg-background px-4 py-3 text-sm leading-relaxed text-foreground transition-colors placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             disabled={mutation.isPending}
             onChange={(e) => setDraftText(e.target.value)}
             placeholder="공고 설명을 입력하세요"
@@ -182,10 +179,10 @@ export function JobDescriptionEditor({
           </div>
         </div>
       ) : (
-        <div className="rounded-xl bg-muted/30 p-4">
+        <div className="min-h-56 rounded-2xl border border-border/60 bg-muted/10 px-4 py-4 sm:px-5">
           <p className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-wrap text-foreground/90">
             {currentDescription ?? (
-              <span className="text-muted-foreground/60 italic">
+              <span className="text-muted-foreground">
                 공고 설명이 없습니다
               </span>
             )}

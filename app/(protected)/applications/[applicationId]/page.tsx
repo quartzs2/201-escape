@@ -1,23 +1,15 @@
-import {
-  ExternalLinkIcon,
-  FileTextIcon,
-  ListChecksIcon,
-  LockKeyholeIcon,
-} from "lucide-react";
+import { FileTextIcon, LockKeyholeIcon } from "lucide-react";
 import { Suspense } from "react";
 
-import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
 import { Skeleton } from "@/components/ui";
-import { Button } from "@/components/ui/button/Button";
 import { deleteApplication, getApplicationDetail } from "@/lib/actions";
 import { updateApplicationNotes } from "@/lib/actions/updateApplicationNotes";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 import { updateJobDescription } from "@/lib/actions/updateJobDescription";
-import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
-import { formatAppliedAt } from "@/lib/utils";
 
+import { ApplicationDetailHero } from "./_components/ApplicationDetailHero";
 import { BackLink } from "./_components/BackLink";
-import { DeleteApplicationButton } from "./_components/DeleteApplicationButton";
+import { DetailSectionPanel } from "./_components/DetailSectionPanel";
 import { ErrorState } from "./_components/ErrorState";
 import { InterviewSection } from "./_components/InterviewSection";
 import { JobDescriptionEditor } from "./_components/JobDescriptionEditor";
@@ -85,107 +77,52 @@ export default async function ApplicationDetailPage({
   }
 
   const detail = result.data;
-  const hasOriginUrl =
-    detail.originUrl !== null &&
-    detail.originUrl.trim() !== "" &&
-    !detail.originUrl.startsWith("manual:");
 
   return (
-    <main className="min-h-screen bg-muted/30 pb-20">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <BackLink />
-          <DeleteApplicationButton
-            applicationId={detail.id}
-            companyName={detail.companyName}
-            deleteAction={deleteApplication}
-            positionTitle={detail.positionTitle}
-          />
-        </div>
+    <main className="min-h-screen bg-[linear-gradient(180deg,rgba(245,245,245,0.9)_0%,rgba(255,255,255,0.82)_18%,rgba(255,255,255,1)_40%)] pb-20">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <ApplicationDetailHero
+          deleteAction={deleteApplication}
+          detail={detail}
+          updateStatusAction={updateApplicationStatus}
+        />
 
-        <section className="space-y-6">
-          <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-x-2 text-xs font-medium text-muted-foreground">
-              {detail.platform !== "MANUAL" && (
-                <>
-                  <span className="tracking-wider uppercase">
-                    {PLATFORM_LABEL[detail.platform]}
-                  </span>
-                  <span aria-hidden="true" className="opacity-40">
-                    /
-                  </span>
-                </>
-              )}
-              <span className="flex gap-1">
-                <span>{detail.status === "SAVED" ? "저장일" : "지원일"}</span>
-                <span>{formatAppliedAt(detail.appliedAt)}</span>
-              </span>
-            </div>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.82fr)]">
+          <div className="order-2 grid gap-6 lg:order-1">
+            <DetailSectionPanel
+              className="motion-safe:animate-fade-up"
+              style={{ animationDelay: "160ms" }}
+            >
+              <JobDescriptionEditor
+                applicationId={detail.id}
+                description={detail.description}
+                updateDescriptionAction={updateJobDescription}
+              />
+            </DetailSectionPanel>
 
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-1.5">
-                <p className="text-lg font-medium text-muted-foreground">
-                  {detail.companyName}
-                </p>
-                <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-                  {detail.positionTitle}
-                </h1>
-              </div>
-              {hasOriginUrl && (
-                <Button
-                  asChild
-                  className="size-10 shrink-0 rounded-full border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-                  variant="ghost"
-                >
-                  <a
-                    aria-label="원문 공고 보러가기"
-                    href={detail.originUrl!}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                  >
-                    <ExternalLinkIcon aria-hidden="true" className="size-5" />
-                  </a>
-                </Button>
-              )}
-            </div>
+            <DetailSectionPanel
+              className="motion-safe:animate-fade-up"
+              style={{ animationDelay: "220ms" }}
+            >
+              <MemoEditor
+                applicationId={detail.id}
+                notes={detail.notes}
+                updateNotesAction={updateApplicationNotes}
+              />
+            </DetailSectionPanel>
           </div>
 
-          <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
-            <ApplicationStatusSelector
-              applicationId={detail.id}
-              ariaLabel="지원 상태 변경"
-              icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
-              key={detail.id}
-              label="지원 상태"
-              status={detail.status}
-              updateStatusAction={updateApplicationStatus}
-            />
-          </div>
-        </section>
-
-        <div className="grid gap-6">
-          <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
-            <SectionErrorBoundary>
-              <Suspense fallback={<InterviewSectionSkeleton />}>
-                <InterviewSection applicationId={detail.id} />
-              </Suspense>
-            </SectionErrorBoundary>
-          </div>
-
-          <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
-            <JobDescriptionEditor
-              applicationId={detail.id}
-              description={detail.description}
-              updateDescriptionAction={updateJobDescription}
-            />
-          </div>
-
-          <div className="rounded-2xl border border-border/50 bg-background p-5 shadow-sm">
-            <MemoEditor
-              applicationId={detail.id}
-              notes={detail.notes}
-              updateNotesAction={updateApplicationNotes}
-            />
+          <div className="order-1 grid gap-6 lg:sticky lg:top-6 lg:order-2 lg:self-start">
+            <DetailSectionPanel
+              className="motion-safe:animate-fade-up"
+              style={{ animationDelay: "200ms" }}
+            >
+              <SectionErrorBoundary>
+                <Suspense fallback={<InterviewSectionSkeleton />}>
+                  <InterviewSection applicationId={detail.id} />
+                </Suspense>
+              </SectionErrorBoundary>
+            </DetailSectionPanel>
           </div>
         </div>
       </div>
