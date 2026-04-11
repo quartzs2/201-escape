@@ -152,9 +152,12 @@ export type MonthlyCount = {
 };
 
 export type StatCounts = {
+  applied: number;
   docs: number;
+  docsPassed: number;
   interviewing: number;
   offered: number;
+  saved: number;
   total: number;
 };
 
