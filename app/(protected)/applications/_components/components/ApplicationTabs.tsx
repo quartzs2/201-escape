@@ -81,7 +81,7 @@ export function ApplicationTabs({
       }}
       value={tab}
     >
-      <div className="border-b border-border px-5">
+      <div className="border-b border-border/70 bg-background px-5 sm:px-6">
         <Tabs.List className="flex h-auto items-end gap-5 rounded-none bg-transparent p-0">
           <Tabs.Trigger className={TAB_TRIGGER_CLASS} value="all">
             전체
@@ -98,7 +98,7 @@ export function ApplicationTabs({
         </Tabs.List>
       </div>
 
-      <Tabs.Content className="mt-0 min-h-0 flex-1 px-4" value="all">
+      <Tabs.Content className="mt-0 min-h-0 flex-1 px-4 sm:px-5" value="all">
         <ApplicationList
           applications={applications}
           emptyMessage="아직 지원한 곳이 없습니다"
@@ -109,7 +109,7 @@ export function ApplicationTabs({
           ref={listRef}
         />
       </Tabs.Content>
-      <Tabs.Content className="mt-0 min-h-0 flex-1 px-4" value="active">
+      <Tabs.Content className="mt-0 min-h-0 flex-1 px-4 sm:px-5" value="active">
         <ApplicationList
           applications={inProgressApplications}
           emptyMessage="진행 중인 지원이 없습니다"
@@ -120,7 +120,7 @@ export function ApplicationTabs({
           ref={listRef}
         />
       </Tabs.Content>
-      <Tabs.Content className="mt-0 min-h-0 flex-1 px-4" value="done">
+      <Tabs.Content className="mt-0 min-h-0 flex-1 px-4 sm:px-5" value="done">
         <ApplicationList
           applications={doneApplications}
           emptyMessage="완료된 지원이 없습니다"

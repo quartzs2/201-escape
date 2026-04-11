@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useEffectEvent, useState } from "react";
 
 import { GoToTopFAB } from "./GoToTopFAB";
@@ -7,6 +8,7 @@ import { GoToTopFAB } from "./GoToTopFAB";
 const VISIBILITY_SCROLL_Y = 280;
 
 export function WindowScrollTopFAB() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
 
   const updateVisibility = useEffectEvent(() => {
@@ -14,6 +16,10 @@ export function WindowScrollTopFAB() {
   });
 
   useEffect(() => {
+    if (pathname === "/applications") {
+      return;
+    }
+
     updateVisibility();
 
     const handleScroll = () => {
@@ -25,7 +31,11 @@ export function WindowScrollTopFAB() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [pathname]);
+
+  if (pathname === "/applications") {
+    return null;
+  }
 
   return (
     <GoToTopFAB

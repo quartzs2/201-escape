@@ -24,13 +24,13 @@ export function ApplicationRow({
   const { badgeClassName, label } = STATUS_META[application.status];
 
   return (
-    <div className="px-1 py-1.5">
+    <div className="border-b border-border/70">
       <button
         aria-label={`${application.companyName} ${application.positionTitle} 지원 미리보기 열기`}
         className={cn(
-          "flex w-full items-center justify-between gap-4 rounded-2xl border border-transparent bg-background p-4 text-left shadow-sm transition-all",
-          "cursor-pointer hover:border-primary/20 hover:bg-primary/2 hover:shadow-md",
-          "focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:outline-none",
+          "group flex w-full items-start justify-between gap-4 px-1 py-4 text-left transition-colors",
+          "cursor-pointer hover:bg-muted/30",
+          "focus-visible:rounded-2xl focus-visible:bg-muted/30 focus-visible:ring-2 focus-visible:ring-primary/15 focus-visible:outline-none",
         )}
         onClick={() => {
           posthog.capture(POSTHOG_EVENTS.APPLICATION_PREVIEW_OPENED);
@@ -39,18 +39,18 @@ export function ApplicationRow({
         type="button"
       >
         <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-          <div className="flex flex-col space-y-0.5">
+          <div className="flex flex-col gap-1">
             <span className="text-[15px] font-bold tracking-tight text-foreground">
               {application.companyName}
             </span>
-            <span className="truncate text-sm font-medium text-muted-foreground">
+            <span className="truncate text-sm leading-6 font-medium text-muted-foreground">
               {application.positionTitle}
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span
               className={cn(
-                "rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase",
+                "rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase",
                 badgeClassName,
               )}
             >
@@ -61,13 +61,17 @@ export function ApplicationRow({
                 {PLATFORM_LABEL[application.platform]}
               </span>
             )}
+            <span className="text-xs text-muted-foreground/80">
+              <TimeAgo dateString={application.appliedAt} />
+            </span>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2 text-muted-foreground/60">
-          <span className="text-xs font-medium">
-            <TimeAgo dateString={application.appliedAt} />
-          </span>
-          <ChevronRightIcon aria-hidden="true" className="size-4" />
+        <div className="flex shrink-0 items-center gap-2 pt-1 text-muted-foreground">
+          <span className="hidden text-xs font-medium sm:block">미리보기</span>
+          <ChevronRightIcon
+            aria-hidden="true"
+            className="size-4 transition-transform group-hover:translate-x-0.5"
+          />
         </div>
       </button>
     </div>
