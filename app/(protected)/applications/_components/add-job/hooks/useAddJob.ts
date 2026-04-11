@@ -2,10 +2,18 @@ import { useRouter } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
+import { useIsMounted } from "@/hooks";
 import { extractJobData } from "@/lib/actions/extractJobData";
 import { saveJobApplication } from "@/lib/actions/saveJobApplication";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { JobId, type JobPost, MANUAL_JOB_DEFAULTS } from "@/lib/types/job";
+
+import {
+  COMMON_POSITION_TITLE_SUGGESTIONS,
+  getDefaultPositionTitle,
+  LAST_POSITION_TITLE_STORAGE_KEY,
+  normalizePositionTitle,
+} from "../_utils/positionTitle";
 
 export type AddJobState =
   | ExtractingState
@@ -42,13 +50,20 @@ type UseAddJobProps = {
 };
 
 export function useAddJob({ onSuccess }: UseAddJobProps) {
+  const isMounted = useIsMounted();
   const router = useRouter();
   const posthog = usePostHog();
+  const [lastSubmittedPositionTitle, setLastSubmittedPositionTitle] = useState<
+    null | string
+  >(null);
   const [state, setState] = useState<AddJobState>({
     error: null,
     step: "idle",
     url: "",
   });
+  const defaultManualPositionTitle = getDefaultPositionTitle(
+    lastSubmittedPositionTitle ?? readStoredPositionTitle(isMounted),
+  );
 
   function setUrl(url: string) {
     if (state.step === "idle" && state.url !== url) {
@@ -65,12 +80,25 @@ export function useAddJob({ onSuccess }: UseAddJobProps) {
       return;
     }
 
+    const normalizedTitle =
+      normalizePositionTitle(fields.title) || MANUAL_JOB_DEFAULTS.title;
+
+    try {
+      window.localStorage.setItem(
+        LAST_POSITION_TITLE_STORAGE_KEY,
+        normalizedTitle,
+      );
+      setLastSubmittedPositionTitle(normalizedTitle);
+    } catch {
+      setLastSubmittedPositionTitle(normalizedTitle);
+    }
+
     const jobData: JobPost = {
       companyName: fields.companyName.trim() || MANUAL_JOB_DEFAULTS.companyName,
       id: crypto.randomUUID() as JobId,
       platform: MANUAL_JOB_DEFAULTS.platform,
       status: MANUAL_JOB_DEFAULTS.status,
-      title: fields.title.trim() || MANUAL_JOB_DEFAULTS.title,
+      title: normalizedTitle,
       // URL 미입력 시 DB의 NOT NULL + 사용자 범위 UNIQUE 제약을 충족하기 위해
       // 고유 식별자를 생성합니다. Zod v4의 z.url()은 manual: 스킴을 허용합니다.
       url: fields.url.trim() || `manual:${crypto.randomUUID()}`,
@@ -135,12 +163,26 @@ export function useAddJob({ onSuccess }: UseAddJobProps) {
   }
 
   return {
+    defaultManualPositionTitle,
     handleExtract,
     handleManualSubmit,
     handleReset,
     handleSave,
+    positionTitleSuggestions: COMMON_POSITION_TITLE_SUGGESTIONS,
     reset,
     setUrl,
     state,
   };
+}
+
+function readStoredPositionTitle(isMounted: boolean) {
+  if (!isMounted) {
+    return null;
+  }
+
+  try {
+    return window.localStorage.getItem(LAST_POSITION_TITLE_STORAGE_KEY);
+  } catch {
+    return null;
+  }
 }

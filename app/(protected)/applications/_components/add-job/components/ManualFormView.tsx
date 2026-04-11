@@ -1,22 +1,36 @@
-import { useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
-type ManualFormViewProps = {
-  error: null | string;
-  onSubmit: (fields: {
-    companyName: string;
-    title: string;
-    url: string;
-  }) => void;
+type ManualFormFields = {
+  companyName: string;
+  title: string;
+  url: string;
 };
 
-export function ManualFormView({ error, onSubmit }: ManualFormViewProps) {
+type ManualFormViewProps = {
+  defaultTitle: string;
+  error: null | string;
+  onSubmit: (fields: ManualFormFields) => void;
+  positionTitleSuggestions: readonly string[];
+};
+
+export function ManualFormView({
+  defaultTitle,
+  error,
+  onSubmit,
+  positionTitleSuggestions,
+}: ManualFormViewProps) {
+  const titleSuggestionsId = useId();
   const [companyName, setCompanyName] = useState("");
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(defaultTitle);
   const [url, setUrl] = useState("");
   const [fieldError, setFieldError] = useState<null | string>(null);
+
+  useEffect(() => {
+    setTitle(defaultTitle);
+  }, [defaultTitle]);
 
   function handleSubmit() {
     if (!companyName.trim() || !title.trim()) {
@@ -78,6 +92,7 @@ export function ManualFormView({ error, onSubmit }: ManualFormViewProps) {
               "focus:ring-1 focus:ring-ring focus:outline-none",
             )}
             id="manual-title"
+            list={titleSuggestionsId}
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -89,6 +104,14 @@ export function ManualFormView({ error, onSubmit }: ManualFormViewProps) {
             type="text"
             value={title}
           />
+          <datalist id={titleSuggestionsId}>
+            {positionTitleSuggestions.map((suggestion) => (
+              <option key={suggestion} value={suggestion} />
+            ))}
+          </datalist>
+          <p className="text-xs text-muted-foreground">
+            최근 입력값을 기본으로 채우고, 없으면 자주 쓰는 포지션을 제안합니다.
+          </p>
         </div>
         <div className="flex flex-col gap-1.5">
           <label

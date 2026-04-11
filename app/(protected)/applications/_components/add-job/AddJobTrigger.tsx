@@ -18,10 +18,12 @@ export function AddJobTrigger() {
   const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
   const {
+    defaultManualPositionTitle,
     handleExtract,
     handleManualSubmit,
     handleReset,
     handleSave,
+    positionTitleSuggestions,
     reset,
     setUrl,
     state,
@@ -70,8 +72,10 @@ export function AddJobTrigger() {
 
                 return (
                   <ManualFormView
+                    defaultTitle={defaultManualPositionTitle}
                     error={state.step === "idle" ? state.error : null}
                     onSubmit={handleManualSubmit}
+                    positionTitleSuggestions={positionTitleSuggestions}
                   />
                 );
               }
