@@ -23,7 +23,7 @@ export function FunnelChart({ data }: Props) {
       <BarChart
         data={data}
         layout="vertical"
-        margin={{ bottom: 0, left: 8, right: 24, top: 0 }}
+        margin={{ bottom: 0, left: 0, right: 12, top: 4 }}
       >
         <XAxis
           allowDecimals={false}
@@ -38,14 +38,15 @@ export function FunnelChart({ data }: Props) {
           tick={{ fill: "var(--color-foreground)", fontSize: 13 }}
           tickLine={false}
           type="category"
-          width={64}
+          width={72}
         />
         <Tooltip
           contentStyle={{
             backgroundColor: "var(--color-background)",
             border: "1px solid var(--color-border)",
-            borderRadius: "8px",
+            borderRadius: "16px",
             fontSize: 13,
+            padding: "10px 12px",
           }}
           cursor={{ fill: "var(--color-muted)" }}
           formatter={(value) => [`${value}건`] as const}
@@ -54,7 +55,7 @@ export function FunnelChart({ data }: Props) {
           dataKey="count"
           fill="var(--color-primary)"
           fillOpacity={0.9}
-          radius={4}
+          radius={999}
         />
       </BarChart>
     </ResponsiveContainer>

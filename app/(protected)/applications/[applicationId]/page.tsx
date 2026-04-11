@@ -67,7 +67,7 @@ export default async function ApplicationDetailPage({
 
     return (
       <main className="min-h-screen bg-muted/30">
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6">
+        <header className="sticky top-16 z-10 flex h-14 items-center gap-4 border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6">
           <BackLink />
           <h1 className="text-sm font-semibold tracking-tight">오류</h1>
         </header>

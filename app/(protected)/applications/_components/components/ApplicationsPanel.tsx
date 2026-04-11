@@ -13,6 +13,7 @@ import { useMemo, useRef, useState } from "react";
 import type { GetApplicationsPage } from "@/lib/types/application";
 import type { JobStatus } from "@/lib/types/job";
 
+import { GoToTopFAB } from "@/app/(protected)/_components/GoToTopFAB";
 import { getApplications } from "@/lib/actions";
 
 import type { PeriodPreset, SortValue, TabValue } from "../constants";
@@ -33,7 +34,6 @@ import {
   SORT_PARAM,
   TAB_PARAM,
 } from "../constants";
-import { GoToTopFAB } from "../go-to-top";
 import { ApplicationFilters } from "./ApplicationFilters";
 import { ApplicationPreviewSheet } from "./ApplicationPreviewSheet";
 import { ApplicationTabs } from "./ApplicationTabs";
