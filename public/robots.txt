@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /applications
+Disallow: /dashboard
+Disallow: /login
+Disallow: /auth

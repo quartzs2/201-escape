@@ -5,8 +5,16 @@ import Link from "next/link";
 import { PublicHeader } from "../_components/PublicHeader";
 
 export const metadata: Metadata = {
-  description: "201 escape 개인정보처리방침",
-  title: "개인정보처리방침 | 201 escape",
+  alternates: {
+    canonical: "/privacy",
+  },
+  description: "201 escape 개인정보처리방침 안내 페이지",
+  openGraph: {
+    description: "201 escape 개인정보처리방침 안내 페이지",
+    title: "개인정보처리방침",
+    url: "/privacy",
+  },
+  title: "개인정보처리방침",
 };
 
 export default function PrivacyPage() {
