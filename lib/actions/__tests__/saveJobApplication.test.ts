@@ -27,8 +27,6 @@ const VALID_INPUT: SaveJobApplicationInput = {
 
 const VALID_PAYLOAD = {
   applicationId: "550e8400-e29b-41d4-a716-446655440000",
-  jobId: "550e8400-e29b-41d4-a716-446655440001",
-  snapshotId: "550e8400-e29b-41d4-a716-446655440002",
 };
 
 beforeEach(() => {
@@ -227,7 +225,7 @@ describe("saveJobApplication", () => {
     it("RPC 호출 시 파싱된 입력값을 올바르게 전달한다", async () => {
       await saveJobApplication(VALID_INPUT);
 
-      expect(mockRpc).toHaveBeenCalledWith("save_job_application", {
+      expect(mockRpc).toHaveBeenCalledWith("save_application", {
         p_applied_at: null,
         p_company_name: "카카오",
         p_description: null,
@@ -238,17 +236,6 @@ describe("saveJobApplication", () => {
         p_raw_data: null,
         p_status: null,
       });
-    });
-
-    it("snapshotId가 null인 응답도 성공적으로 처리한다", async () => {
-      mockRpc.mockResolvedValue({
-        data: { ...VALID_PAYLOAD, snapshotId: null },
-        error: null,
-      });
-
-      const result = await saveJobApplication(VALID_INPUT);
-
-      expect(result).toMatchObject({ data: { snapshotId: null }, ok: true });
     });
   });
 });

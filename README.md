@@ -96,14 +96,12 @@ pnpm dev
 
 Supabase 프로젝트에 아래 테이블이 필요합니다. `supabase/migrations/` 폴더의 마이그레이션 파일로 적용할 수 있습니다.
 
-스키마를 왜 이렇게 나눴는지, 어떤 인덱스와 RLS 정책이 있는지, 마이그레이션이 어떤 순서로 진화했는지는 [`docs/database-schema.md`](/Users/hyeon/Documents/projects/201-escape/docs/database-schema.md)에서 설명합니다.
+최종 스키마 구조와 인덱스, RLS 정책은 [`docs/database-schema.md`](/Users/hyeon/Documents/projects/201-escape/docs/database-schema.md)에서 설명합니다.
 
-| 테이블          | 설명                                            |
-| --------------- | ----------------------------------------------- |
-| `jobs`          | 채용 공고 원본 정보 (회사명, 직책, URL, 플랫폼) |
-| `job_snapshots` | 공고 크롤링 원본 데이터 (JSON)                  |
-| `applications`  | 지원 기록 (상태, 지원일, 메모)                  |
-| `interviews`    | 면접 일정 (유형, 회차, 일시)                    |
+| 테이블         | 설명                                                                              |
+| -------------- | --------------------------------------------------------------------------------- |
+| `applications` | 사용자 소유 지원 기록. 공고 메타데이터, 상태, 메모, 원본 데이터(JSON)를 함께 저장 |
+| `interviews`   | 면접 일정. 특정 지원(`application`)에 종속된 회차/유형/일시 정보를 저장           |
 
 ### 지원 상태
 

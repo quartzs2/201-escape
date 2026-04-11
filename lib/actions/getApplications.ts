@@ -41,24 +41,13 @@ export async function getApplications({
 
   let query = supabase
     .from("applications")
-    .select(
-      `
-      id,
-      applied_at,
-      status,
-      jobs!inner (
-        company_name,
-        position_title,
-        platform
-      )
-    `,
-    )
+    .select("id, applied_at, company_name, platform, position_title, status")
     .eq("user_id", authData.user.id)
     .order("applied_at", { ascending: sort === "applied_at_asc" })
     .range(offset, offset + limit);
 
   if (search) {
-    query = query.ilike("jobs.company_name", `%${search}%`);
+    query = query.ilike("company_name", `%${search}%`);
   }
   if (periodStart) {
     query = query.gte("applied_at", periodStart);
@@ -81,18 +70,12 @@ export async function getApplications({
 
   const items: ApplicationListItem[] = data
     .map((row) => {
-      const job = Array.isArray(row.jobs) ? row.jobs[0] : row.jobs;
-
-      if (!job) {
-        return null;
-      }
-
       return {
         appliedAt: row.applied_at,
-        companyName: job.company_name,
+        companyName: row.company_name,
         id: row.id,
-        platform: job.platform,
-        positionTitle: job.position_title,
+        platform: row.platform,
+        positionTitle: row.position_title,
         status: row.status,
       };
     })

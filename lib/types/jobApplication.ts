@@ -22,12 +22,12 @@ export const saveJobApplicationInputSchema = z
   })
   .strict();
 
-export type SaveJobApplicationInput = z.infer<typeof saveJobApplicationInputSchema>;
+export type SaveJobApplicationInput = z.infer<
+  typeof saveJobApplicationInputSchema
+>;
 
 export const saveJobApplicationPayloadSchema = z.object({
   applicationId: z.uuid(),
-  jobId: z.uuid(),
-  snapshotId: z.uuid().nullable(),
 });
 
 export type SaveJobApplicationErrorCode =
@@ -40,7 +40,9 @@ export type SaveJobApplicationFieldErrors = Partial<
   Record<keyof SaveJobApplicationInput, string[]>
 >;
 
-export type SaveJobApplicationPayload = z.infer<typeof saveJobApplicationPayloadSchema>;
+export type SaveJobApplicationPayload = z.infer<
+  typeof saveJobApplicationPayloadSchema
+>;
 
 export type SaveJobApplicationResult =
   | {

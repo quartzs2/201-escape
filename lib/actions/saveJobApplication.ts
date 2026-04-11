@@ -51,7 +51,7 @@ export async function saveJobApplication(
     };
   }
 
-  const { data, error } = await supabase.rpc("save_job_application", {
+  const { data, error } = await supabase.rpc("save_application", {
     p_applied_at: parsedInput.data.appliedAt ?? null,
     p_company_name: parsedInput.data.companyName,
     p_description: parsedInput.data.description ?? null,

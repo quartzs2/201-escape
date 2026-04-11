@@ -71,7 +71,7 @@ export function useAddJob({ onSuccess }: UseAddJobProps) {
       platform: MANUAL_JOB_DEFAULTS.platform,
       status: MANUAL_JOB_DEFAULTS.status,
       title: fields.title.trim() || MANUAL_JOB_DEFAULTS.title,
-      // URL 미입력 시 DB의 NOT NULL + UNIQUE (platform, origin_url) 제약을 충족하기 위해
+      // URL 미입력 시 DB의 NOT NULL + 사용자 범위 UNIQUE 제약을 충족하기 위해
       // 고유 식별자를 생성합니다. Zod v4의 z.url()은 manual: 스킴을 허용합니다.
       url: fields.url.trim() || `manual:${crypto.randomUUID()}`,
     };
