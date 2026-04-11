@@ -1,40 +1,47 @@
-import { LogIn } from "lucide-react";
+import { LogInIcon } from "lucide-react";
 import Link from "next/link";
 
 import GitHubIcon from "@/assets/github.svg";
 import { Button } from "@/components/ui/button/Button";
-import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 
 export function PublicHeader() {
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/80 px-6 py-3 backdrop-blur-sm">
-      <Button
-        asChild
-        className="text-lg font-bold hover:bg-transparent"
-        variant="ghost"
-      >
-        <Link href="/">201</Link>
-      </Button>
-      <div className="flex items-center gap-1">
-        <Tooltip label="GitHub">
-          <Button asChild size="icon" variant="ghost">
+    <header className="sticky top-0 z-20 border-b border-[#40513b]/10 bg-white/90 px-6 py-4 text-[#192016] backdrop-blur-xl lg:px-10">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+        <Link
+          className="text-base font-bold tracking-[-0.03em] text-[#192016]"
+          href="/"
+        >
+          201 escape
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <Button
+            asChild
+            className="h-9 w-9 rounded-full border border-[#40513b]/14 bg-white text-[#192016] hover:bg-[#eef1eb]"
+            size="icon"
+            variant="outline"
+          >
             <a
               aria-label="GitHub 저장소"
               href="https://github.com/quartzs2/201-escape"
               rel="noreferrer"
               target="_blank"
             >
-              <GitHubIcon className="h-4 w-4" />
+              <GitHubIcon className="size-4" />
             </a>
           </Button>
-        </Tooltip>
-        <Tooltip label="시작하기">
-          <Button asChild size="icon" variant="ghost">
-            <Link aria-label="시작하기" href="/login">
-              <LogIn className="h-4 w-4" />
+          <Button
+            asChild
+            className="h-9 rounded-full bg-[#40513b] px-3.5 text-white hover:bg-[#354230]"
+            size="sm"
+          >
+            <Link href="/login">
+              시작하기
+              <LogInIcon className="size-4" />
             </Link>
           </Button>
-        </Tooltip>
+        </div>
       </div>
     </header>
   );

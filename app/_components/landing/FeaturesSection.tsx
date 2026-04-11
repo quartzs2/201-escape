@@ -1,69 +1,40 @@
-import {
-  BarChart2,
-  Briefcase,
-  CalendarDays,
-  type LucideIcon,
-} from "lucide-react";
-
-type Feature = {
-  description: string;
-  icon: LucideIcon;
-  title: string;
-};
-
-const features: Feature[] = [
-  {
-    description:
-      "지원한 모든 공고를 상태별로 정리. 서류·면접·최종 단계를 한 곳에서 관리하세요.",
-    icon: Briefcase,
-    title: "공고를 한눈에",
-  },
-  {
-    description:
-      "면접 라운드별 정보를 기록하고 추적. 어떤 단계까지 진행됐는지 놓치지 않아요.",
-    icon: CalendarDays,
-    title: "면접 정보 기록",
-  },
-  {
-    description:
-      "전체·서류·면접·합격 건수를 대시보드에서 바로 확인. 내 지원 흐름을 파악하세요.",
-    icon: BarChart2,
-    title: "지원 현황 통계",
-  },
-];
+import { landingFeatures } from "./_utils/content";
 
 export function FeaturesSection() {
   return (
-    <section className="px-6 py-20" id="features">
-      <header className="mb-12">
-        <span className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase">
-          Features
-        </span>
-        <h2 className="mt-3 text-[32px] leading-tight font-extrabold tracking-tight text-foreground">
-          필요한 기능만,
-          <br />
-          군더더기 없이
-        </h2>
-      </header>
+    <section
+      className="border-t border-black/6 bg-white py-16 text-[#192016] lg:py-18"
+      id="features"
+    >
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <header className="max-w-2xl">
+          <p className="text-sm font-semibold tracking-[0.24em] text-[#667064] uppercase">
+            기능
+          </p>
+          <h2 className="mt-4 text-[2rem] leading-[1.08] font-black tracking-[-0.05em] text-balance sm:text-[2.6rem]">
+            필요한 기능만 간단하게 담았습니다.
+          </h2>
+          <p className="mt-5 text-base leading-7 text-[#5f675c]">
+            공고, 일정, 현황처럼 자주 보는 정보만 담았습니다.
+          </p>
+        </header>
 
-      <ul className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {features.map(({ description, icon: Icon, title }) => (
-          <li
-            className="rounded-3xl border border-border/50 bg-background p-7 shadow-sm transition-shadow hover:shadow-md"
-            key={title}
-          >
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/8">
-              <Icon aria-hidden="true" className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="mt-6 text-xl font-bold tracking-tight text-foreground">
-              {title}
-            </h3>
-            <p className="mt-3 text-base leading-relaxed font-medium text-muted-foreground/80">
-              {description}
-            </p>
-          </li>
-        ))}
-      </ul>
+        <ul className="mt-10 grid gap-8 border-t border-black/6 pt-8 md:grid-cols-3">
+          {landingFeatures.map(({ description, icon: Icon, title }) => (
+            <li key={title}>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f3f4f1] text-[#364133]">
+                <Icon aria-hidden="true" className="size-5" />
+              </div>
+              <h3 className="mt-4 text-lg font-bold tracking-[-0.03em] text-[#192016]">
+                {title}
+              </h3>
+              <p className="mt-3 text-sm leading-6 text-[#5f675c]">
+                {description}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
