@@ -10,6 +10,7 @@
 ## 목차
 
 - [주요 기능](#주요-기능)
+- [화면 미리보기](#화면-미리보기)
 - [빠른 시작](#빠른-시작)
 - [환경 변수](#환경-변수)
 - [설치 및 실행](#설치-및-실행)
@@ -31,6 +32,57 @@
 - **무한 스크롤 + 가상 리스트**: 대량 공고도 부드럽게 렌더링
 - **지원 상세 페이지**: 공고 원문 편집, 메모 작성, 면접 일정 관리
 - **면접 일정 관리**: 면접 유형·회차·일시 등록 및 삭제
+
+## 화면 미리보기
+
+### 대시보드
+
+<table>
+  <tr>
+    <td align="center"><strong>KPI 요약</strong></td>
+    <td align="center"><strong>단계별 퍼널</strong></td>
+    <td align="center"><strong>월간 지원 추이</strong></td>
+  </tr>
+  <tr>
+    <td><img src="./docs/images/readme/dashboard_kpis.png" alt="지원 완료 건수와 단계별 KPI를 보여주는 대시보드 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/dashboard_funnel.png" alt="지원 기준 단계별 잔존 비율을 보여주는 퍼널 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/dashboard_monthly_trend.png" alt="최근 12개월 지원 추이와 요약 노트를 보여주는 대시보드 화면" width="220" /></td>
+  </tr>
+</table>
+
+지원 건수, 단계별 잔존 비율, 최근 월별 추이를 한 화면에서 확인할 수 있습니다.
+
+### 지원 목록과 빠른 추가
+
+<table>
+  <tr>
+    <td align="center"><strong>지원 목록</strong></td>
+    <td align="center"><strong>상태 미리보기 바텀시트</strong></td>
+    <td align="center"><strong>공고 추가</strong></td>
+  </tr>
+  <tr>
+    <td><img src="./docs/images/readme/application_list.png" alt="검색, 필터, 정렬이 포함된 지원 목록 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_bottomsheet.png" alt="지원 상태와 요약 정보를 보여주는 바텀시트 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/add_application.png" alt="회사명, 포지션, 공고 URL을 입력하는 공고 추가 바텀시트 화면" width="220" /></td>
+  </tr>
+</table>
+
+목록에서 상태별 필터링과 검색을 수행하고, FAB로 새 공고를 빠르게 추가할 수 있습니다.
+
+### 지원 상세와 면접 일정
+
+<table>
+  <tr>
+    <td align="center"><strong>상세 정보</strong></td>
+    <td align="center"><strong>면접 일정 / 공고 설명</strong></td>
+  </tr>
+  <tr>
+    <td><img src="./docs/images/readme/application_detail.png" alt="지원 상태 변경과 기본 정보를 관리하는 지원 상세 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/interviewschedule.png" alt="면접 일정과 공고 설명 영역을 관리하는 지원 상세 하단 화면" width="220" /></td>
+  </tr>
+</table>
+
+상세 페이지에서는 지원 단계 변경, 공고 원문 확인, 면접 일정 추가 및 수정, 메모 관리까지 한 흐름으로 이어집니다.
 
 ## 기술 스택
 
