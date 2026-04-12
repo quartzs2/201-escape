@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 
-import Link from "next/link";
-
 import { PublicHeader } from "../_components/PublicHeader";
 
 export const metadata: Metadata = {
@@ -176,12 +174,13 @@ export default function PrivacyPage() {
           </div>
 
           <footer className="mt-10 border-t border-border/60 pt-6">
-            <Link
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- Public entrypoints intentionally avoid client navigation JS. */}
+            <a
               className="text-sm font-medium text-primary underline underline-offset-4"
               href="/"
             >
               홈으로 돌아가기
-            </Link>
+            </a>
           </footer>
         </div>
       </main>

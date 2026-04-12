@@ -1,6 +1,6 @@
 import type { FunnelStep } from "@/lib/types/application";
 
-import { getFunnelBreakdown } from "./_utils/dashboard";
+import { getFunnelBreakdown } from "../../_utils/dashboard";
 
 type DashboardFunnelBreakdownProps = {
   data: FunnelStep[];

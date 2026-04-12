@@ -67,20 +67,7 @@ export function ApplicationFilters({
   return (
     <section className="bg-background/95 px-5 py-5 backdrop-blur-sm sm:px-6">
       <div className="flex flex-col gap-4">
-        <div className="flex justify-end">
-          {isFiltered && (
-            <Button
-              className="self-start rounded-full px-4"
-              onClick={onResetFiltersAction}
-              size="sm"
-              variant="outline"
-            >
-              필터 초기화
-            </Button>
-          )}
-        </div>
-
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="grid gap-4">
           <form onSubmit={handleSubmit} role="search">
             <div className="relative">
               <SearchIcon
@@ -109,37 +96,35 @@ export function ApplicationFilters({
             </div>
           </form>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-end">
-            <div>
-              <div
-                aria-label="기간 필터"
-                className="flex flex-wrap gap-2"
-                role="group"
-              >
-                {PERIOD_PRESETS.map((preset) => (
-                  <button
-                    aria-pressed={period === preset}
-                    className={cn(
-                      "rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors",
-                      period === preset
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-foreground",
-                    )}
-                    key={preset}
-                    onClick={() => onPeriodChangeAction(preset)}
-                    type="button"
-                  >
-                    {PERIOD_PRESET_LABELS[preset]}
-                  </button>
-                ))}
-              </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div
+              aria-label="기간 필터"
+              className="flex flex-wrap gap-2"
+              role="group"
+            >
+              {PERIOD_PRESETS.map((preset) => (
+                <button
+                  aria-pressed={period === preset}
+                  className={cn(
+                    "rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors",
+                    period === preset
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-foreground",
+                  )}
+                  key={preset}
+                  onClick={() => onPeriodChangeAction(preset)}
+                  type="button"
+                >
+                  {PERIOD_PRESET_LABELS[preset]}
+                </button>
+              ))}
             </div>
 
-            <div>
+            <div className="flex flex-wrap items-center gap-2">
               <div className="relative inline-flex shrink-0">
                 <select
                   aria-label="정렬"
-                  className="appearance-none rounded-full border border-border bg-background py-2 pr-8 pl-3.5 text-sm font-semibold text-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/10 focus:outline-none sm:min-w-28 sm:pr-10 sm:pl-4"
+                  className="appearance-none rounded-full bg-background py-2 pr-8 pl-3.5 text-sm font-semibold text-foreground focus:ring-2 focus:ring-primary/10 focus:outline-none sm:min-w-28 sm:pr-10 sm:pl-4"
                   id="applications-sort"
                   onChange={(e) =>
                     onSortChangeAction(e.target.value as SortValue)
@@ -157,6 +142,21 @@ export function ApplicationFilters({
                   className="pointer-events-none absolute top-1/2 right-3 size-3.5 -translate-y-1/2 text-muted-foreground sm:right-4"
                 />
               </div>
+
+              <Button
+                aria-hidden={!isFiltered}
+                className={cn(
+                  "min-w-24 rounded-full px-4",
+                  !isFiltered && "pointer-events-none invisible",
+                )}
+                disabled={!isFiltered}
+                onClick={onResetFiltersAction}
+                size="sm"
+                tabIndex={isFiltered ? 0 : -1}
+                variant="outline"
+              >
+                필터 초기화
+              </Button>
             </div>
           </div>
         </div>

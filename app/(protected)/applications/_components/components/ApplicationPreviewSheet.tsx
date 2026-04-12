@@ -28,7 +28,7 @@ import {
   getDescriptionMeta,
   getErrorSummary,
   getNotesMeta,
-} from "../_utils/preview";
+} from "../../_utils/preview";
 import { PLATFORM_LABEL } from "../constants";
 import { ApplicationPreviewSection } from "./ApplicationPreviewSection";
 
@@ -54,6 +54,13 @@ type ApplicationPreviewState =
   | {
       status: "loading";
     };
+
+const DEFAULT_PREVIEW_BODY_MIN_HEIGHT_CLASS = "min-h-58";
+const DEFAULT_PREVIEW_SHEET_HEIGHT_CLASS = "min-h-[40vh]";
+const MANUAL_PREVIEW_BODY_MIN_HEIGHT_CLASS = "min-h-36";
+const MANUAL_PREVIEW_SHEET_HEIGHT_CLASS = "min-h-[30vh]";
+const DEFAULT_PREVIEW_SKELETON_COUNT = 2;
+const MANUAL_PREVIEW_SKELETON_COUNT = 1;
 
 export function ApplicationPreviewSheet({
   application,
@@ -119,6 +126,11 @@ export function ApplicationPreviewSheet({
   const status = detail?.status ?? application?.status;
   const descriptionMeta = getDescriptionMeta(detail);
   const notesMeta = getNotesMeta(detail);
+  const isManualPlatform = platform === "MANUAL";
+  const shouldShowDescription = !isManualPlatform;
+  const previewSkeletonCount = isManualPlatform
+    ? MANUAL_PREVIEW_SKELETON_COUNT
+    : DEFAULT_PREVIEW_SKELETON_COUNT;
 
   const footerButtonContent = (
     <>
@@ -130,7 +142,13 @@ export function ApplicationPreviewSheet({
   return (
     <BottomSheet isOpen={isOpen} onClose={onCloseAction}>
       <BottomSheet.Overlay />
-      <BottomSheet.Content>
+      <BottomSheet.Content
+        className={
+          isManualPlatform
+            ? MANUAL_PREVIEW_SHEET_HEIGHT_CLASS
+            : DEFAULT_PREVIEW_SHEET_HEIGHT_CLASS
+        }
+      >
         <BottomSheet.Header />
         <div className="px-6 pb-4">
           {(platform || appliedAt) && (
@@ -179,7 +197,13 @@ export function ApplicationPreviewSheet({
           )}
 
           {/* min-h는 로딩→콘텐츠 전환 시 시트 높이 변동(레이아웃 시프트)을 방지합니다. */}
-          <div className="min-h-58">
+          <div
+            className={
+              isManualPlatform
+                ? MANUAL_PREVIEW_BODY_MIN_HEIGHT_CLASS
+                : DEFAULT_PREVIEW_BODY_MIN_HEIGHT_CLASS
+            }
+          >
             {visiblePreviewState.status === "loading" && (
               <div
                 aria-busy="true"
@@ -187,8 +211,11 @@ export function ApplicationPreviewSheet({
                 className="space-y-4"
                 role="status"
               >
-                <ApplicationPreviewSectionSkeleton />
-                <ApplicationPreviewSectionSkeleton />
+                {Array.from({ length: previewSkeletonCount }).map(
+                  (_, index) => (
+                    <ApplicationPreviewSectionSkeleton key={index} />
+                  ),
+                )}
               </div>
             )}
 
@@ -216,12 +243,16 @@ export function ApplicationPreviewSheet({
 
             {detail && (
               <>
-                <ApplicationPreviewSection
-                  body={descriptionMeta.text}
-                  icon={<FileTextIcon aria-hidden="true" className="size-4" />}
-                  isEmpty={descriptionMeta.isEmpty}
-                  title="공고 설명"
-                />
+                {shouldShowDescription ? (
+                  <ApplicationPreviewSection
+                    body={descriptionMeta.text}
+                    icon={
+                      <FileTextIcon aria-hidden="true" className="size-4" />
+                    }
+                    isEmpty={descriptionMeta.isEmpty}
+                    title="공고 설명"
+                  />
+                ) : null}
                 <ApplicationPreviewSection
                   body={notesMeta.text}
                   icon={

@@ -1,40 +1,21 @@
 "use client";
 
 import { Plus as PlusIcon } from "lucide-react";
-import { usePostHog } from "posthog-js/react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import { BottomSheet, Button } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { trackEvent } from "@/lib/posthog/client";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
-import { ManualFormView } from "./components/ManualFormView";
-import { ReviewView } from "./components/ReviewView";
-import { UrlInputView } from "./components/UrlInputView";
-import { useAddJob } from "./hooks/useAddJob";
-
-const PARSING_ENABLED = process.env.NEXT_PUBLIC_ENABLE_PARSING === "true";
+const AddJobSheet = dynamic(
+  () => import("./AddJobSheet").then((module) => module.AddJobSheet),
+  { ssr: false },
+);
 
 export function AddJobTrigger() {
-  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
-  const {
-    defaultManualPositionTitle,
-    handleExtract,
-    handleManualSubmit,
-    handleReset,
-    handleSave,
-    positionTitleSuggestions,
-    reset,
-    setUrl,
-    state,
-  } = useAddJob({
-    onSuccess: () => setIsOpen(false),
-  });
-
-  function handleClose() {
-    setIsOpen(false);
-    reset();
-  }
+  const [shouldRenderSheet, setShouldRenderSheet] = useState(false);
 
   return (
     <>
@@ -42,7 +23,8 @@ export function AddJobTrigger() {
         aria-label="공고 추가"
         className="fixed right-5 bottom-[calc(env(safe-area-inset-bottom)+2rem)] z-40 shadow-lg transition-transform active:scale-95"
         onClick={() => {
-          posthog.capture(POSTHOG_EVENTS.APPLICATION_ADD_OPENED);
+          trackEvent(POSTHOG_EVENTS.APPLICATION_ADD_OPENED);
+          setShouldRenderSheet(true);
           setIsOpen(true);
         }}
         size="fab"
@@ -50,49 +32,9 @@ export function AddJobTrigger() {
         <PlusIcon />
       </Button>
 
-      <BottomSheet isOpen={isOpen} onClose={handleClose}>
-        <BottomSheet.Overlay />
-        <BottomSheet.Content>
-          <BottomSheet.Header />
-          <BottomSheet.Body>
-            <BottomSheet.Title className="mb-4">공고 추가</BottomSheet.Title>
-            {(() => {
-              if (state.step === "idle" || state.step === "extracting") {
-                if (PARSING_ENABLED) {
-                  return (
-                    <UrlInputView
-                      error={state.step === "idle" ? state.error : null}
-                      isLoading={state.step === "extracting"}
-                      onExtract={handleExtract}
-                      onUrlChange={setUrl}
-                      url={state.url}
-                    />
-                  );
-                }
-
-                return (
-                  <ManualFormView
-                    defaultTitle={defaultManualPositionTitle}
-                    error={state.step === "idle" ? state.error : null}
-                    onSubmit={handleManualSubmit}
-                    positionTitleSuggestions={positionTitleSuggestions}
-                  />
-                );
-              }
-
-              return (
-                <ReviewView
-                  error={state.step === "review" ? state.error : null}
-                  isSaving={state.step === "saving"}
-                  jobData={state.jobData}
-                  onReset={handleReset}
-                  onSave={handleSave}
-                />
-              );
-            })()}
-          </BottomSheet.Body>
-        </BottomSheet.Content>
-      </BottomSheet>
+      {shouldRenderSheet && (
+        <AddJobSheet isOpen={isOpen} onCloseAction={() => setIsOpen(false)} />
+      )}
     </>
   );
 }

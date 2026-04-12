@@ -1,6 +1,6 @@
 import type { FunnelStep, MonthlyCount } from "@/lib/types/application";
 
-import { formatPercent, getMonthlyTrendSummary } from "./_utils/dashboard";
+import { formatPercent, getMonthlyTrendSummary } from "../../_utils/dashboard";
 
 type DashboardInsightPanelProps = {
   funnel: FunnelStep[];

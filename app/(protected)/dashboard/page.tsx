@@ -1,15 +1,25 @@
-import { Suspense } from "react";
-
+import { getChartData, getStatCounts } from "@/lib/actions";
 import { formatKoreanDate } from "@/lib/utils";
 
-import { ChartsContent } from "./_components/dashboard-view/ChartsContent";
-import {
-  ChartsSkeleton,
-  StatCardsSkeleton,
-} from "./_components/dashboard-view/DashboardSkeleton";
-import { StatCardsContent } from "./_components/dashboard-view/StatCardsContent";
+import { DashboardOverview } from "./_components/dashboard-view/DashboardOverview";
+import { DeferredDashboardCharts } from "./_components/dashboard-view/DeferredDashboardCharts";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const [statsResult, chartResult] = await Promise.all([
+    getStatCounts(),
+    getChartData(),
+  ]);
+
+  if (!statsResult.ok) {
+    throw new Error(statsResult.reason);
+  }
+
+  if (!chartResult.ok) {
+    throw new Error(chartResult.reason);
+  }
+
+  const { funnel, monthly } = chartResult.data;
+
   return (
     <main className="min-h-screen bg-background pb-20">
       <section className="bg-muted/30">
@@ -23,8 +33,12 @@ export default function DashboardPage() {
                 지원 대시보드
               </h1>
               <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                전체 파이프라인 규모, 최근 12개월 지원 추이, 단계별 전환 흐름을
-                한 화면에서 확인합니다.
+                <span className="block break-keep">
+                  전체 파이프라인 규모, 최근 12개월 지원 추이,
+                </span>
+                <span className="block break-keep">
+                  단계별 전환 흐름을 한 화면에서 확인합니다.
+                </span>
               </p>
             </div>
 
@@ -62,13 +76,8 @@ export default function DashboardPage() {
       </section>
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-10 sm:px-6 lg:gap-20 lg:px-8 lg:py-12">
-        <Suspense fallback={<StatCardsSkeleton />}>
-          <StatCardsContent />
-        </Suspense>
-
-        <Suspense fallback={<ChartsSkeleton />}>
-          <ChartsContent />
-        </Suspense>
+        <DashboardOverview stats={statsResult.data} />
+        <DeferredDashboardCharts funnel={funnel} monthly={monthly} />
       </div>
     </main>
   );

@@ -1,6 +1,6 @@
 import type { ApplicationListItem } from "@/lib/types/application";
 
-import { buildApplicationsOverviewContent } from "./_utils/summary";
+import { buildApplicationsOverviewContent } from "../_utils/summary";
 import { type PeriodPreset, type SortValue, type TabValue } from "./constants";
 
 type ApplicationsPageHeaderProps = {

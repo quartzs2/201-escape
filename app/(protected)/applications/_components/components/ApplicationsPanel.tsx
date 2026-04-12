@@ -7,8 +7,9 @@ import {
   useQueryClient,
   useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { GetApplicationsPage } from "@/lib/types/application";
 import type { JobStatus } from "@/lib/types/job";
@@ -36,8 +37,15 @@ import {
 } from "../constants";
 import { GoToTopFAB } from "../go-to-top";
 import { ApplicationFilters } from "./ApplicationFilters";
-import { ApplicationPreviewSheet } from "./ApplicationPreviewSheet";
 import { ApplicationTabs } from "./ApplicationTabs";
+
+const ApplicationPreviewSheet = dynamic(
+  () =>
+    import("./ApplicationPreviewSheet").then(
+      (module) => module.ApplicationPreviewSheet,
+    ),
+  { ssr: false },
+);
 
 type ApplicationsPanelProps = {
   dateLabel: string;
@@ -51,6 +59,11 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
 
   const tabsRef = useRef<ApplicationTabsHandle>(null);
   const [isListScrolled, setIsListScrolled] = useState(false);
+  const [previewApplicationId, setPreviewApplicationId] = useState<
+    null | string
+  >(null);
+  const [shouldRenderPreviewSheet, setShouldRenderPreviewSheet] =
+    useState(false);
 
   const search = searchParams.get(SEARCH_PARAM) ?? "";
   const period = parsePeriodParam(searchParams.get(PERIOD_PARAM));
@@ -85,10 +98,27 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
     (page) => page.items,
   );
 
-  const selectedApplicationId = searchParams.get(PREVIEW_PARAM);
+  const selectedApplicationId = previewApplicationId;
   const isPreviewOpen = selectedApplicationId !== null;
   const selectedApplication =
     applications.find((a) => a.id === selectedApplicationId) ?? null;
+
+  useEffect(() => {
+    const previewParam = searchParams.get(PREVIEW_PARAM);
+
+    if (!previewParam) {
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(PREVIEW_PARAM);
+    const query = params.toString();
+
+    router.replace(
+      `${pathname}${query ? `?${query}` : ""}` as unknown as Route,
+      { scroll: false },
+    );
+  }, [pathname, router, searchParams]);
 
   const updateParams = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -102,31 +132,33 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
     const query = params.toString();
     router.replace(
       `${pathname}${query ? `?${query}` : ""}` as unknown as Route,
+      { scroll: false },
     );
   };
 
   const handleSearchSubmit = (nextSearch: string) => {
-    updateParams({ [PREVIEW_PARAM]: "", [SEARCH_PARAM]: nextSearch });
+    setPreviewApplicationId(null);
+    updateParams({ [SEARCH_PARAM]: nextSearch });
   };
 
   const handlePeriodChange = (nextPeriod: PeriodPreset) => {
+    setPreviewApplicationId(null);
     updateParams({
       [PERIOD_PARAM]: nextPeriod === "all" ? "" : nextPeriod,
-      [PREVIEW_PARAM]: "",
     });
   };
 
   const handleSortChange = (nextSort: SortValue) => {
+    setPreviewApplicationId(null);
     updateParams({
-      [PREVIEW_PARAM]: "",
       [SORT_PARAM]: nextSort === "applied_at_desc" ? "" : nextSort,
     });
   };
 
   const handleResetFilters = () => {
+    setPreviewApplicationId(null);
     updateParams({
       [PERIOD_PARAM]: "",
-      [PREVIEW_PARAM]: "",
       [SEARCH_PARAM]: "",
       [SORT_PARAM]: "",
       [TAB_PARAM]: "",
@@ -134,18 +166,19 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
   };
 
   const handleTabChange = (nextTab: TabValue) => {
+    setPreviewApplicationId(null);
     updateParams({
-      [PREVIEW_PARAM]: "",
       [TAB_PARAM]: nextTab === "all" ? "" : nextTab,
     });
   };
 
   const handleSelectApplication = (application: ApplicationListItem) => {
-    updateParams({ [PREVIEW_PARAM]: application.id });
+    setShouldRenderPreviewSheet(true);
+    setPreviewApplicationId(application.id);
   };
 
   const handleClosePreview = () => {
-    updateParams({ [PREVIEW_PARAM]: "" });
+    setPreviewApplicationId(null);
   };
 
   const handleStatusChange = (applicationId: string, nextStatus: JobStatus) => {
@@ -214,12 +247,14 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
         />
       </section>
 
-      <ApplicationPreviewSheet
-        application={selectedApplication}
-        isOpen={isPreviewOpen}
-        onCloseAction={handleClosePreview}
-        onStatusChangeAction={handleStatusChange}
-      />
+      {(shouldRenderPreviewSheet || isPreviewOpen) && (
+        <ApplicationPreviewSheet
+          application={selectedApplication}
+          isOpen={isPreviewOpen}
+          onCloseAction={handleClosePreview}
+          onStatusChangeAction={handleStatusChange}
+        />
+      )}
       <GoToTopFAB
         className="md:bottom-24"
         isVisible={isListScrolled}

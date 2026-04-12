@@ -30,7 +30,7 @@ export function FocusTrap({
   // 초기 포커스 지정 및 포커스 복원
   useEffect(() => {
     if (!isActive) {
-      prevFocusRef.current?.focus();
+      focusWithoutScroll(prevFocusRef.current);
       prevFocusRef.current = null;
       return;
     }
@@ -49,7 +49,7 @@ export function FocusTrap({
     const focusTarget = titleElement ?? firstElement ?? container;
 
     const rafId = requestAnimationFrame(() => {
-      focusTarget.focus();
+      focusWithoutScroll(focusTarget);
     });
 
     return () => {
@@ -105,4 +105,16 @@ export function FocusTrap({
   }, [isActive, containerRef]);
 
   return <>{children}</>;
+}
+
+function focusWithoutScroll(target: HTMLElement | null) {
+  if (!target) {
+    return;
+  }
+
+  try {
+    target.focus({ preventScroll: true });
+  } catch {
+    target.focus();
+  }
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { ChevronRightIcon } from "lucide-react";
-import { usePostHog } from "posthog-js/react";
 
+import { trackEvent } from "@/lib/posthog/client";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +20,6 @@ export function ApplicationRow({
   application,
   onSelectAction,
 }: ApplicationRowProps) {
-  const posthog = usePostHog();
   const { badgeClassName, label } = STATUS_META[application.status];
 
   return (
@@ -33,7 +32,7 @@ export function ApplicationRow({
           "focus-visible:rounded-2xl focus-visible:bg-muted/30 focus-visible:ring-2 focus-visible:ring-primary/15 focus-visible:outline-none",
         )}
         onClick={() => {
-          posthog.capture(POSTHOG_EVENTS.APPLICATION_PREVIEW_OPENED);
+          trackEvent(POSTHOG_EVENTS.APPLICATION_PREVIEW_OPENED);
           onSelectAction(application);
         }}
         type="button"
@@ -68,10 +67,7 @@ export function ApplicationRow({
         </div>
         <div className="flex shrink-0 items-center gap-2 pt-1 text-muted-foreground">
           <span className="hidden text-xs font-medium sm:block">미리보기</span>
-          <ChevronRightIcon
-            aria-hidden="true"
-            className="size-4 transition-transform group-hover:translate-x-0.5"
-          />
+          <ChevronRightIcon aria-hidden="true" className="size-4" />
         </div>
       </button>
     </div>

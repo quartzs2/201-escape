@@ -4,8 +4,6 @@ import localFont from "next/font/local";
 
 import { PORTAL_ROOT_ID } from "@/lib/constants/dom";
 
-import { DeferredToaster } from "./_components/DeferredToaster";
-import { Providers } from "./providers";
 import "./globals.css";
 
 const DEFAULT_SITE_URL = "https://201-escape.vercel.app";
@@ -55,9 +53,8 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${pretendard.className} antialiased`}>
-        <Providers>{children}</Providers>
+        {children}
         <div id={PORTAL_ROOT_ID} />
-        <DeferredToaster />
       </body>
     </html>
   );

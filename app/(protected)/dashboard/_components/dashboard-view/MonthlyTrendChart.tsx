@@ -12,7 +12,7 @@ import {
 
 import type { MonthlyCount } from "@/lib/types/application";
 
-import { formatMonthLabel } from "./_utils/dashboard";
+import { formatMonthLabel } from "../../_utils/dashboard";
 import { MONTHLY_CHART_HEIGHT } from "./constants";
 
 type Props = {

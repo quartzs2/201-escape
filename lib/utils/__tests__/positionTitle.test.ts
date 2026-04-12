@@ -4,7 +4,7 @@ import {
   COMMON_POSITION_TITLE_SUGGESTIONS,
   getDefaultPositionTitle,
   normalizePositionTitle,
-} from "@/app/(protected)/applications/_components/add-job/_utils/positionTitle";
+} from "@/app/(protected)/applications/_components/add-job/utils/positionTitle";
 
 describe("positionTitle utils", () => {
   it("최근 입력값이 있으면 기본값으로 사용한다", () => {

@@ -2,7 +2,6 @@
 
 import { PencilIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import type {
@@ -14,8 +13,8 @@ import type {
 
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
-import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
+import { trackEvent } from "@/lib/posthog/client";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { Constants } from "@/lib/types/supabase";
 import { toDatetimeLocalValue } from "@/lib/utils";
@@ -55,7 +54,6 @@ type UpsertAction = (
 
 export function InterviewFormSheet(props: InterviewFormSheetProps) {
   const router = useRouter();
-  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
   const [values, setValues] = useState<FormValues>(() =>
     getInitialValues(props),
@@ -115,7 +113,7 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
         return;
       }
 
-      posthog.capture(
+      trackEvent(
         props.mode === "add"
           ? POSTHOG_EVENTS.INTERVIEW_ADDED
           : POSTHOG_EVENTS.INTERVIEW_EDITED,
@@ -130,20 +128,19 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
 
   return (
     <>
-      <Tooltip label={triggerLabel} side="bottom">
-        <Button
-          aria-label={triggerLabel}
-          className="size-8 rounded-full"
-          onClick={handleOpen}
-          variant="ghost"
-        >
-          {isEditMode ? (
-            <PencilIcon aria-hidden="true" className="size-4" />
-          ) : (
-            <PlusIcon aria-hidden="true" className="size-4" />
-          )}
-        </Button>
-      </Tooltip>
+      <Button
+        aria-label={triggerLabel}
+        className="size-8 rounded-full"
+        onClick={handleOpen}
+        title={triggerLabel}
+        variant="ghost"
+      >
+        {isEditMode ? (
+          <PencilIcon aria-hidden="true" className="size-4" />
+        ) : (
+          <PlusIcon aria-hidden="true" className="size-4" />
+        )}
+      </Button>
 
       <BottomSheet isOpen={isOpen} onClose={handleClose}>
         <BottomSheet.Overlay
