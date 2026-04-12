@@ -48,11 +48,16 @@ export default defineConfig({
         extends: true,
         optimizeDeps: {
           include: [
+            "@radix-ui/react-slot",
+            "@tanstack/react-query",
+            "class-variance-authority",
+            "clsx",
+            "next/navigation",
+            "posthog-js",
+            "posthog-js/react",
             "react",
             "react-dom",
-            "next/navigation",
-            "@tanstack/react-query",
-            "posthog-js/react",
+            "tailwind-merge",
           ],
         },
         plugins: [

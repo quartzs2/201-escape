@@ -44,7 +44,7 @@
     <td align="center"><strong>월간 지원 추이</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/readme/dashboard_kpis.png" alt="지원 완료 건수와 단계별 KPI를 보여주는 대시보드 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/dashboard_selected_kpis.png" alt="지원 완료 건수와 단계별 KPI를 보여주는 대시보드 화면" width="220" /></td>
     <td><img src="./docs/images/readme/dashboard_funnel.png" alt="지원 기준 단계별 잔존 비율을 보여주는 퍼널 화면" width="220" /></td>
     <td><img src="./docs/images/readme/dashboard_monthly_trend.png" alt="최근 12개월 지원 추이와 요약 노트를 보여주는 대시보드 화면" width="220" /></td>
   </tr>
@@ -61,9 +61,9 @@
     <td align="center"><strong>공고 추가</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/readme/application_list.png" alt="검색, 필터, 정렬이 포함된 지원 목록 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/application_bottomsheet.png" alt="지원 상태와 요약 정보를 보여주는 바텀시트 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/add_application.png" alt="회사명, 포지션, 공고 URL을 입력하는 공고 추가 바텀시트 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_list.gif" alt="검색, 필터, 정렬이 포함된 지원 목록 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_bottomsheet.gif" alt="지원 상태와 요약 정보를 보여주는 바텀시트 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_add_application_bottomsheet.gif" alt="회사명, 포지션, 공고 URL을 입력하는 공고 추가 바텀시트 화면" width="220" /></td>
   </tr>
 </table>
 
@@ -78,7 +78,7 @@
   </tr>
   <tr>
     <td><img src="./docs/images/readme/application_detail.png" alt="지원 상태 변경과 기본 정보를 관리하는 지원 상세 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/interviewschedule.png" alt="면접 일정과 공고 설명 영역을 관리하는 지원 상세 하단 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_detail_interviewschedule.gif" alt="면접 일정과 공고 설명 영역을 관리하는 지원 상세 하단 화면" width="220" /></td>
   </tr>
 </table>
 
@@ -92,6 +92,7 @@
 - **Styling**: TailwindCSS v4, CVA, tailwind-merge
 - **Validation**: Zod
 - **Parsing**: Cheerio (서버 사이드 HTML 파싱)
+- **Charts**: Recharts (퍼널, 월간 추이 차트)
 - **Analytics**: PostHog (이벤트 트래킹, 사용자 식별)
 - **Error Tracking**: Sentry
 - **Test**: Vitest, Storybook
@@ -147,7 +148,7 @@ pnpm dev
 
 Supabase 프로젝트에 아래 테이블이 필요합니다. `supabase/migrations/` 폴더의 마이그레이션 파일로 적용할 수 있습니다.
 
-최종 스키마 구조와 인덱스, RLS 정책은 [`docs/database-schema.md`](/Users/hyeon/Documents/projects/201-escape/docs/database-schema.md)에서 설명합니다.
+최종 스키마 구조와 인덱스, RLS 정책은 [`docs/database-schema.md`](./docs/database-schema.md)에서 설명합니다.
 
 | 테이블         | 설명                                                                              |
 | -------------- | --------------------------------------------------------------------------------- |
@@ -222,6 +223,7 @@ flowchart LR
 | tailwind-merge           | Tailwind 클래스 충돌 정리                    |
 | Zod                      | 입력값 및 도메인 스키마 검증                 |
 | Cheerio                  | 서버 사이드 HTML 파싱                        |
+| Recharts                 | 대시보드 퍼널 및 월간 추이 차트 렌더링       |
 | PostHog                  | 사용자 이벤트 트래킹과 식별                  |
 | Sentry                   | 런타임 오류 수집과 추적                      |
 | Vitest                   | 단위 테스트와 벤치마크 실행                  |
@@ -252,14 +254,32 @@ flowchart LR
 | `memo_saved`                 | 개인 메모 저장 완료            | -                                  |
 | `applications_tab_changed`   | 지원 목록 탭 전환              | `tab: 'all' \| 'active' \| 'done'` |
 
-### 공고 추가 퍼널 설정 (PostHog 대시보드)
+### 퍼널 설정 (PostHog 대시보드)
 
-1. PostHog → **Insights** → **New insight** → **Funnels**
-2. Step 1: `application_add_opened`
-3. Step 2: `application_add_submitted`
-4. Step 3: `application_add_saved`
+PostHog → **Insights** → **New insight** → **Funnels**
 
-이 퍼널로 FAB 클릭 → 폼 제출 → 저장 완료 각 단계의 이탈률을 확인할 수 있습니다.
+#### 공고 추가 퍼널
+
+| 단계   | 이벤트                      |
+| ------ | --------------------------- |
+| Step 1 | `application_add_opened`    |
+| Step 2 | `application_add_submitted` |
+| Step 3 | `application_add_saved`     |
+
+FAB 클릭 → 폼 제출 → 저장 완료 각 단계의 이탈률을 확인할 수 있습니다.
+
+#### 지원 상태 진행 퍼널
+
+순서 무관(Unordered) 퍼널로 설정합니다.
+
+| 단계   | 이벤트                       | 필터                       |
+| ------ | ---------------------------- | -------------------------- |
+| Step 1 | `application_status_changed` | `to_status = APPLIED`      |
+| Step 2 | `application_status_changed` | `to_status = DOCS_PASSED`  |
+| Step 3 | `application_status_changed` | `to_status = INTERVIEWING` |
+| Step 4 | `application_status_changed` | `to_status = OFFERED`      |
+
+지원 제출 이후 서류 통과 → 면접 → 최종 합격까지 각 단계의 잔존율을 확인할 수 있습니다.
 
 ### 사용자 식별
 
@@ -279,7 +299,8 @@ app/
 │   │   │   │   ├── components/       # add-job 내부 UI 조각
 │   │   │   │   ├── hooks/            # add-job 내부 상태/행동
 │   │   │   │   └── utils/            # add-job 내부 보조 유틸
-│   │   │   └── components/           # 목록 화면 내부 UI 조각
+│   │   │   ├── components/           # 목록 화면 내부 UI 조각
+│   │   │   └── go-to-top/            # 상단 이동 FAB
 │   │   ├── _utils/                   # applications 라우트 전용 유틸
 │   │   └── [applicationId]/          # 지원 상세 (메모, 면접 일정, 공고 원문)
 │   │       └── _components/          # 상세 라우트 전용 UI
@@ -305,7 +326,6 @@ components/
 │   ├── skeleton/                     # 스켈레톤 로딩
 │   ├── tab-selector/                 # 탭 셀렉터
 │   ├── tabs/                         # 탭
-│   ├── tooltip/                      # 툴팁
 │   └── virtual-list/                 # 가상 리스트
 └── common/                           # Portal, FocusTrap 등 공통 컴포넌트
 
