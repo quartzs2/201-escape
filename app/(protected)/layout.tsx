@@ -1,7 +1,5 @@
-import { BottomTabBar } from "./_components/BottomTabBar";
 import { Header } from "./_components/Header";
-import { WindowScrollTopFAB } from "./_components/WindowScrollTopFAB";
-import { ProtectedProviders } from "./ProtectedProviders";
+import { ProtectedEnhancements } from "./ProtectedProviders";
 
 export default function ProtectedLayout({
   children,
@@ -9,11 +7,10 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ProtectedProviders>
+    <>
       <Header />
       <div className="pt-16 pb-16 md:pb-0">{children}</div>
-      <BottomTabBar />
-      <WindowScrollTopFAB />
-    </ProtectedProviders>
+      <ProtectedEnhancements />
+    </>
   );
 }

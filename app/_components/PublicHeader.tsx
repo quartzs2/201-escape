@@ -1,5 +1,4 @@
 import { LogInIcon } from "lucide-react";
-import Link from "next/link";
 
 import GitHubIcon from "@/assets/github.svg";
 import { Button } from "@/components/ui/button/Button";
@@ -8,12 +7,13 @@ export function PublicHeader() {
   return (
     <header className="sticky top-0 z-20 border-b border-[#40513b]/10 bg-white/90 px-6 py-4 text-[#192016] backdrop-blur-xl lg:px-10">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-        <Link
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- Public entrypoints intentionally avoid client navigation JS. */}
+        <a
           className="text-base font-bold tracking-[-0.03em] text-[#192016]"
           href="/"
         >
           201 escape
-        </Link>
+        </a>
 
         <div className="flex items-center gap-2">
           <Button
@@ -36,10 +36,10 @@ export function PublicHeader() {
             className="h-9 rounded-full bg-[#40513b] px-3.5 text-white hover:bg-[#354230]"
             size="sm"
           >
-            <Link href="/login">
+            <a href="/login">
               시작하기
               <LogInIcon className="size-4" />
-            </Link>
+            </a>
           </Button>
         </div>
       </div>
