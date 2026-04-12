@@ -52,11 +52,17 @@ export function DashboardOverview({ stats }: DashboardOverviewProps) {
                 지원 완료 건수
               </p>
             </div>
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              전체 등록 {total}건 중 관심 공고 {saved}건을 제외한 실제 지원
-              건수입니다. 현재 서류 단계 {docs}건, 면접 단계 {interviewing}건,
-              합격 단계 {offered}건입니다.
-            </p>
+            <div className="max-w-2xl text-sm leading-6 text-muted-foreground">
+              <p className="break-keep">
+                전체 등록 {total}건 중 관심 공고 {saved}건을 제외한 실제 지원
+                건수입니다.
+              </p>
+              <p className="break-keep">
+                현재 서류 단계 {docs}건, 면접 단계 {interviewing}건, 합격 단계{" "}
+                {offered}
+                건입니다.
+              </p>
+            </div>
           </div>
 
           <dl className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

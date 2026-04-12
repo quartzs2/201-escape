@@ -23,8 +23,12 @@ export default function DashboardPage() {
                 지원 대시보드
               </h1>
               <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                전체 파이프라인 규모, 최근 12개월 지원 추이, 단계별 전환 흐름을
-                한 화면에서 확인합니다.
+                <span className="block break-keep">
+                  전체 파이프라인 규모, 최근 12개월 지원 추이,
+                </span>
+                <span className="block break-keep">
+                  단계별 전환 흐름을 한 화면에서 확인합니다.
+                </span>
               </p>
             </div>
 
