@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 
 import { PORTAL_ROOT_ID } from "@/lib/constants/dom";
 
+import { ThemeScript } from "./_components/ThemeScript";
 import "./globals.css";
 
 const DEFAULT_SITE_URL = "https://201-escape.vercel.app";
@@ -51,7 +52,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body className={`${pretendard.className} antialiased`}>
         {children}
         <div id={PORTAL_ROOT_ID} />
