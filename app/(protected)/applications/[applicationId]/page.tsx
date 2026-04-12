@@ -93,6 +93,7 @@ async function ApplicationDetailContent({
   }
 
   const detail = result.data;
+  const shouldShowJobDescription = detail.platform !== "MANUAL";
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,rgba(245,245,245,0.9)_0%,rgba(255,255,255,0.82)_18%,rgba(255,255,255,1)_40%)] pb-20">
@@ -106,18 +107,21 @@ async function ApplicationDetailContent({
 
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.82fr)]">
             <div className="order-2 grid gap-6 lg:order-1">
-              <DetailSectionPanel
-                className="motion-safe:animate-fade-up"
-                style={{
-                  animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.jobDescription,
-                }}
-              >
-                <JobDescriptionEditor
-                  applicationId={detail.id}
-                  description={detail.description}
-                  updateDescriptionAction={updateJobDescription}
-                />
-              </DetailSectionPanel>
+              {shouldShowJobDescription ? (
+                <DetailSectionPanel
+                  className="motion-safe:animate-fade-up"
+                  style={{
+                    animationDelay:
+                      DETAIL_PANEL_ANIMATION_DELAYS.jobDescription,
+                  }}
+                >
+                  <JobDescriptionEditor
+                    applicationId={detail.id}
+                    description={detail.description}
+                    updateDescriptionAction={updateJobDescription}
+                  />
+                </DetailSectionPanel>
+              ) : null}
 
               <DetailSectionPanel
                 className="motion-safe:animate-fade-up"

@@ -36,7 +36,6 @@ type UpdateStatusAction = (
   input: UpdateApplicationStatusInput,
 ) => Promise<UpdateApplicationStatusResult>;
 
-const MANUAL_PLATFORM_LABEL = "직접 입력";
 const STATUS_PANEL_ANIMATION_DELAY = "120ms";
 
 export function ApplicationDetailHero({
@@ -45,19 +44,21 @@ export function ApplicationDetailHero({
   updateStatusAction,
 }: ApplicationDetailHeroProps) {
   const statusMeta = APPLICATION_STATUS_META[detail.status];
+  const isManualPlatform = detail.platform === "MANUAL";
   const hasOriginUrl =
     detail.originUrl !== null &&
     detail.originUrl.trim() !== "" &&
     !detail.originUrl.startsWith("manual:");
   const appliedAtLabel = detail.status === "SAVED" ? "저장일" : "지원일";
   const summaryItems: SummaryItem[] = [
-    {
-      label: "플랫폼",
-      value:
-        detail.platform === "MANUAL"
-          ? MANUAL_PLATFORM_LABEL
-          : PLATFORM_LABEL[detail.platform],
-    },
+    ...(!isManualPlatform
+      ? [
+          {
+            label: "플랫폼",
+            value: PLATFORM_LABEL[detail.platform],
+          },
+        ]
+      : []),
     {
       label: appliedAtLabel,
       value: formatAppliedAt(detail.appliedAt),
