@@ -267,18 +267,36 @@ flowchart LR
 
 ## 프로젝트 구조
 
-```
+```text
 app/
-├── (protected)/                      # 인증 필요 라우트
+├── (protected)/                      # 인증 필요 라우트 그룹
+│   ├── ProtectedProviders.tsx        # 보호 영역 지연 마운트 provider
 │   ├── _components/                  # 보호 영역 공통 UI
 │   ├── applications/                 # 지원 목록, 추가 플로우, 상세 페이지
-│   │   ├── _components/              # 목록/추가 플로우 UI
+│   │   ├── ApplicationsProviders.tsx # applications 전용 provider
+│   │   ├── _components/              # applications 라우트 전용 UI
+│   │   │   ├── add-job/              # 공고 추가 feature
+│   │   │   │   ├── components/       # add-job 내부 UI 조각
+│   │   │   │   ├── hooks/            # add-job 내부 상태/행동
+│   │   │   │   └── utils/            # add-job 내부 보조 유틸
+│   │   │   └── components/           # 목록 화면 내부 UI 조각
+│   │   ├── _utils/                   # applications 라우트 전용 유틸
 │   │   └── [applicationId]/          # 지원 상세 (메모, 면접 일정, 공고 원문)
+│   │       └── _components/          # 상세 라우트 전용 UI
 │   └── dashboard/                    # 지원 현황 통계 대시보드
+│       ├── _components/              # dashboard 라우트 전용 UI
+│       └── _utils/                   # dashboard 라우트 전용 유틸
+├── _components/                      # 공개 라우트 공통 UI
+│   └── landing/                      # 랜딩 feature
+│       └── utils/                    # landing 내부 보조 유틸
+├── _fonts/                           # 폰트 에셋
 ├── auth/                             # OAuth 콜백 처리
 ├── login/                            # 로그인 페이지
-├── _components/landing/              # 랜딩 페이지 섹션
-└── providers.tsx                     # 루트 프로바이더
+├── privacy/                          # 개인정보처리방침
+│   ├── _components/                  # privacy 라우트 전용 UI
+│   └── _utils/                       # privacy 라우트 전용 유틸
+├── layout.tsx                        # 루트 레이아웃
+└── page.tsx                          # 랜딩 페이지 엔트리
 
 components/
 ├── ui/                               # 재사용 UI 컴포넌트
@@ -306,6 +324,9 @@ lib/
 supabase/
 └── migrations/                       # DB 스키마 및 정책 마이그레이션
 ```
+
+- `app/<route>` 바로 아래의 내부 폴더는 `_components`, `_utils`처럼 `_`를 붙입니다.
+- 그 아래 feature 내부 폴더는 `components`, `hooks`, `utils`처럼 역할 이름만 사용합니다.
 
 ## 알려진 제약사항
 

@@ -28,7 +28,7 @@ import {
   getDescriptionMeta,
   getErrorSummary,
   getNotesMeta,
-} from "../_utils/preview";
+} from "../../_utils/preview";
 import { PLATFORM_LABEL } from "../constants";
 import { ApplicationPreviewSection } from "./ApplicationPreviewSection";
 
