@@ -8,9 +8,8 @@ import { upsertInterview } from "@/lib/actions/upsertInterview";
 import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
 import { formatScheduledAt } from "@/lib/utils";
 
-import { DeleteInterviewButton } from "./DeleteInterviewButton";
 import { DetailSectionHeader } from "./DetailSectionHeader";
-import { InterviewFormSheet } from "./InterviewFormSheet";
+import { DeleteInterviewButton, InterviewFormSheet } from "./LazyClient";
 
 type InterviewListProps = {
   applicationId: string;
