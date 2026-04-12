@@ -5,6 +5,8 @@ import posthog from "posthog-js";
 import { PostHogProvider as PHProvider, usePostHog } from "posthog-js/react";
 import { Suspense, useEffect } from "react";
 
+import { PostHogUserSync } from "./PostHogUserSync";
+
 if (typeof window !== "undefined") {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN!, {
     advanced_disable_decide: true,
@@ -25,6 +27,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       <Suspense>
         <PageViewTracker />
       </Suspense>
+      <PostHogUserSync />
       {children}
     </PHProvider>
   );

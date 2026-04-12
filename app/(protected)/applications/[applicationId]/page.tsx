@@ -12,8 +12,7 @@ import { BackLink } from "./_components/BackLink";
 import { DetailSectionPanel } from "./_components/DetailSectionPanel";
 import { ErrorState } from "./_components/ErrorState";
 import { InterviewSection } from "./_components/InterviewSection";
-import { JobDescriptionEditor } from "./_components/JobDescriptionEditor";
-import { MemoEditor } from "./_components/MemoEditor";
+import { JobDescriptionEditor, MemoEditor } from "./_components/LazyClient";
 import { SectionErrorBoundary } from "./_components/SectionErrorBoundary";
 
 type ApplicationDetailPageProps = {

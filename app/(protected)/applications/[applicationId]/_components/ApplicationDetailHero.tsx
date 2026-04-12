@@ -8,14 +8,14 @@ import type {
   UpdateApplicationStatusResult,
 } from "@/lib/types/application";
 
-import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
 import { Button } from "@/components/ui/button/Button";
 import { APPLICATION_STATUS_META } from "@/lib/constants/application-status";
 import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
 import { cn, formatAppliedAt } from "@/lib/utils";
 
 import { BackLink } from "./BackLink";
-import { DeleteApplicationButton } from "./DeleteApplicationButton";
+import { ApplicationStatusSelector } from "./LazyClient";
+import { DeleteApplicationButton } from "./LazyClient";
 
 type ApplicationDetailHeroProps = {
   deleteAction: DeleteApplicationAction;
