@@ -59,6 +59,7 @@ export async function getApplicationDetail(
     if (code === "QUERY_ERROR") {
       reportQueryError("getApplicationDetail", reason);
     }
+
     return { code, ok: false, reason };
   }
 

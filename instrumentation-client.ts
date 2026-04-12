@@ -1,10 +1,12 @@
 const isProd = process.env.NODE_ENV === "production";
 const sentryDsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+const PUBLIC_BROWSER_SENTRY_DISABLED_PATHS = new Set(["/", "/privacy"]);
 const shouldEnableBrowserSentry =
   process.env.NEXT_PUBLIC_ENABLE_BROWSER_SENTRY === "true" &&
   typeof window !== "undefined" &&
   typeof sentryDsn === "string" &&
-  sentryDsn.length > 0;
+  sentryDsn.length > 0 &&
+  !PUBLIC_BROWSER_SENTRY_DISABLED_PATHS.has(window.location.pathname);
 
 if (shouldEnableBrowserSentry) {
   const initializeBrowserSentry = () => {
@@ -12,7 +14,7 @@ if (shouldEnableBrowserSentry) {
       Sentry.init({
         dsn: sentryDsn,
         enableLogs: !isProd,
-        tracesSampleRate: isProd ? 0.1 : 1.0,
+        tracesSampleRate: 0,
       });
     });
   };

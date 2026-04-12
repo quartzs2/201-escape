@@ -11,11 +11,31 @@ const SentryUserSync = dynamic(
   { ssr: false },
 );
 
-export function ProtectedProviders({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const DeferredPostHogBootstrap = dynamic(
+  () =>
+    import("@/lib/posthog/DeferredPostHogBootstrap").then((mod) => ({
+      default: mod.DeferredPostHogBootstrap,
+    })),
+  { ssr: false },
+);
+
+const BottomTabBar = dynamic(
+  () =>
+    import("./_components/BottomTabBar").then((mod) => ({
+      default: mod.BottomTabBar,
+    })),
+  { ssr: false },
+);
+
+const WindowScrollTopFAB = dynamic(
+  () =>
+    import("./_components/WindowScrollTopFAB").then((mod) => ({
+      default: mod.WindowScrollTopFAB,
+    })),
+  { ssr: false },
+);
+
+export function ProtectedEnhancements() {
   const [shouldMount, setShouldMount] = useState(false);
 
   useEffect(() => {
@@ -43,10 +63,16 @@ export function ProtectedProviders({
     };
   }, []);
 
+  if (!shouldMount) {
+    return null;
+  }
+
   return (
     <>
-      {children}
-      {shouldMount && <SentryUserSync />}
+      <DeferredPostHogBootstrap />
+      <BottomTabBar />
+      <WindowScrollTopFAB />
+      <SentryUserSync />
     </>
   );
 }

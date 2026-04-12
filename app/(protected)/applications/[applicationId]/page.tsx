@@ -1,6 +1,7 @@
 import { FileTextIcon, LockKeyholeIcon } from "lucide-react";
 import { Suspense } from "react";
 
+import { ApplicationsProviders } from "@/app/(protected)/applications/ApplicationsProviders";
 import { Skeleton } from "@/components/ui";
 import { deleteApplication, getApplicationDetail } from "@/lib/actions";
 import { updateApplicationNotes } from "@/lib/actions/updateApplicationNotes";
@@ -58,6 +59,16 @@ const ERROR_STATE_META = {
 export default async function ApplicationDetailPage({
   params,
 }: ApplicationDetailPageProps) {
+  return (
+    <Suspense fallback={<ApplicationDetailPageSkeleton />}>
+      <ApplicationDetailContent params={params} />
+    </Suspense>
+  );
+}
+
+async function ApplicationDetailContent({
+  params,
+}: ApplicationDetailPageProps) {
   const { applicationId } = await params;
   const result = await getApplicationDetail(applicationId);
 
@@ -85,57 +96,160 @@ export default async function ApplicationDetailPage({
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,rgba(245,245,245,0.9)_0%,rgba(255,255,255,0.82)_18%,rgba(255,255,255,1)_40%)] pb-20">
+      <ApplicationsProviders>
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+          <ApplicationDetailHero
+            deleteAction={deleteApplication}
+            detail={detail}
+            updateStatusAction={updateApplicationStatus}
+          />
+
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.82fr)]">
+            <div className="order-2 grid gap-6 lg:order-1">
+              <DetailSectionPanel
+                className="motion-safe:animate-fade-up"
+                style={{
+                  animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.jobDescription,
+                }}
+              >
+                <JobDescriptionEditor
+                  applicationId={detail.id}
+                  description={detail.description}
+                  updateDescriptionAction={updateJobDescription}
+                />
+              </DetailSectionPanel>
+
+              <DetailSectionPanel
+                className="motion-safe:animate-fade-up"
+                style={{ animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.memo }}
+              >
+                <MemoEditor
+                  applicationId={detail.id}
+                  notes={detail.notes}
+                  updateNotesAction={updateApplicationNotes}
+                />
+              </DetailSectionPanel>
+            </div>
+
+            <div className="order-1 grid gap-6 lg:sticky lg:top-6 lg:order-2 lg:self-start">
+              <DetailSectionPanel
+                className="motion-safe:animate-fade-up"
+                style={{
+                  animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.interview,
+                }}
+              >
+                <SectionErrorBoundary>
+                  <Suspense fallback={<InterviewSectionSkeleton />}>
+                    <InterviewSection applicationId={detail.id} />
+                  </Suspense>
+                </SectionErrorBoundary>
+              </DetailSectionPanel>
+            </div>
+          </div>
+        </div>
+      </ApplicationsProviders>
+    </main>
+  );
+}
+
+function ApplicationDetailPageSkeleton() {
+  return (
+    <main className="min-h-screen bg-[linear-gradient(180deg,rgba(245,245,245,0.9)_0%,rgba(255,255,255,0.82)_18%,rgba(255,255,255,1)_40%)] pb-20">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <ApplicationDetailHero
-          deleteAction={deleteApplication}
-          detail={detail}
-          updateStatusAction={updateApplicationStatus}
-        />
+        <section
+          aria-busy="true"
+          aria-label="지원 상세 정보를 불러오는 중입니다"
+          className="relative overflow-hidden rounded-[32px] border border-border/60 bg-background p-5 shadow-[0_36px_120px_-64px_rgba(23,23,23,0.45)] sm:p-8"
+          role="status"
+        >
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)] lg:gap-10">
+            <div className="space-y-8">
+              <div className="flex items-center justify-between gap-3">
+                <Skeleton className="h-9 w-24 rounded-full" />
+                <Skeleton className="h-9 w-9 rounded-full" />
+              </div>
+
+              <div className="space-y-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Skeleton className="h-6 w-18 rounded-full" />
+                  <Skeleton className="h-4 w-28 rounded-full" />
+                </div>
+
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-28 rounded-full" />
+                  <Skeleton className="h-12 w-full max-w-2xl rounded-2xl" />
+                </div>
+
+                <Skeleton className="h-10 w-32 rounded-full" />
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div
+                    className="rounded-2xl border border-border/50 bg-background/70 px-4 py-4"
+                    key={index}
+                  >
+                    <Skeleton className="h-4 w-14 rounded-full" />
+                    <Skeleton className="mt-2 h-5 w-20 rounded-full" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[28px] border border-border/60 bg-background/90 p-5 sm:p-6">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-18 rounded-full" />
+                <Skeleton className="h-8 w-24 rounded-full" />
+                <Skeleton className="h-4 w-40 rounded-full" />
+              </div>
+
+              <div className="mt-6 space-y-3">
+                <Skeleton className="h-4 w-16 rounded-full" />
+                <div className="flex flex-wrap gap-2">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Skeleton className="h-11 w-20 rounded-full" key={index} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.82fr)]">
           <div className="order-2 grid gap-6 lg:order-1">
-            <DetailSectionPanel
-              className="motion-safe:animate-fade-up"
-              style={{
-                animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.jobDescription,
-              }}
-            >
-              <JobDescriptionEditor
-                applicationId={detail.id}
-                description={detail.description}
-                updateDescriptionAction={updateJobDescription}
-              />
+            <DetailSectionPanel>
+              <EditorSectionSkeleton />
             </DetailSectionPanel>
-
-            <DetailSectionPanel
-              className="motion-safe:animate-fade-up"
-              style={{ animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.memo }}
-            >
-              <MemoEditor
-                applicationId={detail.id}
-                notes={detail.notes}
-                updateNotesAction={updateApplicationNotes}
-              />
+            <DetailSectionPanel>
+              <EditorSectionSkeleton />
             </DetailSectionPanel>
           </div>
 
-          <div className="order-1 grid gap-6 lg:sticky lg:top-6 lg:order-2 lg:self-start">
-            <DetailSectionPanel
-              className="motion-safe:animate-fade-up"
-              style={{
-                animationDelay: DETAIL_PANEL_ANIMATION_DELAYS.interview,
-              }}
-            >
-              <SectionErrorBoundary>
-                <Suspense fallback={<InterviewSectionSkeleton />}>
-                  <InterviewSection applicationId={detail.id} />
-                </Suspense>
-              </SectionErrorBoundary>
+          <div className="order-1 lg:order-2">
+            <DetailSectionPanel>
+              <InterviewSectionSkeleton />
             </DetailSectionPanel>
           </div>
         </div>
       </div>
     </main>
+  );
+}
+
+function EditorSectionSkeleton() {
+  return (
+    <div
+      aria-busy="true"
+      aria-label="편집 영역을 불러오는 중입니다"
+      className="space-y-4"
+      role="status"
+    >
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-5 w-24 rounded-full" />
+        <Skeleton className="h-8 w-16 rounded-full" />
+      </div>
+      <Skeleton className="h-32 w-full rounded-xl" />
+    </div>
   );
 }
 

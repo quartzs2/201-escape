@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 
 import localFont from "next/font/local";
-import { Suspense } from "react";
 
 import { PORTAL_ROOT_ID } from "@/lib/constants/dom";
-import { DeferredPostHogBootstrap } from "@/lib/posthog/DeferredPostHogBootstrap";
 
 import "./globals.css";
 
@@ -56,9 +54,6 @@ export default function RootLayout({
     <html lang="ko">
       <body className={`${pretendard.className} antialiased`}>
         {children}
-        <Suspense fallback={null}>
-          <DeferredPostHogBootstrap />
-        </Suspense>
         <div id={PORTAL_ROOT_ID} />
       </body>
     </html>

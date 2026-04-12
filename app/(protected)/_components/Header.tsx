@@ -1,10 +1,9 @@
 import { LogOutIcon } from "lucide-react";
-import Link from "next/link";
 
 import { Button } from "@/components/ui/button/Button";
 import { signOut } from "@/lib/actions/signOut";
 
-import { HeaderNavLinks } from "./HeaderNavLinks";
+import { NAV_ITEMS } from "./nav-items";
 
 export function Header() {
   return (
@@ -16,10 +15,22 @@ export function Header() {
             className="text-xl font-black tracking-tighter text-primary hover:bg-transparent"
             variant="ghost"
           >
-            <Link href="/dashboard">201</Link>
+            <a href="/dashboard">201</a>
           </Button>
           <nav aria-label="주 내비게이션" className="hidden md:flex">
-            <HeaderNavLinks />
+            <ul className="flex items-center gap-1">
+              {NAV_ITEMS.map(({ href, label }) => (
+                <li key={href}>
+                  <Button
+                    asChild
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground"
+                    variant="ghost"
+                  >
+                    <a href={href}>{label}</a>
+                  </Button>
+                </li>
+              ))}
+            </ul>
           </nav>
         </div>
         <form action={signOut}>

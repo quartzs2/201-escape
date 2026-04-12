@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { Suspense } from "react";
 
+import { ApplicationsProviders } from "@/app/(protected)/applications/ApplicationsProviders";
 import { Skeleton } from "@/components/ui";
 import { getApplications } from "@/lib/actions";
 import { formatKoreanDate } from "@/lib/utils";
@@ -66,11 +67,13 @@ export async function ApplicationsView({
   return (
     <main className="min-h-screen bg-background pb-20">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 pt-0 pb-10 sm:px-6 lg:gap-20 lg:px-8 lg:pb-12">
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <Suspense fallback={<ApplicationsViewSkeleton />}>
-            <ApplicationsPanel dateLabel={dateLabel} />
-          </Suspense>
-        </HydrationBoundary>
+        <ApplicationsProviders>
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <Suspense fallback={<ApplicationsViewSkeleton />}>
+              <ApplicationsPanel dateLabel={dateLabel} />
+            </Suspense>
+          </HydrationBoundary>
+        </ApplicationsProviders>
       </div>
       <AddJobTrigger />
     </main>

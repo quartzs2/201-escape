@@ -1,5 +1,4 @@
 import { ArrowRightIcon } from "lucide-react";
-import Link from "next/link";
 
 import { Button } from "@/components/ui/button/Button";
 
@@ -23,10 +22,10 @@ export function FinalCtaSection() {
           asChild
           className="h-[3.25rem] w-full rounded-full bg-[#40513b] px-7 text-sm font-bold text-white hover:bg-[#354230] focus-visible:ring-[#40513b] sm:w-auto"
         >
-          <Link href="/login">
+          <a href="/login">
             로그인하고 시작하기
             <ArrowRightIcon className="size-4" />
-          </Link>
+          </a>
         </Button>
       </div>
     </section>
