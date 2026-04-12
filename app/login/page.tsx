@@ -3,32 +3,26 @@
 import type { Route } from "next";
 
 import Link from "next/link";
-import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import GoogleIcon from "@/assets/google.svg";
+import { trackEvent } from "@/lib/posthog/client";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
-import { PostHogProvider } from "@/lib/posthog/PostHogProvider";
 
 import { PublicHeader } from "../_components/PublicHeader";
 
 const PRIVACY_PAGE_HREF = "/privacy" as Route;
 
 export default function LoginPage() {
-  return (
-    <PostHogProvider>
-      <LoginPageContent />
-    </PostHogProvider>
-  );
+  return <LoginPageContent />;
 }
 
 function LoginPageContent() {
-  const posthog = usePostHog();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
   const handleGoogleLogin = async () => {
-    posthog.capture(POSTHOG_EVENTS.LOGIN_ATTEMPTED);
+    trackEvent(POSTHOG_EVENTS.LOGIN_ATTEMPTED);
     setIsLoading(true);
     setErrorMessage(null);
 

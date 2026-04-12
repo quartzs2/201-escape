@@ -11,7 +11,11 @@ const SentryUserSync = dynamic(
   { ssr: false },
 );
 
-export function ProtectedProviders() {
+export function ProtectedProviders({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [shouldMount, setShouldMount] = useState(false);
 
   useEffect(() => {
@@ -39,13 +43,10 @@ export function ProtectedProviders() {
     };
   }, []);
 
-  if (!shouldMount) {
-    return null;
-  }
-
   return (
     <>
-      <SentryUserSync />
+      {children}
+      {shouldMount && <SentryUserSync />}
     </>
   );
 }

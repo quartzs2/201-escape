@@ -90,7 +90,6 @@
 - **Server State**: TanStack Query v5
 - **Database & Auth**: Supabase (PostgreSQL, Google OAuth)
 - **Styling**: TailwindCSS v4, CVA, tailwind-merge
-- **Notifications**: Sonner
 - **Validation**: Zod
 - **Parsing**: Cheerio (서버 사이드 HTML 파싱)
 - **Analytics**: PostHog (이벤트 트래킹, 사용자 식별)
@@ -223,7 +222,6 @@ flowchart LR
 | tailwind-merge           | Tailwind 클래스 충돌 정리                    |
 | Zod                      | 입력값 및 도메인 스키마 검증                 |
 | Cheerio                  | 서버 사이드 HTML 파싱                        |
-| Sonner                   | 토스트 알림 표시                             |
 | PostHog                  | 사용자 이벤트 트래킹과 식별                  |
 | Sentry                   | 런타임 오류 수집과 추적                      |
 | Vitest                   | 단위 테스트와 벤치마크 실행                  |

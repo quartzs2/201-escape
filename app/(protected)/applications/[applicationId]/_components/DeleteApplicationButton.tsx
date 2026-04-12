@@ -3,7 +3,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import type {
@@ -13,7 +12,7 @@ import type {
 
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
-import { Tooltip } from "@/components/ui/tooltip/Tooltip";
+import { trackEvent } from "@/lib/posthog/client";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 type DeleteApplicationAction = (
@@ -34,7 +33,6 @@ export function DeleteApplicationButton({
   positionTitle,
 }: DeleteApplicationButtonProps) {
   const router = useRouter();
-  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
@@ -52,7 +50,7 @@ export function DeleteApplicationButton({
       setErrorMessage(null);
     },
     onSuccess: () => {
-      posthog.capture(POSTHOG_EVENTS.APPLICATION_DELETED);
+      trackEvent(POSTHOG_EVENTS.APPLICATION_DELETED);
       router.replace("/applications");
     },
   });
@@ -78,16 +76,15 @@ export function DeleteApplicationButton({
 
   return (
     <>
-      <Tooltip label="지원 삭제" side="bottom">
-        <Button
-          aria-label="지원 삭제"
-          onClick={handleOpen}
-          size="sm"
-          variant="ghost"
-        >
-          <Trash2Icon aria-hidden="true" className="size-4" />
-        </Button>
-      </Tooltip>
+      <Button
+        aria-label="지원 삭제"
+        onClick={handleOpen}
+        size="sm"
+        title="지원 삭제"
+        variant="ghost"
+      >
+        <Trash2Icon aria-hidden="true" className="size-4" />
+      </Button>
 
       <BottomSheet isOpen={isOpen} onClose={handleClose}>
         <BottomSheet.Overlay

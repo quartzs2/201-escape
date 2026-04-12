@@ -3,7 +3,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { NotebookPenIcon, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
 import { useEffect, useRef, useState } from "react";
 
 import type {
@@ -12,7 +11,7 @@ import type {
 } from "@/lib/types/application";
 
 import { Button } from "@/components/ui";
-import { Tooltip } from "@/components/ui/tooltip/Tooltip";
+import { trackEvent } from "@/lib/posthog/client";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 import { DetailSectionHeader } from "./DetailSectionHeader";
@@ -31,7 +30,6 @@ export function MemoEditor({
   updateNotesAction,
 }: MemoEditorProps) {
   const router = useRouter();
-  const posthog = usePostHog();
   const [currentNotes, setCurrentNotes] = useState(notes);
   const [draftText, setDraftText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -89,7 +87,7 @@ export function MemoEditor({
       return { previousNotes };
     },
     onSuccess: () => {
-      posthog.capture(POSTHOG_EVENTS.MEMO_SAVED);
+      trackEvent(POSTHOG_EVENTS.MEMO_SAVED);
       router.refresh();
     },
   });
@@ -118,18 +116,17 @@ export function MemoEditor({
       <DetailSectionHeader
         action={
           !isEditing ? (
-            <Tooltip label="편집" side="bottom">
-              <Button
-                aria-label="편집"
-                className="size-9 rounded-full"
-                disabled={mutation.isPending}
-                onClick={handleEditStart}
-                ref={editButtonRef}
-                variant="ghost"
-              >
-                <PencilIcon aria-hidden="true" className="size-4" />
-              </Button>
-            </Tooltip>
+            <Button
+              aria-label="편집"
+              className="size-9 rounded-full"
+              disabled={mutation.isPending}
+              onClick={handleEditStart}
+              ref={editButtonRef}
+              title="편집"
+              variant="ghost"
+            >
+              <PencilIcon aria-hidden="true" className="size-4" />
+            </Button>
           ) : null
         }
         description="다음 액션, 인상, 비교 포인트를 남겨 두는 작업 공간입니다."

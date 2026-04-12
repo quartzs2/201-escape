@@ -7,6 +7,7 @@ import {
   useQueryClient,
   useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 
@@ -36,8 +37,15 @@ import {
 } from "../constants";
 import { GoToTopFAB } from "../go-to-top";
 import { ApplicationFilters } from "./ApplicationFilters";
-import { ApplicationPreviewSheet } from "./ApplicationPreviewSheet";
 import { ApplicationTabs } from "./ApplicationTabs";
+
+const ApplicationPreviewSheet = dynamic(
+  () =>
+    import("./ApplicationPreviewSheet").then(
+      (module) => module.ApplicationPreviewSheet,
+    ),
+  { ssr: false },
+);
 
 type ApplicationsPanelProps = {
   dateLabel: string;
@@ -51,6 +59,9 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
 
   const tabsRef = useRef<ApplicationTabsHandle>(null);
   const [isListScrolled, setIsListScrolled] = useState(false);
+  const [shouldRenderPreviewSheet, setShouldRenderPreviewSheet] = useState(
+    selectedPreviewExists(searchParams.get(PREVIEW_PARAM)),
+  );
 
   const search = searchParams.get(SEARCH_PARAM) ?? "";
   const period = parsePeriodParam(searchParams.get(PERIOD_PARAM));
@@ -102,6 +113,7 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
     const query = params.toString();
     router.replace(
       `${pathname}${query ? `?${query}` : ""}` as unknown as Route,
+      { scroll: false },
     );
   };
 
@@ -141,6 +153,7 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
   };
 
   const handleSelectApplication = (application: ApplicationListItem) => {
+    setShouldRenderPreviewSheet(true);
     updateParams({ [PREVIEW_PARAM]: application.id });
   };
 
@@ -214,12 +227,14 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
         />
       </section>
 
-      <ApplicationPreviewSheet
-        application={selectedApplication}
-        isOpen={isPreviewOpen}
-        onCloseAction={handleClosePreview}
-        onStatusChangeAction={handleStatusChange}
-      />
+      {(shouldRenderPreviewSheet || isPreviewOpen) && (
+        <ApplicationPreviewSheet
+          application={selectedApplication}
+          isOpen={isPreviewOpen}
+          onCloseAction={handleClosePreview}
+          onStatusChangeAction={handleStatusChange}
+        />
+      )}
       <GoToTopFAB
         className="md:bottom-24"
         isVisible={isListScrolled}
@@ -227,4 +242,8 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
       />
     </div>
   );
+}
+
+function selectedPreviewExists(value: null | string) {
+  return value !== null;
 }
