@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useEffectEvent } from "react";
 
 // 여러 컴포넌트가 동시에 scroll lock을 요청할 때 올바르게 관리하기 위한 Set
 const scrollLockOwners = new Set<object>();
@@ -9,12 +10,17 @@ const scrollLockOwners = new Set<object>();
 let lockState: null | { paddingRight: string; scrollY: number } = null;
 
 export const useScrollLock = (isActive: boolean) => {
+  const pathname = usePathname();
+  const getLatestPathname = useEffectEvent(() => pathname);
+
   useEffect(() => {
     if (!isActive) {
       return;
     }
 
     const token = {};
+    // lock 획득 시점의 경로를 캡처 — cleanup 시 페이지 이동 여부 판단에 사용
+    const acquiredPathname = getLatestPathname();
     scrollLockOwners.add(token);
 
     if (scrollLockOwners.size === 1) {
@@ -46,7 +52,11 @@ export const useScrollLock = (isActive: boolean) => {
         document.body.style.overscrollBehavior = "";
         document.body.style.paddingRight = paddingRight;
 
-        window.scrollTo(0, scrollY);
+        // 페이지가 변경된 경우 최상단으로, 동일 페이지면 원래 위치로 복원
+        window.scrollTo(
+          0,
+          getLatestPathname() !== acquiredPathname ? 0 : scrollY,
+        );
       }
     };
   }, [isActive]);
