@@ -3,7 +3,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { FileTextIcon, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
 import { useEffect, useRef, useState } from "react";
 
 import type {
@@ -12,7 +11,7 @@ import type {
 } from "@/lib/types/application";
 
 import { Button } from "@/components/ui";
-import { Tooltip } from "@/components/ui/tooltip/Tooltip";
+import { trackEvent } from "@/lib/posthog/client";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 import { DetailSectionHeader } from "./DetailSectionHeader";
@@ -31,7 +30,6 @@ export function JobDescriptionEditor({
   updateDescriptionAction,
 }: JobDescriptionEditorProps) {
   const router = useRouter();
-  const posthog = usePostHog();
   const [currentDescription, setCurrentDescription] = useState(description);
   const [draftText, setDraftText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -92,7 +90,7 @@ export function JobDescriptionEditor({
       return { previousDescription };
     },
     onSuccess: () => {
-      posthog.capture(POSTHOG_EVENTS.JOB_DESCRIPTION_SAVED);
+      trackEvent(POSTHOG_EVENTS.JOB_DESCRIPTION_SAVED);
       router.refresh();
     },
   });
@@ -121,18 +119,17 @@ export function JobDescriptionEditor({
       <DetailSectionHeader
         action={
           !isEditing ? (
-            <Tooltip label="편집" side="bottom">
-              <Button
-                aria-label="편집"
-                className="size-9 rounded-full"
-                disabled={mutation.isPending}
-                onClick={handleEditStart}
-                ref={editButtonRef}
-                variant="ghost"
-              >
-                <PencilIcon aria-hidden="true" className="size-4" />
-              </Button>
-            </Tooltip>
+            <Button
+              aria-label="편집"
+              className="size-9 rounded-full"
+              disabled={mutation.isPending}
+              onClick={handleEditStart}
+              ref={editButtonRef}
+              title="편집"
+              variant="ghost"
+            >
+              <PencilIcon aria-hidden="true" className="size-4" />
+            </Button>
           ) : null
         }
         description="원문 공고 내용을 저장해 두고 이후에도 같은 기준으로 비교합니다."

@@ -9,12 +9,11 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <ProtectedProviders>
       <Header />
       <div className="pt-16 pb-16 md:pb-0">{children}</div>
       <BottomTabBar />
       <WindowScrollTopFAB />
-      <ProtectedProviders />
-    </>
+    </ProtectedProviders>
   );
 }

@@ -1,10 +1,10 @@
 import { useRouter } from "next/navigation";
-import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 import { useIsMounted } from "@/hooks";
 import { extractJobData } from "@/lib/actions/extractJobData";
 import { saveJobApplication } from "@/lib/actions/saveJobApplication";
+import { trackEvent } from "@/lib/posthog/client";
 import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { JobId, type JobPost, MANUAL_JOB_DEFAULTS } from "@/lib/types/job";
 
@@ -52,7 +52,6 @@ type UseAddJobProps = {
 export function useAddJob({ onSuccess }: UseAddJobProps) {
   const isMounted = useIsMounted();
   const router = useRouter();
-  const posthog = usePostHog();
   const [lastSubmittedPositionTitle, setLastSubmittedPositionTitle] = useState<
     null | string
   >(null);
@@ -104,7 +103,7 @@ export function useAddJob({ onSuccess }: UseAddJobProps) {
       url: fields.url.trim() || `manual:${crypto.randomUUID()}`,
     };
 
-    posthog.capture(POSTHOG_EVENTS.APPLICATION_ADD_SUBMITTED, {
+    trackEvent(POSTHOG_EVENTS.APPLICATION_ADD_SUBMITTED, {
       has_url: !!fields.url.trim(),
     });
     setState({ error: null, jobData, step: "review", url: fields.url.trim() });
@@ -148,13 +147,13 @@ export function useAddJob({ onSuccess }: UseAddJobProps) {
       return;
     }
 
-    posthog.capture(POSTHOG_EVENTS.APPLICATION_ADD_SAVED);
+    trackEvent(POSTHOG_EVENTS.APPLICATION_ADD_SAVED);
     router.refresh();
     onSuccess();
   }
 
   function handleReset() {
-    posthog.capture(POSTHOG_EVENTS.APPLICATION_ADD_RESET);
+    trackEvent(POSTHOG_EVENTS.APPLICATION_ADD_RESET);
     setState({ error: null, step: "idle", url: state.url });
   }
 
