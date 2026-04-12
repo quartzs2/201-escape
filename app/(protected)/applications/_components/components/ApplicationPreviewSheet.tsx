@@ -266,7 +266,7 @@ export function ApplicationPreviewSheet({
           </div>
         </BottomSheet.Body>
 
-        <div className="border-t border-border bg-white px-6 py-4">
+        <div className="border-t border-border bg-background px-6 py-4">
           {application ? (
             <Button
               asChild

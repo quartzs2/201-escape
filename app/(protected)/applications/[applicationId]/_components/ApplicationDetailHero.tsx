@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import { ExternalLinkIcon } from "lucide-react";
 
 import type {
@@ -38,6 +40,11 @@ type UpdateStatusAction = (
 
 const STATUS_PANEL_ANIMATION_DELAY = "120ms";
 
+const HERO_OVERLAY_STYLE: CSSProperties = {
+  backgroundImage:
+    "radial-gradient(circle at top left, color-mix(in srgb, var(--color-primary) 16%, transparent) 0%, transparent 36%), linear-gradient(180deg, color-mix(in srgb, var(--color-muted) 78%, transparent) 0%, color-mix(in srgb, var(--color-background) 88%, transparent) 42%, var(--color-background) 100%)",
+};
+
 export function ApplicationDetailHero({
   deleteAction,
   detail,
@@ -71,7 +78,7 @@ export function ApplicationDetailHero({
 
   return (
     <section className="relative overflow-hidden rounded-[32px] border border-border/60 bg-background shadow-[0_36px_120px_-64px_rgba(23,23,23,0.45)] motion-safe:animate-fade-in">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(64,81,59,0.14),transparent_36%),linear-gradient(180deg,rgba(245,245,245,0.95),rgba(255,255,255,0.82)_42%,rgba(255,255,255,1))]" />
+      <div className="absolute inset-0" style={HERO_OVERLAY_STYLE} />
       <div className="relative grid gap-8 p-5 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)] lg:gap-10">
         <div className="space-y-8 motion-safe:animate-fade-up">
           <div className="flex items-center justify-between gap-3">

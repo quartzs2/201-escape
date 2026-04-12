@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 @layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
   html,
   body {
     width: 100%;
@@ -49,6 +57,26 @@
   --animate-slide-up: slide-up 0.5s ease-out both;
 }
 
+@layer base {
+  html[data-theme="dark"] {
+    --color-background: #16171a;
+    --color-foreground: #f3f1ec;
+    --color-primary: #9db58d;
+    --color-primary-foreground: #0f140f;
+    --color-secondary: #202228;
+    --color-secondary-foreground: #f3f1ec;
+    --color-destructive: #f87171;
+    --color-destructive-foreground: #1f1111;
+    --color-muted: #1a1c21;
+    --color-muted-foreground: #abaeb8;
+    --color-accent: #262930;
+    --color-accent-foreground: #f3f1ec;
+    --color-border: #31343c;
+    --color-input: #31343c;
+    --color-ring: #9db58d;
+  }
+}
+
 @keyframes slide-up {
   from {
     transform: translateY(16px);
@@ -81,4 +109,12 @@
 .bg-dot-pattern {
   background-image: radial-gradient(circle, #40513b18 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+html[data-theme="dark"] .bg-dot-pattern {
+  background-image: radial-gradient(
+    circle,
+    rgb(157 181 141 / 0.14) 1px,
+    transparent 1px
+  );
 }

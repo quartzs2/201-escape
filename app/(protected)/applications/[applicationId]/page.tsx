@@ -1,5 +1,5 @@
 import { FileTextIcon, LockKeyholeIcon } from "lucide-react";
-import { Suspense } from "react";
+import { type CSSProperties, Suspense } from "react";
 
 import { ApplicationsProviders } from "@/app/(protected)/applications/ApplicationsProviders";
 import { Skeleton } from "@/components/ui";
@@ -27,6 +27,11 @@ const DETAIL_PANEL_ANIMATION_DELAYS = {
   jobDescription: "160ms",
   memo: "220ms",
 } as const;
+
+const DETAIL_PAGE_BACKGROUND_STYLE: CSSProperties = {
+  backgroundImage:
+    "linear-gradient(180deg, color-mix(in srgb, var(--color-muted) 72%, transparent) 0%, color-mix(in srgb, var(--color-background) 88%, transparent) 18%, var(--color-background) 40%)",
+};
 
 const ERROR_STATE_META = {
   AUTH_REQUIRED: {
@@ -96,7 +101,10 @@ async function ApplicationDetailContent({
   const shouldShowJobDescription = detail.platform !== "MANUAL";
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,rgba(245,245,245,0.9)_0%,rgba(255,255,255,0.82)_18%,rgba(255,255,255,1)_40%)] pb-20">
+    <main
+      className="min-h-screen bg-background pb-20"
+      style={DETAIL_PAGE_BACKGROUND_STYLE}
+    >
       <ApplicationsProviders>
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
           <ApplicationDetailHero
@@ -158,7 +166,10 @@ async function ApplicationDetailContent({
 
 function ApplicationDetailPageSkeleton() {
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,rgba(245,245,245,0.9)_0%,rgba(255,255,255,0.82)_18%,rgba(255,255,255,1)_40%)] pb-20">
+    <main
+      className="min-h-screen bg-background pb-20"
+      style={DETAIL_PAGE_BACKGROUND_STYLE}
+    >
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <section
           aria-busy="true"

@@ -5,7 +5,7 @@ import { PublicHeader } from "./_components/PublicHeader";
 
 export default function Home() {
   return (
-    <div className="flex min-h-dvh flex-col bg-white text-[#192016]">
+    <div className="flex min-h-dvh flex-col bg-background text-foreground">
       <PublicHeader />
       <main className="flex-1">
         <HeroSection />
