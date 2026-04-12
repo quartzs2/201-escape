@@ -1,5 +1,6 @@
 import { LogOutIcon } from "lucide-react";
 
+import { HeaderActions } from "@/app/_components/HeaderActions";
 import { Button } from "@/components/ui/button/Button";
 import { signOut } from "@/lib/actions/signOut";
 
@@ -33,17 +34,20 @@ export function Header() {
             </ul>
           </nav>
         </div>
-        <form action={signOut}>
-          <Button
-            aria-label="로그아웃"
-            size="icon"
-            title="로그아웃"
-            type="submit"
-            variant="ghost"
-          >
-            <LogOutIcon aria-hidden="true" />
-          </Button>
-        </form>
+        <div className="flex items-center gap-2">
+          <HeaderActions />
+          <form action={signOut}>
+            <Button
+              aria-label="로그아웃"
+              size="icon"
+              title="로그아웃"
+              type="submit"
+              variant="ghost"
+            >
+              <LogOutIcon aria-hidden="true" />
+            </Button>
+          </form>
+        </div>
       </div>
     </header>
   );
