@@ -1,6 +1,6 @@
 import type { StatCounts } from "@/lib/types/application";
 
-import { formatPercent } from "./_utils/dashboard";
+import { formatPercent } from "../../_utils/dashboard";
 
 type DashboardOverviewProps = {
   stats: StatCounts;

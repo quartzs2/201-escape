@@ -1,4 +1,4 @@
-import { landingFeatures } from "./_utils/content";
+import { landingFeatures } from "./utils/content";
 
 export function FeaturesSection() {
   return (

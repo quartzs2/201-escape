@@ -2,14 +2,18 @@ import type { ApplicationListItem } from "@/lib/types/application";
 
 import { formatAppliedAt } from "@/lib/utils";
 
-import type { PeriodPreset, SortValue, TabValue } from "../constants";
+import type {
+  PeriodPreset,
+  SortValue,
+  TabValue,
+} from "../_components/constants";
 
 import {
   DONE_STATUSES,
   IN_PROGRESS_STATUSES,
   PERIOD_PRESET_LABELS,
   SORT_LABELS,
-} from "../constants";
+} from "../_components/constants";
 
 export type ApplicationsOverviewContent = {
   chips: string[];

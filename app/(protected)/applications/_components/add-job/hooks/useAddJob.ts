@@ -13,7 +13,7 @@ import {
   getDefaultPositionTitle,
   LAST_POSITION_TITLE_STORAGE_KEY,
   normalizePositionTitle,
-} from "../_utils/positionTitle";
+} from "../utils/positionTitle";
 
 export type AddJobState =
   | ExtractingState

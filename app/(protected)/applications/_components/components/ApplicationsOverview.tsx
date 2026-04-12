@@ -2,7 +2,7 @@ import type { ApplicationListItem } from "@/lib/types/application";
 
 import type { PeriodPreset, SortValue, TabValue } from "../constants";
 
-import { buildApplicationsOverviewContent } from "../_utils/summary";
+import { buildApplicationsOverviewContent } from "../../_utils/summary";
 
 type ApplicationsOverviewProps = {
   applications: ApplicationListItem[];
