@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
   },
   reactCompiler: true,
   turbopack: {
+    resolveAlias: {
+      "../build/polyfills/polyfill-module": "./lib/modern-polyfill.js",
+      "next/dist/build/polyfills/polyfill-module": "./lib/modern-polyfill.js",
+    },
     rules: {
       "*.svg": {
         as: "*.js",
