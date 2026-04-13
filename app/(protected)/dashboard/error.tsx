@@ -10,7 +10,7 @@ export default function DashboardError({
   reset: () => void;
 }) {
   return (
-    <main className="min-h-screen bg-muted/30">
+    <main className="bg-muted/30">
       <ErrorPageFallback
         description="목록 로딩 중 오류가 발생했습니다. 다시 시도하거나 잠시 후 돌아와 주세요."
         error={error}

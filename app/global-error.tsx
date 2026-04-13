@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 
 import { createErrorReportPayload } from "@/lib/error-report/payload";
 
+import { ErrorPageFallback } from "./_components/ErrorPageFallback";
+
 export default function GlobalError({
   error,
   reset,
@@ -36,23 +38,28 @@ export default function GlobalError({
 
   return (
     <html lang="ko">
-      <body>
-        <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center">
-          <h2 className="mb-4 text-2xl font-bold">문제가 발생했습니다.</h2>
-          <p className="mb-8 text-gray-600">
-            예상치 못한 오류가 발생했습니다.
-            {error.digest && (
-              <span className="mt-1 block text-xs text-gray-400">
-                오류 코드: {error.digest}
-              </span>
-            )}
-          </p>
-          <button
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
-            onClick={reset}
-          >
-            다시 시도
-          </button>
+      <body className="bg-muted/30 text-foreground">
+        <div className="min-h-screen">
+          <header className="sticky top-0 z-20 border-b border-border bg-background/90 px-6 py-4 text-foreground backdrop-blur-xl lg:px-10">
+            <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- Global error recovery must bypass client routing. */}
+              <a
+                className="text-base font-bold tracking-[-0.03em] text-foreground"
+                href="/"
+              >
+                201 escape
+              </a>
+            </div>
+          </header>
+          <ErrorPageFallback
+            description="예상치 못한 오류가 발생했습니다. 다시 시도하거나 홈으로 이동해 주세요."
+            error={error}
+            navHref="/"
+            navLabel="홈으로 이동"
+            resetAction={reset}
+            title="문제가 발생했습니다"
+            viewport="withoutHeader"
+          />
         </div>
       </body>
     </html>
