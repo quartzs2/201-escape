@@ -8,7 +8,10 @@ import type {
   MonthlyCount,
 } from "@/lib/types/application";
 
-import { DOCS_PASSED_STATUSES } from "@/lib/constants/application-status";
+import {
+  DOCS_PASSED_STATUSES,
+  INTERVIEW_STATUSES,
+} from "@/lib/constants/application-status";
 
 import { createClient, createClientWithToken } from "../supabase/server";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
@@ -50,7 +53,7 @@ const getCachedChartData = unstable_cache(
         .from("applications")
         .select("*", { count: "exact", head: true })
         .eq("user_id", userId)
-        .in("status", ["INTERVIEWING", "OFFERED"]),
+        .in("status", INTERVIEW_STATUSES),
       supabase
         .from("applications")
         .select("*", { count: "exact", head: true })

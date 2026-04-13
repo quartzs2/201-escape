@@ -4,6 +4,7 @@ export { getApplicationDetail } from "./getApplicationDetail";
 export { getApplications } from "./getApplications";
 export { getApplicationsStats } from "./getApplicationsStats";
 export { getChartData } from "./getChartData";
+export { getDashboardData } from "./getDashboardData";
 export { getInterviews } from "./getInterviews";
 export { getStatCounts } from "./getStatCounts";
 export { saveJobApplication } from "./saveJobApplication";
