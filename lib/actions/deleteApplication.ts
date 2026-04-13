@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { trackServerEvent } from "@/lib/analytics/server";
 import {
   type DeleteApplicationInput,
   deleteApplicationInputSchema,
@@ -38,7 +40,7 @@ export async function deleteApplication(
     return ownership;
   }
 
-  const { supabase } = ownership;
+  const { supabase, userId } = ownership;
 
   const { error } = await supabase
     .from("applications")
@@ -50,6 +52,8 @@ export async function deleteApplication(
     reportQueryError("deleteApplication", reason);
     return { code: "QUERY_ERROR", ok: false, reason };
   }
+
+  trackServerEvent(userId, ANALYTICS_EVENTS.APPLICATION_DELETED);
 
   return { ok: true };
 }

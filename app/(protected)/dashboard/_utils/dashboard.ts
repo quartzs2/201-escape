@@ -48,7 +48,7 @@ export function getFunnelBreakdown(data: FunnelStep[]): FunnelBreakdownItem[] {
 export function getMonthlyTrendSummary(
   monthly: MonthlyCount[],
 ): MonthlyTrendSummary {
-  const latest = monthly.at(-1);
+  const latest = monthly.length > 0 ? monthly[monthly.length - 1] : undefined;
 
   if (!latest) {
     return {
@@ -59,7 +59,8 @@ export function getMonthlyTrendSummary(
     };
   }
 
-  const previous = monthly.at(PREVIOUS_MONTH_OFFSET);
+  const previousIndex = monthly.length + PREVIOUS_MONTH_OFFSET;
+  const previous = previousIndex >= 0 ? monthly[previousIndex] : undefined;
 
   if (!previous) {
     return {

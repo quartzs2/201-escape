@@ -4,7 +4,11 @@ import { MoonIcon, SunIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/button/Button";
-import { type Theme, THEME_STORAGE_KEY } from "@/lib/constants/theme";
+import {
+  type Theme,
+  THEME_DATA_ATTRIBUTE,
+  THEME_STORAGE_KEY,
+} from "@/lib/constants/theme";
 
 const DEFAULT_THEME: Theme = "light";
 
@@ -19,7 +23,7 @@ export function ThemeToggle() {
   const handleToggleTheme = () => {
     const nextTheme = getNextTheme(theme);
 
-    document.documentElement.dataset.theme = nextTheme;
+    document.documentElement.dataset[THEME_DATA_ATTRIBUTE] = nextTheme;
     window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     window.dispatchEvent(new CustomEvent("theme-change"));
   };
@@ -54,7 +58,7 @@ function getServerThemeSnapshot(): Theme {
 }
 
 function readThemeFromDocument(): Theme {
-  const theme = document.documentElement.dataset.theme;
+  const theme = document.documentElement.dataset[THEME_DATA_ATTRIBUTE];
 
   if (theme === "dark") {
     return "dark";

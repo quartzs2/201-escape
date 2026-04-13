@@ -95,13 +95,13 @@ export function ApplicationDetailHero({
             <div className="flex flex-wrap items-center gap-2">
               <span
                 className={cn(
-                  "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
+                  "inline-flex rounded-full px-3 py-1 text-sm font-semibold",
                   statusMeta.badgeClassName,
                 )}
               >
                 {statusMeta.label}
               </span>
-              <span className="text-xs font-medium text-muted-foreground">
+              <span className="text-sm font-medium text-muted-foreground">
                 {appliedAtLabel} {formatAppliedAt(detail.appliedAt)}
               </span>
             </div>
@@ -142,7 +142,7 @@ export function ApplicationDetailHero({
                 className="rounded-2xl border border-border/50 bg-background/70 px-4 py-4 backdrop-blur-sm"
                 key={item.label}
               >
-                <dt className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                <dt className="text-sm font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                   {item.label}
                 </dt>
                 <dd className="mt-2 text-sm font-semibold tracking-tight text-foreground sm:text-[15px]">
@@ -159,13 +159,13 @@ export function ApplicationDetailHero({
         >
           <div className="rounded-[28px] border border-border/60 bg-background/90 p-5 shadow-[0_24px_60px_-40px_rgba(23,23,23,0.28)] backdrop-blur-sm sm:p-6">
             <div className="space-y-2">
-              <p className="text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+              <p className="text-sm font-semibold tracking-[0.16em] text-muted-foreground uppercase">
                 진행 관리
               </p>
               <p className="text-2xl font-semibold tracking-tight text-foreground">
                 {statusMeta.label}
               </p>
-              <p className="text-sm leading-relaxed text-muted-foreground">
+              <p className="text-sm leading-relaxed font-medium text-muted-foreground">
                 지원 단계 변경은 즉시 저장됩니다.
               </p>
             </div>

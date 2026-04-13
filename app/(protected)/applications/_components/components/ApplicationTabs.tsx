@@ -5,8 +5,8 @@ import { useImperativeHandle, useRef } from "react";
 import type { VirtualListHandle } from "@/components/ui/virtual-list";
 
 import { Tabs } from "@/components/ui";
-import { trackEvent } from "@/lib/posthog/client";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
+import { trackEvent } from "@/lib/analytics/client";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
 import type { TabValue } from "../constants";
@@ -69,9 +69,7 @@ export function ApplicationTabs({
     <Tabs
       className={cn("flex flex-col", className ?? "h-full")}
       onValueChange={(value) => {
-        trackEvent(POSTHOG_EVENTS.APPLICATIONS_TAB_CHANGED, {
-          tab: value,
-        });
+        trackEvent(ANALYTICS_EVENTS.APPLICATIONS_TAB_CHANGED, { tab: value });
         // 탭 전환 시 GoToTopFAB 상태를 즉시 초기화합니다.
         // 새 탭의 VirtualList가 마운트되면 onRangeChangeAction(0, N)이 다시 호출됩니다.
         onRangeChangeAction?.(0, 0);

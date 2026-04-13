@@ -3,9 +3,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { UpdateApplicationStatusInput } from "@/lib/types/application";
 
 import { AUTH_ERROR_CODE } from "@/lib/actions/_queryError";
+import { trackServerEvent } from "@/lib/analytics/server";
 import { createClient } from "@/lib/supabase/server";
 
 import { updateApplicationStatus } from "../updateApplicationStatus";
+
+vi.mock("@/lib/analytics/server", () => ({
+  trackServerEvent: vi.fn(),
+}));
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(),
@@ -164,6 +169,11 @@ describe("updateApplicationStatus", () => {
       const result = await updateApplicationStatus(VALID_INPUT);
 
       expect(result).toMatchObject({ ok: true });
+      expect(trackServerEvent).toHaveBeenCalledWith(
+        "user-1",
+        "application_status_changed",
+        { status: "APPLIED" },
+      );
     });
 
     it.each<UpdateApplicationStatusInput["status"]>([

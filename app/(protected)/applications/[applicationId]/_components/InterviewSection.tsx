@@ -54,7 +54,7 @@ function InterviewList({ applicationId, interviews }: InterviewListProps) {
   if (interviews.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border/80 bg-muted/10 p-5">
-        <p className="text-[15px] leading-relaxed text-muted-foreground">
+        <p className="text-[15px] leading-relaxed font-medium text-muted-foreground">
           등록된 면접 일정이 없습니다.
         </p>
       </div>
@@ -71,7 +71,7 @@ function InterviewList({ applicationId, interviews }: InterviewListProps) {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                <span className="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-sm font-semibold text-primary">
                   {interview.round}차
                 </span>
                 <span className="text-sm font-semibold text-foreground">
@@ -83,7 +83,7 @@ function InterviewList({ applicationId, interviews }: InterviewListProps) {
                   {formatScheduledAt(interview.scheduledAt)}
                 </p>
                 {interview.location !== null ? (
-                  <p className="text-sm leading-relaxed text-muted-foreground">
+                  <p className="text-sm leading-relaxed font-medium text-muted-foreground">
                     {interview.location}
                   </p>
                 ) : null}

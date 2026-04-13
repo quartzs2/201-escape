@@ -37,22 +37,22 @@ export function DashboardOverview({ stats }: DashboardOverviewProps) {
   ];
 
   return (
-    <section className="animate-fade-up" style={{ animationDelay: "60ms" }}>
+    <section>
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.8fr)] lg:gap-12">
         <div className="space-y-8">
           <div className="space-y-3">
-            <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
+            <p className="text-sm font-semibold tracking-[0.22em] text-muted-foreground uppercase">
               Selected KPIs
             </p>
             <div className="flex flex-wrap items-end gap-x-4 gap-y-2">
-              <span className="text-5xl font-black tracking-tight text-foreground sm:text-6xl">
+              <span className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl">
                 {applied}
               </span>
               <p className="pb-1 text-sm font-medium text-muted-foreground">
                 지원 완료 건수
               </p>
             </div>
-            <div className="max-w-2xl text-sm leading-6 text-muted-foreground">
+            <div className="max-w-2xl text-sm leading-6 font-medium text-muted-foreground">
               <p className="break-keep">
                 전체 등록 {total}건 중 관심 공고 {saved}건을 제외한 실제 지원
                 건수입니다.
@@ -71,16 +71,16 @@ export function DashboardOverview({ stats }: DashboardOverviewProps) {
                 className="rounded-3xl bg-muted/45 px-5 py-5 transition-colors hover:bg-muted/60"
                 key={metric.label}
               >
-                <dt className="text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+                <dt className="text-sm font-semibold tracking-[0.18em] text-muted-foreground uppercase">
                   {metric.label}
                 </dt>
-                <dd className="mt-3 text-3xl font-black tracking-tight text-foreground">
+                <dd className="mt-3 text-3xl font-bold tracking-tight text-foreground">
                   {metric.value}
                 </dd>
-                <dd className="mt-2 text-xs leading-5 text-muted-foreground">
+                <dd className="mt-2 text-sm leading-5 font-medium text-muted-foreground">
                   {metric.meta}
                 </dd>
-                <dd className="mt-1 text-xs leading-5 text-muted-foreground">
+                <dd className="mt-2 text-sm leading-5 font-medium text-muted-foreground">
                   {metric.description}
                 </dd>
               </div>
@@ -89,7 +89,7 @@ export function DashboardOverview({ stats }: DashboardOverviewProps) {
         </div>
 
         <aside className="rounded-3xl border border-border/70 bg-muted/55 px-5 py-5">
-          <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
+          <p className="text-sm font-semibold tracking-[0.22em] text-muted-foreground uppercase">
             Key Rates
           </p>
           <dl className="mt-5 space-y-5">
@@ -97,10 +97,10 @@ export function DashboardOverview({ stats }: DashboardOverviewProps) {
               <dt className="text-sm font-semibold text-foreground">
                 서류 통과율
               </dt>
-              <dd className="text-2xl font-black tracking-tight text-foreground">
+              <dd className="text-2xl font-bold tracking-tight text-foreground">
                 {formatPercent(docsPassed, applied)}
               </dd>
-              <dd className="text-sm leading-6 text-muted-foreground">
+              <dd className="text-sm leading-6 font-medium text-muted-foreground">
                 지원 {applied}건 중 {docsPassed}건이 서류 통과 이후 단계까지
                 진행됐습니다.
               </dd>
@@ -109,10 +109,10 @@ export function DashboardOverview({ stats }: DashboardOverviewProps) {
               <dt className="text-sm font-semibold text-foreground">
                 최종 합격률
               </dt>
-              <dd className="text-2xl font-black tracking-tight text-foreground">
+              <dd className="text-2xl font-bold tracking-tight text-foreground">
                 {formatPercent(offered, applied)}
               </dd>
-              <dd className="text-sm leading-6 text-muted-foreground">
+              <dd className="text-sm leading-6 font-medium text-muted-foreground">
                 지원 {applied}건 중 {offered}건이 최종 합격으로 이어졌습니다.
               </dd>
             </div>
@@ -120,10 +120,10 @@ export function DashboardOverview({ stats }: DashboardOverviewProps) {
               <dt className="text-sm font-semibold text-foreground">
                 저장 공고 비중
               </dt>
-              <dd className="text-2xl font-black tracking-tight text-foreground">
+              <dd className="text-2xl font-bold tracking-tight text-foreground">
                 {formatPercent(saved, total)}
               </dd>
-              <dd className="text-sm leading-6 text-muted-foreground">
+              <dd className="text-sm leading-6 font-medium text-muted-foreground">
                 전체 등록 {total}건 중 {saved}건이 아직 저장 상태에 머물러
                 있습니다.
               </dd>

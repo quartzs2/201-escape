@@ -54,7 +54,7 @@ export function ReviewView({
 function ReviewField({ label, value }: ReviewFieldProps) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-sm text-muted-foreground">{label}</span>
       <span className="text-sm font-semibold text-foreground">{value}</span>
     </div>
   );

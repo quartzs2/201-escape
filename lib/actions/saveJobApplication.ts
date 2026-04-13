@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { trackServerEvent } from "@/lib/analytics/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   type SaveJobApplicationFieldErrors,
@@ -82,6 +84,8 @@ export async function saveJobApplication(
       reason: ERROR_MESSAGES.INVALID_RPC_RESPONSE,
     };
   }
+
+  trackServerEvent(authData.user.id, ANALYTICS_EVENTS.APPLICATION_ADD_SAVED);
 
   return {
     data: parsedPayload.data,

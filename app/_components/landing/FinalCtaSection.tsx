@@ -10,10 +10,10 @@ export function FinalCtaSection() {
           <p className="text-sm font-semibold tracking-[0.24em] text-primary uppercase">
             시작하기
           </p>
-          <h2 className="mt-4 text-[2rem] leading-[1.08] font-black tracking-[-0.05em] text-balance sm:text-[2.6rem]">
+          <h2 className="mt-4 text-[2rem] leading-[1.08] font-bold tracking-[-0.05em] text-balance sm:text-[2.6rem]">
             흩어진 지원 기록을 한곳에 모아보세요.
           </h2>
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">
+          <p className="mt-4 text-sm leading-6 font-medium text-muted-foreground">
             지금 바로 로그인해서 공고와 일정을 정리할 수 있습니다.
           </p>
         </div>

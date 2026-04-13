@@ -10,7 +10,7 @@ export default function ApplicationDetailError({
   reset: () => void;
 }) {
   return (
-    <main className="min-h-screen bg-muted/30">
+    <main className="bg-muted/30">
       <ErrorPageFallback
         description="일시적인 오류가 발생했습니다. 다시 시도하거나 대시보드로 돌아가 주세요."
         error={error}

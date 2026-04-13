@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useEffectEvent } from "react";
+import { useEffectEvent, useLayoutEffect } from "react";
 
 // 여러 컴포넌트가 동시에 scroll lock을 요청할 때 올바르게 관리하기 위한 Set
 const scrollLockOwners = new Set<object>();
@@ -13,7 +13,7 @@ export const useScrollLock = (isActive: boolean) => {
   const pathname = usePathname();
   const getLatestPathname = useEffectEvent(() => pathname);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isActive) {
       return;
     }

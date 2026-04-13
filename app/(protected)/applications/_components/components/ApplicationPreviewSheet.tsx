@@ -154,15 +154,15 @@ export function ApplicationPreviewSheet({
           {(platform || appliedAt) && (
             <div className="mb-2 flex flex-wrap items-center gap-0">
               {platform && platform !== "MANUAL" && (
-                <span className="text-xs font-medium text-muted-foreground">
+                <span className="text-sm font-medium text-muted-foreground">
                   {PLATFORM_LABEL[platform]}
                 </span>
               )}
               {platform && platform !== "MANUAL" && appliedAt && (
-                <span className="mx-2 text-xs text-muted-foreground/40">|</span>
+                <span className="mx-2 text-sm text-muted-foreground/40">|</span>
               )}
               {appliedAt && (
-                <span className="flex gap-1 text-xs font-medium text-muted-foreground">
+                <span className="flex gap-1 text-sm font-medium text-muted-foreground">
                   <span>{status === "SAVED" ? "저장일" : "지원일"}</span>
                   <span>{formatAppliedAt(appliedAt)}</span>
                 </span>

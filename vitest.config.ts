@@ -17,6 +17,43 @@ const pathAlias = {
   },
 };
 
+const shouldRunStorybookTests = process.env.VITEST_ENABLE_STORYBOOK === "true";
+
+const storybookProject = {
+  extends: true as const,
+  optimizeDeps: {
+    include: [
+      "@radix-ui/react-slot",
+      "@tanstack/react-query",
+      "class-variance-authority",
+      "clsx",
+      "next/navigation",
+      "posthog-js",
+      "posthog-js/react",
+      "react",
+      "react-dom",
+      "tailwind-merge",
+    ],
+  },
+  plugins: [
+    // Storybook browser tests require a local server, so keep them opt-in.
+    storybookTest({ configDir: path.join(dirname, ".storybook") }),
+  ],
+  test: {
+    browser: {
+      api: {
+        host: "127.0.0.1",
+      },
+      enabled: true,
+      headless: true,
+      instances: [{ browser: "chromium" as const }],
+      provider: playwright({}),
+    },
+    name: "storybook",
+    setupFiles: [".storybook/vitest.setup.ts"],
+  },
+};
+
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   test: {
@@ -44,38 +81,7 @@ export default defineConfig({
           name: "dom",
         },
       },
-      {
-        extends: true,
-        optimizeDeps: {
-          include: [
-            "@radix-ui/react-slot",
-            "@tanstack/react-query",
-            "class-variance-authority",
-            "clsx",
-            "next/navigation",
-            "posthog-js",
-            "posthog-js/react",
-            "react",
-            "react-dom",
-            "tailwind-merge",
-          ],
-        },
-        plugins: [
-          // The plugin will run tests for the stories defined in your Storybook config
-          // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
-          storybookTest({ configDir: path.join(dirname, ".storybook") }),
-        ],
-        test: {
-          browser: {
-            enabled: true,
-            headless: true,
-            instances: [{ browser: "chromium" }],
-            provider: playwright({}),
-          },
-          name: "storybook",
-          setupFiles: [".storybook/vitest.setup.ts"],
-        },
-      },
+      ...(shouldRunStorybookTests ? [storybookProject] : []),
     ],
   },
 });

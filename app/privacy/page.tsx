@@ -22,18 +22,18 @@ export default function PrivacyPage() {
       <main className="px-5 py-10 sm:px-6 sm:py-14">
         <div className="mx-auto w-full max-w-3xl rounded-[28px] border border-border/60 bg-background p-6 shadow-xl shadow-black/[0.03] sm:p-10">
           <header className="border-b border-border/60 pb-6">
-            <p className="text-xs font-bold tracking-[0.2em] text-primary uppercase">
+            <p className="text-sm font-bold tracking-[0.2em] text-primary uppercase">
               Privacy Policy
             </p>
-            <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+            <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               개인정보처리방침
             </h1>
-            <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-[15px]">
+            <p className="mt-4 text-sm leading-6 font-medium text-muted-foreground sm:text-[15px]">
               201 escape(이하 &quot;서비스&quot;)는 이용자의 개인정보를 중요하게
               생각하며, 관련 법령을 준수하기 위해 개인정보의 수집, 이용, 보관,
               파기 기준을 아래와 같이 안내합니다.
             </p>
-            <dl className="mt-6 grid gap-3 rounded-2xl bg-muted/60 p-4 text-sm sm:grid-cols-2">
+            <dl className="mt-6 grid gap-3 rounded-2xl bg-muted/60 p-4 text-sm font-medium sm:grid-cols-2">
               <div>
                 <dt className="font-semibold text-foreground">시행일</dt>
                 <dd className="mt-1 text-muted-foreground">2026년 4월 11일</dd>
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
             </dl>
           </header>
 
-          <div className="mt-8 space-y-8 text-sm leading-7 text-foreground sm:text-[15px]">
+          <div className="mt-8 space-y-8 text-sm leading-7 font-medium text-foreground sm:text-[15px]">
             <section>
               <h2 className="text-lg font-bold sm:text-xl">
                 1. 수집하는 개인정보 항목
