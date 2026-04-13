@@ -2,8 +2,8 @@
 
 import { ChevronRightIcon } from "lucide-react";
 
-import { trackEvent } from "@/lib/posthog/client";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
+import { trackEvent } from "@/lib/analytics/client";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
 import type { ApplicationListItem } from "../types";
@@ -32,7 +32,7 @@ export function ApplicationRow({
           "focus-visible:rounded-2xl focus-visible:bg-muted/30 focus-visible:ring-2 focus-visible:ring-primary/15 focus-visible:outline-none",
         )}
         onClick={() => {
-          trackEvent(POSTHOG_EVENTS.APPLICATION_PREVIEW_OPENED);
+          trackEvent(ANALYTICS_EVENTS.APPLICATION_PREVIEW_OPENED);
           onSelectAction(application);
         }}
         type="button"

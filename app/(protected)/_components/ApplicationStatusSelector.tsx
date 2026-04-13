@@ -17,8 +17,6 @@ import {
   APPLICATION_STATUS_META,
   APPLICATION_STATUS_ORDER,
 } from "@/lib/constants/application-status";
-import { trackEvent } from "@/lib/posthog/client";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { cn } from "@/lib/utils";
 
 export type ApplicationStatusSelectorProps = {
@@ -91,11 +89,7 @@ export function ApplicationStatusSelector({
       onStatusChangeAction?.(nextStatus);
       return { previousStatus };
     },
-    onSuccess: (_, nextStatus, context) => {
-      trackEvent(POSTHOG_EVENTS.APPLICATION_STATUS_CHANGED, {
-        from_status: context?.previousStatus,
-        to_status: nextStatus,
-      });
+    onSuccess: () => {
       router.refresh();
     },
   });

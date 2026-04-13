@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { trackServerEvent } from "@/lib/analytics/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   type UpdateJobDescriptionInput,
@@ -72,6 +74,8 @@ export async function updateJobDescription(
       reason: ERROR_MESSAGES.NOT_FOUND,
     };
   }
+
+  trackServerEvent(authData.user.id, ANALYTICS_EVENTS.JOB_DESCRIPTION_SAVED);
 
   return {
     data: {

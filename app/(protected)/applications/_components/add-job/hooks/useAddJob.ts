@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useIsMounted } from "@/hooks";
 import { extractJobData } from "@/lib/actions/extractJobData";
 import { saveJobApplication } from "@/lib/actions/saveJobApplication";
-import { trackEvent } from "@/lib/posthog/client";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
+import { trackEvent } from "@/lib/analytics/client";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { JobId, type JobPost, MANUAL_JOB_DEFAULTS } from "@/lib/types/job";
 
 import {
@@ -103,7 +103,7 @@ export function useAddJob({ onSuccess }: UseAddJobProps) {
       url: fields.url.trim() || `manual:${crypto.randomUUID()}`,
     };
 
-    trackEvent(POSTHOG_EVENTS.APPLICATION_ADD_SUBMITTED, {
+    trackEvent(ANALYTICS_EVENTS.APPLICATION_ADD_SUBMITTED, {
       has_url: !!fields.url.trim(),
     });
     setState({ error: null, jobData, step: "review", url: fields.url.trim() });
@@ -147,13 +147,12 @@ export function useAddJob({ onSuccess }: UseAddJobProps) {
       return;
     }
 
-    trackEvent(POSTHOG_EVENTS.APPLICATION_ADD_SAVED);
     router.refresh();
     onSuccess();
   }
 
   function handleReset() {
-    trackEvent(POSTHOG_EVENTS.APPLICATION_ADD_RESET);
+    trackEvent(ANALYTICS_EVENTS.APPLICATION_ADD_RESET);
     setState({ error: null, step: "idle", url: state.url });
   }
 

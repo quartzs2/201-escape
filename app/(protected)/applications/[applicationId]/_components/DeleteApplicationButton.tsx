@@ -12,8 +12,6 @@ import type {
 
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
-import { trackEvent } from "@/lib/posthog/client";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 type DeleteApplicationAction = (
   input: DeleteApplicationInput,
@@ -50,7 +48,6 @@ export function DeleteApplicationButton({
       setErrorMessage(null);
     },
     onSuccess: () => {
-      trackEvent(POSTHOG_EVENTS.APPLICATION_DELETED);
       router.replace("/applications");
     },
   });

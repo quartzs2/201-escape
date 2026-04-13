@@ -126,8 +126,8 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_SUPABASE_URL`             | Supabase 프로젝트 URL                                              |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Publishable Key                                           |
 | `NEXT_PUBLIC_ENABLE_PARSING`           | `true`로 설정 시 URL 자동 파싱 활성화 (로컬 전용, 기본값: `false`) |
-| `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN`    | PostHog 프로젝트 API Key                                           |
-| `NEXT_PUBLIC_POSTHOG_HOST`             | PostHog API Host                                                   |
+| `POSTHOG_PROJECT_TOKEN`                | 서버에서 사용하는 PostHog 프로젝트 API Key                         |
+| `POSTHOG_HOST`                         | 서버에서 사용하는 PostHog API Host                                 |
 | `NEXT_PUBLIC_SENTRY_DSN`               | Sentry DSN                                                         |
 | `NEXT_PUBLIC_ENABLE_BROWSER_SENTRY`    | `true`로 설정 시 브라우저 Sentry 활성화 (기본값: `false`)          |
 
@@ -233,7 +233,7 @@ flowchart LR
 
 ## 이벤트 트래킹
 
-[PostHog](https://posthog.com)를 사용해 핵심 사용자 행동을 측정합니다. 페이지뷰는 `PostHogProvider`가 적용된 화면에서 수동으로 수집하며, 아래 이벤트는 코드에서 명시적으로 발송합니다.
+[PostHog](https://posthog.com)를 사용해 핵심 사용자 행동을 측정합니다. 클라이언트 이벤트는 `/api/events`로 수집한 뒤 서버에서 PostHog로 전달하고, 서버 액션 성공 이벤트는 `posthog-node`로 직접 발송합니다.
 
 ### 이벤트 목록
 
@@ -283,7 +283,7 @@ FAB 클릭 → 폼 제출 → 저장 완료 각 단계의 이탈률을 확인할
 
 ### 사용자 식별
 
-`applications` 라우트에서는 로그인한 Supabase user ID를 PostHog `distinct_id`로 사용합니다(`PostHogUserSync` 컴포넌트). 세션이 해제되면 `posthog.reset()`으로 식별 정보를 초기화합니다.
+이벤트 전송 시 로그인한 사용자의 Supabase user ID를 PostHog `distinct_id`로 사용합니다. 로그인하지 않은 요청은 `anonymous`로 기록합니다.
 
 ## 프로젝트 구조
 

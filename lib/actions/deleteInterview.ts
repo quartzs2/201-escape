@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { trackServerEvent } from "@/lib/analytics/server";
 import {
   type DeleteInterviewInput,
   deleteInterviewInputSchema,
@@ -38,7 +40,7 @@ export async function deleteInterview(
     return ownership;
   }
 
-  const { supabase } = ownership;
+  const { supabase, userId } = ownership;
 
   const { error } = await supabase
     .from("interviews")
@@ -51,6 +53,8 @@ export async function deleteInterview(
     reportQueryError("deleteInterview", reason);
     return { code: "QUERY_ERROR", ok: false, reason };
   }
+
+  trackServerEvent(userId, ANALYTICS_EVENTS.INTERVIEW_DELETED);
 
   return { ok: true };
 }

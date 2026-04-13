@@ -3,12 +3,11 @@
 import type { Route } from "next";
 
 import Link from "next/link";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 
 import GoogleIcon from "@/assets/google.svg";
-import { trackEvent } from "@/lib/posthog/client";
-import { DeferredPostHogBootstrap } from "@/lib/posthog/DeferredPostHogBootstrap";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
+import { trackEvent } from "@/lib/analytics/client";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 import { PublicHeader } from "../_components/PublicHeader";
 
@@ -23,7 +22,7 @@ function LoginPageContent() {
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
   const handleGoogleLogin = async () => {
-    trackEvent(POSTHOG_EVENTS.LOGIN_ATTEMPTED);
+    trackEvent(ANALYTICS_EVENTS.LOGIN_ATTEMPTED);
     setIsLoading(true);
     setErrorMessage(null);
 
@@ -102,9 +101,6 @@ function LoginPageContent() {
           </div>
         </div>
       </div>
-      <Suspense fallback={null}>
-        <DeferredPostHogBootstrap />
-      </Suspense>
     </>
   );
 }

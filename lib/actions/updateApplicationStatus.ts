@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
+import { trackServerEvent } from "@/lib/analytics/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   type UpdateApplicationStatusInput,
@@ -74,6 +76,12 @@ export async function updateApplicationStatus(
       reason: ERROR_MESSAGES.NOT_FOUND,
     };
   }
+
+  trackServerEvent(
+    authData.user.id,
+    ANALYTICS_EVENTS.APPLICATION_STATUS_CHANGED,
+    { status: parsedInput.data.status },
+  );
 
   return {
     ok: true,

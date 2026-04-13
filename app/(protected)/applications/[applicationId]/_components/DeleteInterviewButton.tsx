@@ -10,8 +10,6 @@ import type {
 
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
-import { trackEvent } from "@/lib/posthog/client";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 type DeleteInterviewAction = (
   input: DeleteInterviewInput,
@@ -63,7 +61,6 @@ export function DeleteInterviewButton({
         return;
       }
 
-      trackEvent(POSTHOG_EVENTS.INTERVIEW_DELETED);
       setIsOpen(false);
       router.refresh();
     } finally {
