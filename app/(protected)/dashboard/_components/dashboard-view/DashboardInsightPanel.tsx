@@ -13,15 +13,17 @@ export function DashboardInsightPanel({
 }: DashboardInsightPanelProps) {
   const monthlySummary = getMonthlyTrendSummary(monthly);
   const appliedCount = funnel[0]?.count ?? 0;
-  const offeredCount = funnel.at(-1)?.count ?? 0;
+  const offeredCount =
+    funnel.length > 0 ? (funnel[funnel.length - 1]?.count ?? 0) : 0;
   const interviewCount =
     funnel.find((step) => step.label === "면접")?.count ?? 0;
-  const trendToneClassName =
-    monthlySummary.direction === "up"
-      ? "text-primary"
-      : monthlySummary.direction === "down"
-        ? "text-foreground"
-        : "text-muted-foreground";
+  let trendToneClassName = "text-muted-foreground";
+
+  if (monthlySummary.direction === "up") {
+    trendToneClassName = "text-primary";
+  } else if (monthlySummary.direction === "down") {
+    trendToneClassName = "text-foreground";
+  }
 
   return (
     <aside className="flex h-full flex-col justify-between rounded-3xl border border-border/70 bg-muted/55 px-5 py-6">

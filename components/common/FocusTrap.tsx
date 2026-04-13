@@ -83,7 +83,7 @@ export function FocusTrap({
       }
 
       const firstElement = focusableElements[0];
-      const lastElement = focusableElements.at(-1)!;
+      const lastElement = focusableElements[focusableElements.length - 1]!;
 
       if (event.shiftKey) {
         if (document.activeElement === firstElement) {

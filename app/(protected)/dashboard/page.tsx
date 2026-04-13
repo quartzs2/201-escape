@@ -1,8 +1,8 @@
 import { getChartData, getStatCounts } from "@/lib/actions";
 import { formatKoreanDate } from "@/lib/utils";
 
+import { DashboardCharts } from "./_components/dashboard-view/DashboardCharts";
 import { DashboardOverview } from "./_components/dashboard-view/DashboardOverview";
-import { DeferredDashboardCharts } from "./_components/dashboard-view/DeferredDashboardCharts";
 
 export default async function DashboardPage() {
   const [statsResult, chartResult] = await Promise.all([
@@ -77,7 +77,7 @@ export default async function DashboardPage() {
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-10 sm:px-6 lg:gap-20 lg:px-8 lg:py-12">
         <DashboardOverview stats={statsResult.data} />
-        <DeferredDashboardCharts funnel={funnel} monthly={monthly} />
+        <DashboardCharts funnel={funnel} monthly={monthly} />
       </div>
     </main>
   );

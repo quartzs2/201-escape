@@ -1,5 +1,3 @@
-"use client";
-
 import type { FunnelStep, MonthlyCount } from "@/lib/types/application";
 
 import { DashboardFunnelBreakdown } from "./DashboardFunnelBreakdown";
@@ -15,10 +13,7 @@ type Props = {
 export function DashboardCharts({ funnel, monthly }: Props) {
   return (
     <div className="space-y-16 lg:space-y-20">
-      <section
-        className="grid animate-fade-up gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,0.8fr)] lg:gap-12"
-        style={{ animationDelay: "120ms" }}
-      >
+      <section className="grid gap-10 lg:grid-cols-[minmax(0,1.5fr)_minmax(280px,0.8fr)] lg:gap-12">
         <div className="min-w-0">
           <div className="mb-8 flex flex-col gap-2">
             <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
@@ -40,10 +35,7 @@ export function DashboardCharts({ funnel, monthly }: Props) {
         <DashboardInsightPanel funnel={funnel} monthly={monthly} />
       </section>
 
-      <section
-        className="grid animate-fade-up gap-10 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,1.15fr)] lg:gap-12"
-        style={{ animationDelay: "180ms" }}
-      >
+      <section className="grid gap-10 lg:grid-cols-[minmax(260px,0.85fr)_minmax(0,1.15fr)] lg:gap-12">
         <div className="min-w-0">
           <div className="mb-8 space-y-1">
             <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">

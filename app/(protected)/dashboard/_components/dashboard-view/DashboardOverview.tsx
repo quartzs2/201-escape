@@ -37,7 +37,7 @@ export function DashboardOverview({ stats }: DashboardOverviewProps) {
   ];
 
   return (
-    <section className="animate-fade-up" style={{ animationDelay: "60ms" }}>
+    <section>
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.8fr)] lg:gap-12">
         <div className="space-y-8">
           <div className="space-y-3">
