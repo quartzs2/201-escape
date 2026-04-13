@@ -40,49 +40,55 @@
 <table>
   <tr>
     <td align="center"><strong>KPI 요약</strong></td>
+    <td align="center"><strong>주요 비율</strong></td>
     <td align="center"><strong>단계별 퍼널</strong></td>
     <td align="center"><strong>월간 지원 추이</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/readme/dashboard_selected_kpis.png" alt="지원 완료 건수와 단계별 KPI를 보여주는 대시보드 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/dashboard_kpis.png" alt="지원 완료 건수와 단계별 KPI 요약을 보여주는 대시보드 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/dashboard_kpis2.png" alt="서류 통과율, 최종 합격률, 저장 공고 비중을 보여주는 핵심 비율 카드 화면" width="220" /></td>
     <td><img src="./docs/images/readme/dashboard_funnel.png" alt="지원 기준 단계별 잔존 비율을 보여주는 퍼널 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/dashboard_monthly_trend.png" alt="최근 12개월 지원 추이와 요약 노트를 보여주는 대시보드 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/dashboard_monthly_trend.png" alt="최근 12개월 지원 추이와 최근 흐름 메모를 보여주는 대시보드 화면" width="220" /></td>
   </tr>
 </table>
 
-지원 건수, 단계별 잔존 비율, 최근 월별 추이를 한 화면에서 확인할 수 있습니다.
+지원 건수, 핵심 전환율, 단계별 잔존 비율, 최근 월별 추이를 한 화면에서 확인할 수 있습니다.
 
-### 지원 목록과 빠른 추가
+### 지원 목록과 빠른 액션
 
 <table>
   <tr>
     <td align="center"><strong>지원 목록</strong></td>
-    <td align="center"><strong>상태 미리보기 바텀시트</strong></td>
+    <td align="center"><strong>검색</strong></td>
+    <td align="center"><strong>미리보기 시트</strong></td>
     <td align="center"><strong>공고 추가</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/readme/application_list.gif" alt="검색, 필터, 정렬이 포함된 지원 목록 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/application_bottomsheet.gif" alt="지원 상태와 요약 정보를 보여주는 바텀시트 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/application_add_application_bottomsheet.gif" alt="회사명, 포지션, 공고 URL을 입력하는 공고 추가 바텀시트 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_list.png" alt="상태 탭과 정렬을 포함한 지원 목록 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_search.gif" alt="회사명 검색으로 지원 목록을 빠르게 좁히는 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_previewsheet.gif" alt="지원 상태와 핵심 정보를 미리보기 시트로 확인하는 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_add_application.gif" alt="회사명, 포지션, 공고 URL을 입력해 새 공고를 추가하는 화면" width="220" /></td>
   </tr>
 </table>
 
-목록에서 상태별 필터링과 검색을 수행하고, FAB로 새 공고를 빠르게 추가할 수 있습니다.
+목록에서 상태별 탐색과 검색을 수행하고, 미리보기 시트 확인과 FAB 기반 공고 추가까지 빠르게 이어집니다.
 
-### 지원 상세와 면접 일정
+### 지원 상세와 후속 관리
 
 <table>
   <tr>
     <td align="center"><strong>상세 정보</strong></td>
-    <td align="center"><strong>면접 일정 / 공고 설명</strong></td>
+    <td align="center"><strong>면접 일정 추가</strong></td>
+    <td align="center"><strong>개인 메모 추가</strong></td>
   </tr>
   <tr>
     <td><img src="./docs/images/readme/application_detail.png" alt="지원 상태 변경과 기본 정보를 관리하는 지원 상세 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/application_detail_interviewschedule.gif" alt="면접 일정과 공고 설명 영역을 관리하는 지원 상세 하단 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_detail_add_interview.gif" alt="지원 상세 화면에서 면접 일정을 추가하는 흐름" width="220" /></td>
+    <td><img src="./docs/images/readme/application_detail_add_memo.gif" alt="지원 상세 화면에서 개인 메모를 남기는 흐름" width="220" /></td>
   </tr>
 </table>
 
-상세 페이지에서는 지원 단계 변경, 공고 원문 확인, 면접 일정 추가 및 수정, 메모 관리까지 한 흐름으로 이어집니다.
+상세 페이지에서는 지원 단계 확인, 면접 일정 추가, 메모 기록 등 후속 액션을 한 흐름에서 관리할 수 있습니다.
 
 ## 기술 스택
 
