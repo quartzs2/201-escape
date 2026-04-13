@@ -1,3 +1,5 @@
+"use client";
+
 import GitHubIcon from "@/assets/github.svg";
 import { Button } from "@/components/ui/button/Button";
 
