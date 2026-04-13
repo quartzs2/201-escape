@@ -11,8 +11,6 @@ import type {
 } from "@/lib/types/application";
 
 import { Button } from "@/components/ui";
-import { trackEvent } from "@/lib/posthog/client";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 import { DetailSectionHeader } from "./DetailSectionHeader";
 
@@ -90,7 +88,6 @@ export function JobDescriptionEditor({
       return { previousDescription };
     },
     onSuccess: () => {
-      trackEvent(POSTHOG_EVENTS.JOB_DESCRIPTION_SAVED);
       router.refresh();
     },
   });

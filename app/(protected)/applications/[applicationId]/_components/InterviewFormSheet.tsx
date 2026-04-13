@@ -13,9 +13,9 @@ import type {
 
 import { Button } from "@/components/ui";
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
+import { trackEvent } from "@/lib/analytics/client";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
-import { trackEvent } from "@/lib/posthog/client";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 import { Constants } from "@/lib/types/supabase";
 import { toDatetimeLocalValue } from "@/lib/utils";
 
@@ -115,8 +115,8 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
 
       trackEvent(
         props.mode === "add"
-          ? POSTHOG_EVENTS.INTERVIEW_ADDED
-          : POSTHOG_EVENTS.INTERVIEW_EDITED,
+          ? ANALYTICS_EVENTS.INTERVIEW_ADDED
+          : ANALYTICS_EVENTS.INTERVIEW_EDITED,
         { interview_type: values.interviewType, round: values.round },
       );
       setIsOpen(false);

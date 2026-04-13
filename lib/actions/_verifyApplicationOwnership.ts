@@ -11,6 +11,7 @@ type VerifyResult =
   | {
       ok: true;
       supabase: Awaited<ReturnType<typeof createClient>>;
+      userId: string;
     };
 
 /**
@@ -57,5 +58,5 @@ export async function verifyApplicationOwnership(
     };
   }
 
-  return { ok: true, supabase };
+  return { ok: true, supabase, userId: authData.user.id };
 }

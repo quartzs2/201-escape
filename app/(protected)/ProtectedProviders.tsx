@@ -3,22 +3,6 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
-const SentryUserSync = dynamic(
-  () =>
-    import("@/lib/sentry/SentryUserSync").then((mod) => ({
-      default: mod.SentryUserSync,
-    })),
-  { ssr: false },
-);
-
-const DeferredPostHogBootstrap = dynamic(
-  () =>
-    import("@/lib/posthog/DeferredPostHogBootstrap").then((mod) => ({
-      default: mod.DeferredPostHogBootstrap,
-    })),
-  { ssr: false },
-);
-
 const BottomTabBar = dynamic(
   () =>
     import("./_components/BottomTabBar").then((mod) => ({
@@ -69,10 +53,8 @@ export function ProtectedEnhancements() {
 
   return (
     <>
-      <DeferredPostHogBootstrap />
       <BottomTabBar />
       <WindowScrollTopFAB />
-      <SentryUserSync />
     </>
   );
 }

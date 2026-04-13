@@ -3,9 +3,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { SaveJobApplicationInput } from "@/lib/types/jobApplication";
 
 import { AUTH_ERROR_CODE } from "@/lib/actions/_queryError";
+import { trackServerEvent } from "@/lib/analytics/server";
 import { createClient } from "@/lib/supabase/server";
 
 import { saveJobApplication } from "../saveJobApplication";
+
+vi.mock("@/lib/analytics/server", () => ({
+  trackServerEvent: vi.fn(),
+}));
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(),
@@ -205,6 +210,10 @@ describe("saveJobApplication", () => {
       const result = await saveJobApplication(VALID_INPUT);
 
       expect(result).toMatchObject({ data: VALID_PAYLOAD, ok: true });
+      expect(trackServerEvent).toHaveBeenCalledWith(
+        "user-1",
+        "application_add_saved",
+      );
     });
 
     it("선택 필드를 포함한 전체 입력도 성공적으로 처리한다", async () => {

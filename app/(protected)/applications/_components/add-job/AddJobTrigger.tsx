@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import { Button } from "@/components/ui";
-import { trackEvent } from "@/lib/posthog/client";
-import { POSTHOG_EVENTS } from "@/lib/posthog/events";
+import { trackEvent } from "@/lib/analytics/client";
+import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 
 const AddJobSheet = dynamic(
   () => import("./AddJobSheet").then((module) => module.AddJobSheet),
@@ -23,7 +23,7 @@ export function AddJobTrigger() {
         aria-label="공고 추가"
         className="fixed right-5 bottom-[calc(env(safe-area-inset-bottom)+2rem)] z-40 shadow-lg transition-transform active:scale-95"
         onClick={() => {
-          trackEvent(POSTHOG_EVENTS.APPLICATION_ADD_OPENED);
+          trackEvent(ANALYTICS_EVENTS.APPLICATION_ADD_OPENED);
           setShouldRenderSheet(true);
           setIsOpen(true);
         }}

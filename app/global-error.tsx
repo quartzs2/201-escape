@@ -1,7 +1,8 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import { useEffect, useRef } from "react";
+
+import { createErrorReportPayload } from "@/lib/error-report/payload";
 
 export default function GlobalError({
   error,
@@ -17,7 +18,20 @@ export default function GlobalError({
       return;
     }
     captured.current = true;
-    Sentry.captureException(error);
+
+    void fetch("/api/error-report", {
+      body: JSON.stringify(
+        createErrorReportPayload({
+          digest: error.digest,
+          message: error.message,
+        }),
+      ),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      keepalive: true,
+      method: "POST",
+    });
   }, [error]);
 
   return (

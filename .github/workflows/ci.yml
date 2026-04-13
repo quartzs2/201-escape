@@ -48,3 +48,8 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Storybook browser test
+        env:
+          VITEST_ENABLE_STORYBOOK: "true"
+        run: pnpm exec vitest run --project storybook

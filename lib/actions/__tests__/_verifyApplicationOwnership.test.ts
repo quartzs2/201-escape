@@ -126,10 +126,14 @@ describe("verifyApplicationOwnership", () => {
   });
 
   describe("성공", () => {
-    it("ok: true와 supabase 클라이언트를 반환한다", async () => {
+    it("ok: true와 supabase 클라이언트, userId를 반환한다", async () => {
       const result = await verifyApplicationOwnership(APPLICATION_ID);
 
-      expect(result).toMatchObject({ ok: true, supabase: mockSupabase });
+      expect(result).toMatchObject({
+        ok: true,
+        supabase: mockSupabase,
+        userId: USER_ID,
+      });
     });
 
     it("select 쿼리 시 applicationId와 userId를 올바르게 전달한다", async () => {
