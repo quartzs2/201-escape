@@ -45,7 +45,7 @@ export function ApplicationList({
   const emptyState = (
     <div className="flex flex-col items-center gap-3 py-20 text-muted-foreground">
       <InboxIcon className="size-8 stroke-[1.5]" />
-      <p className="text-sm">{emptyMessage}</p>
+      <p className="text-sm font-medium">{emptyMessage}</p>
     </div>
   );
 

@@ -109,7 +109,7 @@ export function ManualFormView({
               <option key={suggestion} value={suggestion} />
             ))}
           </datalist>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm font-medium text-muted-foreground">
             최근 입력값을 기본으로 채우고, 없으면 자주 쓰는 포지션을 제안합니다.
           </p>
         </div>
@@ -119,7 +119,7 @@ export function ManualFormView({
             htmlFor="manual-url"
           >
             공고 URL
-            <span className="text-xs text-muted-foreground">(선택)</span>
+            <span className="text-sm text-muted-foreground">(선택)</span>
           </label>
           <input
             className={cn(

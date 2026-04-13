@@ -14,7 +14,7 @@ export function DashboardFunnelBreakdown({
   return (
     <div className="space-y-5">
       <div>
-        <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
+        <p className="text-sm font-semibold tracking-[0.22em] text-muted-foreground uppercase">
           Retention By Stage
         </p>
         <h3 className="mt-3 text-xl font-bold tracking-tight text-foreground">
@@ -30,15 +30,15 @@ export function DashboardFunnelBreakdown({
                 <p className="text-sm font-semibold text-foreground">
                   {item.label}
                 </p>
-                <p className="text-xs leading-5 text-muted-foreground">
+                <p className="text-sm leading-5 text-muted-foreground">
                   전체 지원 대비 {item.shareOfStart}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-black tracking-tight text-foreground">
+                <p className="text-2xl font-bold tracking-tight text-foreground">
                   {item.count}
                 </p>
-                <p className="text-xs text-muted-foreground">건</p>
+                <p className="text-sm text-muted-foreground">건</p>
               </div>
             </div>
             <div

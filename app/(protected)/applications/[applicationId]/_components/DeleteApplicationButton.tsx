@@ -95,20 +95,20 @@ export function DeleteApplicationButton({
           <BottomSheet.Header />
           <BottomSheet.Body>
             <BottomSheet.Title className="mb-2">지원 삭제</BottomSheet.Title>
-            <p className="mb-1 text-[15px] text-muted-foreground">
+            <p className="mb-1 text-[15px] font-medium text-muted-foreground">
               <span className="font-medium text-foreground">{companyName}</span>{" "}
               ·{" "}
               <span className="font-medium text-foreground">
                 {positionTitle}
               </span>
             </p>
-            <p className="mb-6 text-[15px] text-muted-foreground">
+            <p className="mb-6 text-[15px] font-medium text-muted-foreground">
               이 지원 기록과 면접 일정이 모두 삭제됩니다. 이 작업은 되돌릴 수
               없습니다.
             </p>
 
             {errorMessage !== null && (
-              <p className="mb-4 text-sm text-red-600" role="alert">
+              <p className="mb-4 text-sm font-medium text-red-600" role="alert">
                 {errorMessage}
               </p>
             )}

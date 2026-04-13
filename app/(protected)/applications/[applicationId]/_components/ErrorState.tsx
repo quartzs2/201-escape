@@ -25,7 +25,7 @@ export function ErrorState({
           <h1 className="text-[28px] leading-tight font-semibold tracking-[-0.02em] text-foreground">
             {title}
           </h1>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="text-sm leading-6 font-medium text-muted-foreground">
             {description}
           </p>
         </div>
