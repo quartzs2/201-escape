@@ -147,7 +147,7 @@ export function MemoEditor({
         <div className="space-y-3">
           <textarea
             aria-labelledby={`memo-label-${applicationId}`}
-            className="min-h-40 w-full resize-none rounded-2xl border border-input bg-background px-4 py-3 text-sm leading-relaxed text-foreground transition-colors placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-40 w-full resize-none rounded-2xl border border-input bg-background px-4 py-3 text-base leading-relaxed text-foreground transition-colors placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm"
             disabled={mutation.isPending}
             onChange={(e) => setDraftText(e.target.value)}
             placeholder="메모를 입력하세요"
