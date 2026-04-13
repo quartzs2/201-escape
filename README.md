@@ -128,6 +128,7 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_ENABLE_PARSING`           | `true`로 설정 시 URL 자동 파싱 활성화 (로컬 전용, 기본값: `false`) |
 | `POSTHOG_PROJECT_TOKEN`                | 서버에서 사용하는 PostHog 프로젝트 API Key                         |
 | `POSTHOG_HOST`                         | 서버에서 사용하는 PostHog API Host                                 |
+| `SENTRY_AUTH_TOKEN`                    | Sentry 소스맵 업로드 및 빌드 연동에 사용하는 인증 토큰             |
 | `NEXT_PUBLIC_SENTRY_DSN`               | Sentry DSN                                                         |
 | `NEXT_PUBLIC_ENABLE_BROWSER_SENTRY`    | `true`로 설정 시 브라우저 Sentry 활성화 (기본값: `false`)          |
 
