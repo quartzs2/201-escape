@@ -76,7 +76,7 @@ export function ApplicationFilters({
               />
               <input
                 aria-label="회사명 검색"
-                className="w-full rounded-2xl border border-border bg-muted/40 py-3 pr-11 pl-11 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/10 focus:outline-none"
+                className="w-full rounded-2xl border border-border bg-muted/40 py-3 pr-11 pl-11 text-base text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/10 focus:outline-none sm:text-sm"
                 id="applications-company-search"
                 onChange={handleChange}
                 placeholder="회사명으로 현재 목록 좁히기"
