@@ -80,6 +80,8 @@ export type ChartData = {
   monthly: MonthlyCount[];
 };
 
+export type DashboardData = ChartData & { stats: StatCounts };
+
 export type DeleteApplicationErrorCode =
   | "AUTH_REQUIRED"
   | "NOT_FOUND"
@@ -139,6 +141,12 @@ export type GetChartDataErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
 export type GetChartDataResult =
   | { code: GetChartDataErrorCode; ok: false; reason: string }
   | { data: ChartData; ok: true };
+
+export type GetDashboardDataErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
+
+export type GetDashboardDataResult =
+  | { code: GetDashboardDataErrorCode; ok: false; reason: string }
+  | { data: DashboardData; ok: true };
 
 export type GetStatCountsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
 

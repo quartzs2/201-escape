@@ -1,24 +1,17 @@
-import { getChartData, getStatCounts } from "@/lib/actions";
+import { getDashboardData } from "@/lib/actions";
 import { formatKoreanDate } from "@/lib/utils";
 
 import { DashboardCharts } from "./_components/dashboard-view/DashboardCharts";
 import { DashboardOverview } from "./_components/dashboard-view/DashboardOverview";
 
 export default async function DashboardPage() {
-  const [statsResult, chartResult] = await Promise.all([
-    getStatCounts(),
-    getChartData(),
-  ]);
+  const dashboardResult = await getDashboardData();
 
-  if (!statsResult.ok) {
-    throw new Error(statsResult.reason);
+  if (!dashboardResult.ok) {
+    throw new Error(dashboardResult.reason);
   }
 
-  if (!chartResult.ok) {
-    throw new Error(chartResult.reason);
-  }
-
-  const { funnel, monthly } = chartResult.data;
+  const { funnel, monthly, stats } = dashboardResult.data;
 
   return (
     <main className="min-h-screen bg-background pb-20">
@@ -76,7 +69,7 @@ export default async function DashboardPage() {
       </section>
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-10 sm:px-6 lg:gap-20 lg:px-8 lg:py-12">
-        <DashboardOverview stats={statsResult.data} />
+        <DashboardOverview stats={stats} />
         <DashboardCharts funnel={funnel} monthly={monthly} />
       </div>
     </main>
