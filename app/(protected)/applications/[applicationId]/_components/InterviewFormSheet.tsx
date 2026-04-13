@@ -179,7 +179,7 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
                   value={values.round}
                 />
                 {isEditMode && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm font-medium text-muted-foreground">
                     차수는 변경할 수 없습니다.
                   </p>
                 )}
@@ -241,7 +241,7 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
                   htmlFor="interview-location"
                 >
                   <span>장소</span>
-                  <span className="font-normal text-muted-foreground">
+                  <span className="font-medium text-muted-foreground">
                     (선택)
                   </span>
                 </label>
@@ -267,7 +267,7 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
                   htmlFor="interview-scratchpad"
                 >
                   <span>메모</span>
-                  <span className="font-normal text-muted-foreground">
+                  <span className="font-medium text-muted-foreground">
                     (선택)
                   </span>
                 </label>
@@ -288,7 +288,7 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
               </div>
 
               {errorMessage !== null && (
-                <p className="text-sm text-red-600" role="alert">
+                <p className="text-sm font-medium text-red-600" role="alert">
                   {errorMessage}
                 </p>
               )}

@@ -106,7 +106,7 @@ export function ApplicationFilters({
                 <button
                   aria-pressed={period === preset}
                   className={cn(
-                    "rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors",
+                    "rounded-full border px-3.5 py-2 text-sm font-semibold transition-colors",
                     period === preset
                       ? "border-primary bg-primary text-primary-foreground"
                       : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-foreground",

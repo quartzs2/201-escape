@@ -88,13 +88,13 @@ export function DeleteInterviewButton({
             <BottomSheet.Title className="mb-2">
               면접 일정 삭제
             </BottomSheet.Title>
-            <p className="mb-6 text-[15px] text-muted-foreground">
+            <p className="mb-6 text-[15px] font-medium text-muted-foreground">
               {round}차 면접 일정을 삭제하시겠습니까? 이 작업은 되돌릴 수
               없습니다.
             </p>
 
             {errorMessage !== null && (
-              <p className="mb-4 text-sm text-red-600" role="alert">
+              <p className="mb-4 text-sm font-medium text-red-600" role="alert">
                 {errorMessage}
               </p>
             )}

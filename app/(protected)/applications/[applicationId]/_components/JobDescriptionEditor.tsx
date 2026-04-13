@@ -137,7 +137,7 @@ export function JobDescriptionEditor({
 
       <div aria-atomic="true" aria-live="polite" className="min-h-0">
         {isEditing && errorMessage && (
-          <p className="mb-2 text-xs font-medium text-red-600">
+          <p className="mb-2 text-sm font-medium text-red-600">
             {errorMessage}
           </p>
         )}

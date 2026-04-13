@@ -60,13 +60,13 @@ export function ApplicationRow({
                 {PLATFORM_LABEL[application.platform]}
               </span>
             )}
-            <span className="text-xs text-muted-foreground/80">
+            <span className="text-sm text-muted-foreground/80">
               <TimeAgo dateString={application.appliedAt} />
             </span>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2 pt-1 text-muted-foreground">
-          <span className="hidden text-xs font-medium sm:block">미리보기</span>
+          <span className="hidden text-sm font-medium sm:block">미리보기</span>
           <ChevronRightIcon aria-hidden="true" className="size-4" />
         </div>
       </button>

@@ -13,7 +13,7 @@ export function Header() {
         <div className="flex items-center gap-6">
           <Button
             asChild
-            className="text-xl font-black tracking-tighter text-primary hover:bg-transparent"
+            className="text-xl font-bold tracking-tighter text-primary hover:bg-transparent"
             variant="ghost"
           >
             <a href="/dashboard">201</a>

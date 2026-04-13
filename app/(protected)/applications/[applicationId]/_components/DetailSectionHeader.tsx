@@ -29,7 +29,7 @@ export function DetailSectionHeader({
             {title}
           </h2>
           {description ? (
-            <p className="text-sm leading-relaxed text-muted-foreground">
+            <p className="text-sm leading-relaxed font-medium text-muted-foreground">
               {description}
             </p>
           ) : null}

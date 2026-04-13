@@ -11,10 +11,10 @@ export function FeaturesSection() {
           <p className="text-sm font-semibold tracking-[0.24em] text-muted-foreground uppercase">
             기능
           </p>
-          <h2 className="mt-4 text-[2rem] leading-[1.08] font-black tracking-[-0.05em] text-balance sm:text-[2.6rem]">
+          <h2 className="mt-4 text-[2rem] leading-[1.08] font-bold tracking-[-0.05em] text-balance sm:text-[2.6rem]">
             필요한 기능만 간단하게 담았습니다.
           </h2>
-          <p className="mt-5 text-base leading-7 text-muted-foreground">
+          <p className="mt-5 text-base leading-7 font-medium text-muted-foreground">
             공고, 일정, 현황처럼 자주 보는 정보만 담았습니다.
           </p>
         </header>
@@ -28,7 +28,7 @@ export function FeaturesSection() {
               <h3 className="mt-4 text-lg font-bold tracking-[-0.03em] text-foreground">
                 {title}
               </h3>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              <p className="mt-3 text-sm leading-6 font-medium text-muted-foreground">
                 {description}
               </p>
             </li>

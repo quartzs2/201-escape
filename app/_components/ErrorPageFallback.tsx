@@ -52,12 +52,12 @@ export function ErrorPageFallback({
         <p className="text-sm text-muted-foreground">
           {description}
           {error.digest && (
-            <span className="mt-1 block text-xs text-muted-foreground/60">
+            <span className="mt-1 block text-sm text-muted-foreground/60">
               오류 코드: {error.digest}
             </span>
           )}
           {isDeploymentMismatchError && (
-            <span className="mt-2 block text-xs text-muted-foreground/80">
+            <span className="mt-2 block text-sm text-muted-foreground/80">
               배포가 갱신되면서 이전 페이지 상태가 남아 있을 수 있습니다. 다시
               시도는 전체 새로고침으로 처리됩니다.
             </span>
