@@ -1,5 +1,3 @@
-import type { GetApplicationsPage } from "@/lib/types/application";
-
 import { APPLICATION_STATUS_META } from "@/lib/constants/application-status";
 import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
 import { JobStatus } from "@/lib/types/job";
@@ -93,6 +91,18 @@ export const SORT_LABELS: Record<SortValue, string> = {
 };
 
 /**
+ * 서버가 새 첫 페이지를 준비해야 하는 필터 조합을 문자열 키로 직렬화합니다.
+ * 탭은 같은 데이터 집합을 재사용하므로 키에 포함하지 않습니다.
+ */
+export function buildApplicationsRequestKey(params: {
+  period: PeriodPreset;
+  search: string;
+  sort: SortValue;
+}) {
+  return JSON.stringify(params);
+}
+
+/**
  * URL 파라미터를 PeriodPreset으로 파싱합니다.
  * 유효하지 않은 값은 "all"로 폴백합니다.
  */
@@ -120,33 +130,4 @@ export function parseTabParam(value: null | string): TabValue {
   return (TAB_VALUES as readonly string[]).includes(value ?? "")
     ? (value as TabValue)
     : "all";
-}
-
-/**
- * useInfiniteQuery / prefetchInfiniteQuery 공통 query key 베이스
- */
-export const APPLICATIONS_QUERY_KEY = ["applications"] as const;
-
-/**
- * 필터가 포함된 query key를 생성합니다.
- * Panel과 View에서 동일한 key를 사용해 HydrationBoundary가 올바르게 작동합니다.
- */
-export function buildApplicationsQueryKey(params: {
-  period: PeriodPreset;
-  search: string;
-  sort: SortValue;
-}) {
-  return [...APPLICATIONS_QUERY_KEY, params] as const;
-}
-
-/**
- * useInfiniteQuery / prefetchInfiniteQuery 공통 getNextPageParam.
- * lastPageParam + 현재 페이지 아이템 수로 다음 오프셋을 O(1)에 계산합니다.
- */
-export function getApplicationsNextPageParam(
-  lastPage: GetApplicationsPage,
-  _allPages: GetApplicationsPage[],
-  lastPageParam: number,
-): number | undefined {
-  return lastPage.hasMore ? lastPageParam + lastPage.items.length : undefined;
 }

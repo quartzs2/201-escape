@@ -1,19 +1,14 @@
 "use client";
 
-import type { InfiniteData } from "@tanstack/react-query";
 import type { Route } from "next";
 
-import {
-  useQueryClient,
-  useSuspenseInfiniteQuery,
-} from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import type { GetApplicationsPage } from "@/lib/types/application";
 import type { JobStatus } from "@/lib/types/job";
 
+import { Button } from "@/components/ui/button/Button";
 import { getApplications } from "@/lib/actions";
 
 import type { PeriodPreset, SortValue, TabValue } from "../constants";
@@ -22,13 +17,8 @@ import type { ApplicationTabsHandle } from "./ApplicationTabs";
 
 import { ApplicationsPageHeader } from "../ApplicationsPageHeader";
 import {
-  buildApplicationsQueryKey,
-  getApplicationsNextPageParam,
   getPeriodDateRange,
   PAGE_SIZE,
-  parsePeriodParam,
-  parseSortParam,
-  parseTabParam,
   PERIOD_PARAM,
   PREVIEW_PARAM,
   SEARCH_PARAM,
@@ -49,63 +39,46 @@ const ApplicationPreviewSheet = dynamic(
 
 type ApplicationsPanelProps = {
   dateLabel: string;
+  initialApplications: ApplicationListItem[];
+  initialHasNextPage: boolean;
+  period: PeriodPreset;
+  search: string;
+  sort: SortValue;
+  tab: TabValue;
 };
 
-export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
+export function ApplicationsPanel({
+  dateLabel,
+  initialApplications,
+  initialHasNextPage,
+  period,
+  search,
+  sort,
+  tab,
+}: ApplicationsPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
 
   const tabsRef = useRef<ApplicationTabsHandle>(null);
+  const isFetchingNextPageRef = useRef(false);
+  const [applications, setApplications] =
+    useState<ApplicationListItem[]>(initialApplications);
+  const [hasNextPage, setHasNextPage] = useState(initialHasNextPage);
+  const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
   const [isListScrolled, setIsListScrolled] = useState(false);
+  const [paginationErrorMessage, setPaginationErrorMessage] = useState<
+    null | string
+  >(null);
   const [previewApplicationId, setPreviewApplicationId] = useState<
     null | string
   >(null);
   const [shouldRenderPreviewSheet, setShouldRenderPreviewSheet] =
     useState(false);
 
-  const search = searchParams.get(SEARCH_PARAM) ?? "";
-  const period = parsePeriodParam(searchParams.get(PERIOD_PARAM));
-  const sort = parseSortParam(searchParams.get(SORT_PARAM));
-  const tab = parseTabParam(searchParams.get(TAB_PARAM));
-
-  const queryKey = buildApplicationsQueryKey({ period, search, sort });
-  const dateRange = useMemo(() => getPeriodDateRange(period), [period]);
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useSuspenseInfiniteQuery({
-      getNextPageParam: getApplicationsNextPageParam,
-      initialPageParam: 0,
-      queryFn: async ({ pageParam }: { pageParam: number }) => {
-        const result = await getApplications({
-          limit: PAGE_SIZE,
-          offset: pageParam,
-          periodEnd: dateRange?.end,
-          periodStart: dateRange?.start,
-          search: search || undefined,
-          sort,
-        });
-        if (!result.ok) {
-          throw new Error(result.reason);
-        }
-        return result.data;
-      },
-      queryKey,
-    });
-
-  const applications: ApplicationListItem[] = data.pages.reduce<
-    ApplicationListItem[]
-  >((items, page) => {
-    items.push(...page.items);
-
-    return items;
-  }, []);
-
-  const selectedApplicationId = previewApplicationId;
-  const isPreviewOpen = selectedApplicationId !== null;
+  const isPreviewOpen = previewApplicationId !== null;
   const selectedApplication =
-    applications.find((a) => a.id === selectedApplicationId) ?? null;
+    applications.find((a) => a.id === previewApplicationId) ?? null;
 
   useEffect(() => {
     const previewParam = searchParams.get(PREVIEW_PARAM);
@@ -186,31 +159,51 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
   };
 
   const handleStatusChange = (applicationId: string, nextStatus: JobStatus) => {
-    queryClient.setQueryData<InfiniteData<GetApplicationsPage>>(
-      queryKey,
-      (old) => {
-        if (!old) {
-          return old;
-        }
-        return {
-          ...old,
-          pages: old.pages.map((page) => ({
-            ...page,
-            items: page.items.map((item) =>
-              item.id === applicationId
-                ? { ...item, status: nextStatus }
-                : item,
-            ),
-          })),
-        };
-      },
+    setApplications((currentApplications) =>
+      currentApplications.map((item) =>
+        item.id === applicationId ? { ...item, status: nextStatus } : item,
+      ),
     );
   };
 
-  const handleNearEnd = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+  async function loadNextPage() {
+    if (isFetchingNextPageRef.current || !hasNextPage) {
+      return;
     }
+
+    isFetchingNextPageRef.current = true;
+    setIsFetchingNextPage(true);
+    setPaginationErrorMessage(null);
+
+    try {
+      const dateRange = getPeriodDateRange(period);
+      const result = await getApplications({
+        limit: PAGE_SIZE,
+        offset: applications.length,
+        periodEnd: dateRange?.end,
+        periodStart: dateRange?.start,
+        search: search || undefined,
+        sort,
+      });
+
+      if (!result.ok) {
+        setPaginationErrorMessage(result.reason);
+        return;
+      }
+
+      setApplications((currentApplications) => [
+        ...currentApplications,
+        ...result.data.items,
+      ]);
+      setHasNextPage(result.data.hasMore);
+    } finally {
+      setIsFetchingNextPage(false);
+      isFetchingNextPageRef.current = false;
+    }
+  }
+
+  const handleNearEnd = () => {
+    void loadNextPage();
   };
 
   return (
@@ -249,6 +242,25 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
           ref={tabsRef}
           tab={tab}
         />
+        {paginationErrorMessage && (
+          <div className="border-t border-border/70 bg-background px-5 py-4 sm:px-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm leading-6 text-muted-foreground">
+                다음 항목을 불러오지 못했습니다. 네트워크 상태를 확인한 뒤 다시
+                시도해 주세요.
+              </p>
+              <Button
+                className="shrink-0 rounded-full font-semibold hover:border-primary/30 hover:text-primary"
+                onClick={() => {
+                  void loadNextPage();
+                }}
+                variant="outline"
+              >
+                다시 시도
+              </Button>
+            </div>
+          </div>
+        )}
       </section>
 
       {(shouldRenderPreviewSheet || isPreviewOpen) && (
