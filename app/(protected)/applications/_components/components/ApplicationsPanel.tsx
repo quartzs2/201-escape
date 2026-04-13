@@ -94,9 +94,13 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
       queryKey,
     });
 
-  const applications: ApplicationListItem[] = data.pages.flatMap(
-    (page) => page.items,
-  );
+  const applications: ApplicationListItem[] = data.pages.reduce<
+    ApplicationListItem[]
+  >((items, page) => {
+    items.push(...page.items);
+
+    return items;
+  }, []);
 
   const selectedApplicationId = previewApplicationId;
   const isPreviewOpen = selectedApplicationId !== null;
