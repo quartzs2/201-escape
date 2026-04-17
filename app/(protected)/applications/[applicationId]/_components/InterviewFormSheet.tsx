@@ -223,23 +223,28 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
                 >
                   일시
                 </label>
-                <input
+                <div
                   className={cn(
-                    INPUT_CLASS,
-                    "mobile-datetime-local-input max-w-full",
+                    "w-full min-w-0 rounded-md border border-input bg-background px-3 py-2",
+                    "focus-within:ring-2 focus-within:ring-ring",
+                    isSaving && "cursor-not-allowed opacity-50",
                   )}
-                  disabled={isSaving}
-                  id="interview-scheduled-at"
-                  onChange={(e) =>
-                    setValues((prev) => ({
-                      ...prev,
-                      scheduledAt: e.target.value,
-                    }))
-                  }
-                  required
-                  type="datetime-local"
-                  value={values.scheduledAt}
-                />
+                >
+                  <input
+                    className="mobile-datetime-local-input block w-full min-w-0 bg-transparent px-0 py-0 text-base text-foreground focus:outline-none disabled:cursor-not-allowed"
+                    disabled={isSaving}
+                    id="interview-scheduled-at"
+                    onChange={(e) =>
+                      setValues((prev) => ({
+                        ...prev,
+                        scheduledAt: e.target.value,
+                      }))
+                    }
+                    required
+                    type="datetime-local"
+                    value={values.scheduledAt}
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">
