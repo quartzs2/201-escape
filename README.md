@@ -41,14 +41,21 @@
   <tr>
     <td align="center"><strong>KPI 요약</strong></td>
     <td align="center"><strong>주요 비율</strong></td>
+  </tr>
+  <tr>
+    <td><img src="./docs/images/readme/dashboard_kpis.png" alt="지원 완료 건수와 단계별 KPI 요약을 보여주는 대시보드 화면" width="340" /></td>
+    <td><img src="./docs/images/readme/dashboard_kpis2.png" alt="서류 통과율, 최종 합격률, 저장 공고 비중을 보여주는 핵심 비율 카드 화면" width="340" /></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
     <td align="center"><strong>단계별 퍼널</strong></td>
     <td align="center"><strong>월간 지원 추이</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/readme/dashboard_kpis.png" alt="지원 완료 건수와 단계별 KPI 요약을 보여주는 대시보드 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/dashboard_kpis2.png" alt="서류 통과율, 최종 합격률, 저장 공고 비중을 보여주는 핵심 비율 카드 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/dashboard_funnel.png" alt="지원 기준 단계별 잔존 비율을 보여주는 퍼널 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/dashboard_monthly_trend.png" alt="최근 12개월 지원 추이와 최근 흐름 메모를 보여주는 대시보드 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/dashboard_funnel.png" alt="지원 기준 단계별 잔존 비율을 보여주는 퍼널 화면" width="340" /></td>
+    <td><img src="./docs/images/readme/dashboard_monthly_trend.png" alt="최근 12개월 지원 추이와 최근 흐름 메모를 보여주는 대시보드 화면" width="340" /></td>
   </tr>
 </table>
 
@@ -60,14 +67,21 @@
   <tr>
     <td align="center"><strong>지원 목록</strong></td>
     <td align="center"><strong>검색</strong></td>
+  </tr>
+  <tr>
+    <td><img src="./docs/images/readme/application_list.png" alt="상태 탭과 정렬을 포함한 지원 목록 화면" width="340" /></td>
+    <td><img src="./docs/images/readme/application_search.gif" alt="회사명 검색으로 지원 목록을 빠르게 좁히는 화면" width="340" /></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
     <td align="center"><strong>미리보기 시트</strong></td>
     <td align="center"><strong>공고 추가</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/readme/application_list.png" alt="상태 탭과 정렬을 포함한 지원 목록 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/application_search.gif" alt="회사명 검색으로 지원 목록을 빠르게 좁히는 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/application_previewsheet.gif" alt="지원 상태와 핵심 정보를 미리보기 시트로 확인하는 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/application_add_application.gif" alt="회사명, 포지션, 공고 URL을 입력해 새 공고를 추가하는 화면" width="220" /></td>
+    <td><img src="./docs/images/readme/application_previewsheet.gif" alt="지원 상태와 핵심 정보를 미리보기 시트로 확인하는 화면" width="340" /></td>
+    <td><img src="./docs/images/readme/application_add_application.gif" alt="회사명, 포지션, 공고 URL을 입력해 새 공고를 추가하는 화면" width="340" /></td>
   </tr>
 </table>
 
@@ -79,12 +93,19 @@
   <tr>
     <td align="center"><strong>상세 정보</strong></td>
     <td align="center"><strong>면접 일정 추가</strong></td>
+  </tr>
+  <tr>
+    <td><img src="./docs/images/readme/application_detail.png" alt="지원 상태 변경과 기본 정보를 관리하는 지원 상세 화면" width="340" /></td>
+    <td><img src="./docs/images/readme/application_detail_add_interview.gif" alt="지원 상세 화면에서 면접 일정을 추가하는 흐름" width="340" /></td>
+  </tr>
+</table>
+
+<table>
+  <tr>
     <td align="center"><strong>개인 메모 추가</strong></td>
   </tr>
   <tr>
-    <td><img src="./docs/images/readme/application_detail.png" alt="지원 상태 변경과 기본 정보를 관리하는 지원 상세 화면" width="220" /></td>
-    <td><img src="./docs/images/readme/application_detail_add_interview.gif" alt="지원 상세 화면에서 면접 일정을 추가하는 흐름" width="220" /></td>
-    <td><img src="./docs/images/readme/application_detail_add_memo.gif" alt="지원 상세 화면에서 개인 메모를 남기는 흐름" width="220" /></td>
+    <td><img src="./docs/images/readme/application_detail_add_memo.gif" alt="지원 상세 화면에서 개인 메모를 남기는 흐름" width="340" /></td>
   </tr>
 </table>
 
