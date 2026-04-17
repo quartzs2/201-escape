@@ -75,6 +75,28 @@
     --color-input: #31343c;
     --color-ring: #9db58d;
   }
+
+  input[type="datetime-local"].mobile-datetime-local-input {
+    min-width: 0;
+  }
+
+  input[type="datetime-local"].mobile-datetime-local-input::-webkit-date-and-time-value {
+    min-width: 0;
+    text-align: left;
+  }
+
+  input[type="datetime-local"].mobile-datetime-local-input::-webkit-datetime-edit {
+    min-width: 0;
+    padding: 0;
+  }
+
+  input[type="datetime-local"].mobile-datetime-local-input::-webkit-datetime-edit-fields-wrapper {
+    min-width: 0;
+  }
+
+  input[type="datetime-local"].mobile-datetime-local-input::-webkit-calendar-picker-indicator {
+    margin: 0;
+  }
 }
 
 @keyframes slide-up {
