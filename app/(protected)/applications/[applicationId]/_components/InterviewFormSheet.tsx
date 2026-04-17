@@ -17,12 +17,16 @@ import { trackEvent } from "@/lib/analytics/client";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
 import { Constants } from "@/lib/types/supabase";
-import { toDatetimeLocalValue } from "@/lib/utils";
+import { cn, toDatetimeLocalValue } from "@/lib/utils";
 
 const INTERVIEW_TYPES = Constants.public.Enums.interview_type;
-
-const INPUT_CLASS =
-  "min-w-0 w-full rounded-md border border-input bg-background px-3 py-2 text-base text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50";
+const INPUT_CLASS = cn(
+  "min-w-0 w-full rounded-md border border-input",
+  "bg-background px-3 py-2 text-base text-foreground",
+  "placeholder:text-muted-foreground",
+  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+  "disabled:cursor-not-allowed disabled:opacity-50",
+);
 
 export type InterviewFormSheetProps = AddModeProps | EditModeProps;
 
@@ -220,7 +224,10 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
                   일시
                 </label>
                 <input
-                  className={INPUT_CLASS}
+                  className={cn(
+                    INPUT_CLASS,
+                    "mobile-datetime-local-input max-w-full",
+                  )}
                   disabled={isSaving}
                   id="interview-scheduled-at"
                   onChange={(e) =>
