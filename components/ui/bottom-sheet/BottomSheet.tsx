@@ -54,7 +54,7 @@ function Content({
       tabIndex={-1}
       {...props}
       className={cn(
-        "w-full max-w-md rounded-t-[32px] bg-background shadow-2xl",
+        "w-full max-w-md min-w-0 rounded-t-[32px] bg-background shadow-2xl",
         "pointer-events-auto relative flex flex-col",
         "max-h-[92vh] min-h-[40vh]",
         "pb-[env(safe-area-inset-bottom)]",
