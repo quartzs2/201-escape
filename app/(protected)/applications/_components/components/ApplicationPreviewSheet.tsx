@@ -272,10 +272,7 @@ export function ApplicationPreviewSheet({
               asChild
               className="h-11 w-full justify-between rounded-xl px-4"
             >
-              <Link
-                href={`/applications/${application.id}` as Route}
-                onClick={onCloseAction}
-              >
+              <Link href={`/applications/${application.id}` as Route}>
                 {footerButtonContent}
               </Link>
             </Button>
