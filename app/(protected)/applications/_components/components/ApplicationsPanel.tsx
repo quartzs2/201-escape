@@ -10,6 +10,7 @@ import {
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import type { GetApplicationsPage } from "@/lib/types/application";
 import type { JobStatus } from "@/lib/types/job";
@@ -59,6 +60,7 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
 
   const tabsRef = useRef<ApplicationTabsHandle>(null);
   const [isListScrolled, setIsListScrolled] = useState(false);
+  const [isNavigatingFromPreview, setIsNavigatingFromPreview] = useState(false);
 
   const search = searchParams.get(SEARCH_PARAM) ?? "";
   const period = parsePeriodParam(searchParams.get(PERIOD_PARAM));
@@ -102,6 +104,8 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
   const isPreviewOpen = selectedApplicationId !== null;
   const selectedApplication =
     applications.find((a) => a.id === selectedApplicationId) ?? null;
+  const shouldRenderPreview =
+    isPreviewOpen && !isNavigatingFromPreview && selectedApplication !== null;
 
   const updateParams = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -155,14 +159,21 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
   };
 
   const handleSelectApplication = (application: ApplicationListItem) => {
+    setIsNavigatingFromPreview(false);
     updateParams({ [PREVIEW_PARAM]: application.id });
   };
 
   const handleClosePreview = () => {
+    setIsNavigatingFromPreview(false);
     updateParams({ [PREVIEW_PARAM]: "" });
   };
 
   const handleDetailNavigate = () => {
+    // iOS Safari bfcache가 "열린 시트" 상태를 스냅샷하지 않도록 상세 이동 직전에 프리뷰를 즉시 제거합니다.
+    flushSync(() => {
+      setIsNavigatingFromPreview(true);
+    });
+
     const params = new URLSearchParams(searchParams.toString());
     params.delete(PREVIEW_PARAM);
 
@@ -238,13 +249,15 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
         />
       </section>
 
-      <ApplicationPreviewSheet
-        application={selectedApplication}
-        isOpen={isPreviewOpen}
-        onCloseAction={handleClosePreview}
-        onDetailNavigateAction={handleDetailNavigate}
-        onStatusChangeAction={handleStatusChange}
-      />
+      {shouldRenderPreview && (
+        <ApplicationPreviewSheet
+          application={selectedApplication}
+          isOpen={true}
+          onCloseAction={handleClosePreview}
+          onDetailNavigateAction={handleDetailNavigate}
+          onStatusChangeAction={handleStatusChange}
+        />
+      )}
       <GoToTopFAB
         className="md:bottom-24"
         isVisible={isListScrolled}
