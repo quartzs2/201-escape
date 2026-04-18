@@ -113,14 +113,14 @@
 
 ## 기술 스택
 
-- **Framework**: Next.js 16 (App Router, TypeScript), React 19
+- **Framework**: Next.js 16(App Router, TypeScript), React 19
 - **Server State**: TanStack Query v5
-- **Database & Auth**: Supabase (PostgreSQL, Google OAuth)
+- **Database & Auth**: Supabase(PostgreSQL, Google OAuth)
 - **Styling**: TailwindCSS v4, CVA, tailwind-merge
 - **Validation**: Zod
-- **Parsing**: Cheerio (서버 사이드 HTML 파싱)
-- **Charts**: Recharts (퍼널, 월간 추이 차트)
-- **Analytics**: PostHog (이벤트 트래킹, 사용자 식별)
+- **Parsing**: Cheerio(서버 사이드 HTML 파싱)
+- **Charts**: 커스텀 SVG 차트(퍼널, 월간 추이 차트)
+- **Analytics**: PostHog(이벤트 트래킹, 사용자 식별)
 - **Error Tracking**: Sentry
 - **Test**: Vitest, Storybook
 - **Code Quality**: ESLint, Prettier, Husky, lint-staged
@@ -148,16 +148,16 @@ cp .env.example .env.local
 4. `supabase/migrations/`의 마이그레이션을 적용합니다.
 5. `.env.local`을 채운 뒤 `pnpm dev`로 앱을 실행합니다.
 
-| 변수                                   | 설명                                                               |
-| -------------------------------------- | ------------------------------------------------------------------ |
-| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase 프로젝트 URL                                              |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Publishable Key                                           |
-| `NEXT_PUBLIC_ENABLE_PARSING`           | `true`로 설정 시 URL 자동 파싱 활성화 (로컬 전용, 기본값: `false`) |
-| `POSTHOG_PROJECT_TOKEN`                | 서버에서 사용하는 PostHog 프로젝트 API Key                         |
-| `POSTHOG_HOST`                         | 서버에서 사용하는 PostHog API Host                                 |
-| `SENTRY_AUTH_TOKEN`                    | Sentry 소스맵 업로드 및 빌드 연동에 사용하는 인증 토큰             |
-| `NEXT_PUBLIC_SENTRY_DSN`               | Sentry DSN                                                         |
-| `NEXT_PUBLIC_ENABLE_BROWSER_SENTRY`    | `true`로 설정 시 브라우저 Sentry 활성화 (기본값: `false`)          |
+| 변수                                   | 설명                                                              |
+| -------------------------------------- | ----------------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             | Supabase 프로젝트 URL                                             |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Publishable Key                                          |
+| `NEXT_PUBLIC_ENABLE_PARSING`           | `true`로 설정 시 URL 자동 파싱 활성화(로컬 전용, 기본값: `false`) |
+| `POSTHOG_PROJECT_TOKEN`                | 서버에서 사용하는 PostHog 프로젝트 API Key                        |
+| `POSTHOG_HOST`                         | 서버에서 사용하는 PostHog API Host                                |
+| `SENTRY_AUTH_TOKEN`                    | Sentry 소스맵 업로드 및 빌드 연동에 사용하는 인증 토큰            |
+| `NEXT_PUBLIC_SENTRY_DSN`               | Sentry DSN                                                        |
+| `NEXT_PUBLIC_ENABLE_BROWSER_SENTRY`    | `true`로 설정 시 브라우저 Sentry 활성화(기본값: `false`)          |
 
 `NEXT_PUBLIC_SUPABASE_URL`과 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`는 Supabase 대시보드의 **Project Settings → API** 페이지에서 확인할 수 있습니다.
 
@@ -192,9 +192,9 @@ SAVED → APPLIED → DOCS_PASSED → INTERVIEWING → OFFERED
 
 ### 지원 플랫폼
 
-- `WANTED`: 원티드 (자동 파싱, 로컬 전용)
-- `SARAMIN`: 사람인 (자동 파싱, 로컬 전용)
-- `LINKEDIN`: LinkedIn (수동 입력)
+- `WANTED`: 원티드(자동 파싱, 로컬 전용)
+- `SARAMIN`: 사람인(자동 파싱, 로컬 전용)
+- `LINKEDIN`: LinkedIn(수동 입력)
 - `MANUAL`: 직접 입력
 
 ## 스크립트
@@ -206,7 +206,7 @@ pnpm start           # 프로덕션 서버 실행
 pnpm lint            # ESLint 실행
 pnpm test            # Vitest 테스트 실행
 pnpm bench           # VirtualList 벤치마크 실행
-pnpm storybook       # Storybook 실행 (포트 6006)
+pnpm storybook       # Storybook 실행(포트 6006)
 pnpm build-storybook # Storybook 정적 빌드
 ```
 
@@ -251,7 +251,7 @@ flowchart LR
 | tailwind-merge           | Tailwind 클래스 충돌 정리                    |
 | Zod                      | 입력값 및 도메인 스키마 검증                 |
 | Cheerio                  | 서버 사이드 HTML 파싱                        |
-| Recharts                 | 대시보드 퍼널 및 월간 추이 차트 렌더링       |
+| 커스텀 SVG 차트          | 대시보드 퍼널 및 월간 추이 차트 렌더링       |
 | PostHog                  | 사용자 이벤트 트래킹과 식별                  |
 | Sentry                   | 런타임 오류 수집과 추적                      |
 | Vitest                   | 단위 테스트와 벤치마크 실행                  |
@@ -282,7 +282,7 @@ flowchart LR
 | `memo_saved`                 | 개인 메모 저장 완료            | -                                  |
 | `applications_tab_changed`   | 지원 목록 탭 전환              | `tab: 'all' \| 'active' \| 'done'` |
 
-### 퍼널 설정 (PostHog 대시보드)
+### 퍼널 설정(PostHog 대시보드)
 
 PostHog → **Insights** → **New insight** → **Funnels**
 
@@ -330,7 +330,7 @@ app/
 │   │   │   ├── components/           # 목록 화면 내부 UI 조각
 │   │   │   └── go-to-top/            # 상단 이동 FAB
 │   │   ├── _utils/                   # applications 라우트 전용 유틸
-│   │   └── [applicationId]/          # 지원 상세 (메모, 면접 일정, 공고 원문)
+│   │   └── [applicationId]/          # 지원 상세(메모, 면접 일정, 공고 원문)
 │   │       └── _components/          # 상세 라우트 전용 UI
 │   └── dashboard/                    # 지원 현황 통계 대시보드
 │       ├── _components/              # dashboard 라우트 전용 UI
