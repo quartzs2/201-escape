@@ -162,6 +162,16 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
     updateParams({ [PREVIEW_PARAM]: "" });
   };
 
+  const handleDetailNavigate = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(PREVIEW_PARAM);
+
+    const query = params.toString();
+    const nextUrl = `${pathname}${query ? `?${query}` : ""}`;
+
+    window.history.replaceState(window.history.state, "", nextUrl);
+  };
+
   const handleStatusChange = (applicationId: string, nextStatus: JobStatus) => {
     queryClient.setQueryData<InfiniteData<GetApplicationsPage>>(
       queryKey,
@@ -232,6 +242,7 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
         application={selectedApplication}
         isOpen={isPreviewOpen}
         onCloseAction={handleClosePreview}
+        onDetailNavigateAction={handleDetailNavigate}
         onStatusChangeAction={handleStatusChange}
       />
       <GoToTopFAB
