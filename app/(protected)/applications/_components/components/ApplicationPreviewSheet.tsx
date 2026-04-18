@@ -36,6 +36,7 @@ type ApplicationPreviewSheetProps = {
   application: ApplicationListItem | null;
   isOpen: boolean;
   onCloseAction: () => void;
+  onDetailNavigateAction: () => void;
   onStatusChangeAction: (applicationId: string, nextStatus: JobStatus) => void;
 };
 
@@ -66,6 +67,7 @@ export function ApplicationPreviewSheet({
   application,
   isOpen,
   onCloseAction,
+  onDetailNavigateAction,
   onStatusChangeAction,
 }: ApplicationPreviewSheetProps) {
   const [previewState, setPreviewState] = useState<ApplicationPreviewState>({
@@ -274,7 +276,22 @@ export function ApplicationPreviewSheet({
             >
               <Link
                 href={`/applications/${application.id}` as Route}
-                onClick={onCloseAction}
+                onClick={(event) => {
+                  if (
+                    event.defaultPrevented ||
+                    event.button !== 0 ||
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                  ) {
+                    return;
+                  }
+
+                  // iOS Safari bfcache 복원 시 이전 목록 URL의 preview 파라미터로
+                  // 바텀시트가 다시 열리지 않도록 현재 히스토리 엔트리를 정리합니다.
+                  onDetailNavigateAction();
+                }}
               >
                 {footerButtonContent}
               </Link>
