@@ -5,7 +5,7 @@ import type { Route } from "next";
 import { AlertCircleIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
 import type {
@@ -65,6 +65,9 @@ export function ApplicationsPanel({
   const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
   const [isListScrolled, setIsListScrolled] = useState(false);
   const [isNavigatingFromPreview, setIsNavigatingFromPreview] = useState(false);
+  const [localPreviewApplicationId, setLocalPreviewApplicationId] = useState<
+    null | string
+  >(previewApplicationId);
   const [pages, setPages] = useState<GetApplicationsPage[]>([initialPage]);
   const [paginationError, setPaginationError] = useState<null | string>(null);
 
@@ -73,26 +76,48 @@ export function ApplicationsPanel({
   const hasNextPage = pages[pages.length - 1]?.hasMore ?? false;
   const selectedApplication =
     applications.find(
-      (application) => application.id === previewApplicationId,
+      (application) => application.id === localPreviewApplicationId,
     ) ?? null;
   const shouldRenderPreview =
-    previewApplicationId !== null &&
+    localPreviewApplicationId !== null &&
     !isNavigatingFromPreview &&
     selectedApplication !== null;
 
+  useEffect(() => {
+    setLocalPreviewApplicationId(previewApplicationId);
+  }, [previewApplicationId]);
+
   function updateRoute(nextState: RouteStateUpdate) {
+    const nextPreviewApplicationId =
+      nextState.previewApplicationId !== undefined
+        ? nextState.previewApplicationId
+        : localPreviewApplicationId;
+
+    if (nextState.previewApplicationId !== undefined) {
+      setLocalPreviewApplicationId(nextPreviewApplicationId);
+    }
+
     const href = buildApplicationsHref({
       period: nextState.period ?? period,
-      previewApplicationId:
-        nextState.previewApplicationId !== undefined
-          ? nextState.previewApplicationId
-          : previewApplicationId,
+      previewApplicationId: nextPreviewApplicationId,
       search: nextState.search ?? search,
       sort: nextState.sort ?? sort,
       tab: nextState.tab ?? tab,
     });
 
     router.replace(href as Route, { scroll: false });
+  }
+
+  function updatePreviewHistory(nextPreviewApplicationId: null | string) {
+    const href = buildApplicationsHref({
+      period,
+      previewApplicationId: nextPreviewApplicationId,
+      search,
+      sort,
+      tab,
+    });
+
+    window.history.replaceState(window.history.state, "", href);
   }
 
   function handleTabChange(nextTab: TabValue) {
@@ -104,12 +129,15 @@ export function ApplicationsPanel({
 
   function handleSelectApplication(application: ApplicationListItem) {
     setIsNavigatingFromPreview(false);
-    updateRoute({ previewApplicationId: application.id });
+    setLocalPreviewApplicationId(application.id);
+    // preview는 서버 데이터가 아니라 목록 위의 UI 상태이므로 App Router 재요청 없이 URL만 동기화합니다.
+    updatePreviewHistory(application.id);
   }
 
   function handleClosePreview() {
     setIsNavigatingFromPreview(false);
-    updateRoute({ previewApplicationId: null });
+    setLocalPreviewApplicationId(null);
+    updatePreviewHistory(null);
   }
 
   function handleDetailNavigate() {
