@@ -30,6 +30,11 @@ export type ApplicationStatusSelectorProps = {
   updateStatusAction: UpdateStatusAction;
 };
 
+type StatusMutationInput = {
+  nextStatus: JobStatus;
+  previousStatus: JobStatus;
+};
+
 type UpdateStatusAction = (
   input: UpdateApplicationStatusInput,
 ) => Promise<UpdateApplicationStatusResult>;
@@ -63,12 +68,13 @@ export function ApplicationStatusSelector({
   const mutation = useMutation<
     void,
     Error,
-    JobStatus,
+    StatusMutationInput,
     { previousStatus: JobStatus }
   >({
-    mutationFn: async (nextStatus) => {
+    mutationFn: async ({ nextStatus, previousStatus }) => {
       const result = await updateStatusAction({
         applicationId,
+        previousStatus,
         status: nextStatus,
       });
       if (!result.ok) {
@@ -82,8 +88,7 @@ export function ApplicationStatusSelector({
       }
       setErrorState({ message: error.message, status });
     },
-    onMutate: (nextStatus) => {
-      const previousStatus = currentStatus;
+    onMutate: ({ nextStatus, previousStatus }) => {
       setCurrentStatus(nextStatus);
       setErrorState(null);
       onStatusChangeAction?.(nextStatus);
@@ -103,7 +108,10 @@ export function ApplicationStatusSelector({
       return;
     }
 
-    mutation.mutate(nextStatus as JobStatus);
+    mutation.mutate({
+      nextStatus: nextStatus as JobStatus,
+      previousStatus: currentStatus,
+    });
   }
 
   return (
