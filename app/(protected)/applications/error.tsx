@@ -16,6 +16,7 @@ export default function ApplicationsError({
         error={error}
         navHref="/"
         navLabel="홈으로 이동"
+        reportSource="applications-error"
         resetAction={reset}
         title="지원 목록을 불러오지 못했습니다"
       />

@@ -26,6 +26,7 @@ export default function RootError({
         error={error}
         navHref={isProtectedPath ? "/dashboard" : "/"}
         navLabel={isProtectedPath ? "대시보드로 이동" : "홈으로 이동"}
+        reportSource="app-root-error"
         resetAction={reset}
         title="페이지를 불러오지 못했습니다"
         viewport="withoutHeader"
