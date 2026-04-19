@@ -80,7 +80,12 @@ export async function updateApplicationStatus(
   trackServerEvent(
     authData.user.id,
     ANALYTICS_EVENTS.APPLICATION_STATUS_CHANGED,
-    { status: parsedInput.data.status },
+    parsedInput.data.previousStatus
+      ? {
+          from_status: parsedInput.data.previousStatus,
+          to_status: parsedInput.data.status,
+        }
+      : { to_status: parsedInput.data.status },
   );
 
   return {
