@@ -6,12 +6,9 @@ import type {
 } from "@/lib/types/application";
 
 import { createClient } from "../supabase/server";
+import { getAuthenticatedUserId } from "./_auth";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
-
-const ERROR_MESSAGES = {
-  AUTH_REQUIRED: "로그인이 필요합니다.",
-} as const;
 
 export async function getApplications({
   limit,
@@ -29,20 +26,20 @@ export async function getApplications({
   sort?: "applied_at_asc" | "applied_at_desc";
 }): Promise<GetApplicationsResult> {
   const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
+  const authResult = await getAuthenticatedUserId(supabase);
 
-  if (authError || !authData.user) {
+  if (!authResult.ok) {
     return {
       code: "AUTH_REQUIRED",
       ok: false,
-      reason: ERROR_MESSAGES.AUTH_REQUIRED,
+      reason: authResult.reason,
     };
   }
 
   let query = supabase
     .from("applications")
     .select("id, applied_at, company_name, platform, position_title, status")
-    .eq("user_id", authData.user.id)
+    .eq("user_id", authResult.userId)
     .order("applied_at", { ascending: sort === "applied_at_asc" })
     .range(offset, offset + limit);
 

@@ -14,9 +14,9 @@ const mockEqUserId = vi.fn(() => ({ maybeSingle: mockMaybeSingle }));
 const mockEqId = vi.fn(() => ({ eq: mockEqUserId }));
 const mockSelect = vi.fn(() => ({ eq: mockEqId }));
 const mockFrom = vi.fn(() => ({ select: mockSelect }));
-const mockGetUser = vi.fn();
+const mockGetClaims = vi.fn();
 const mockSupabase = {
-  auth: { getUser: mockGetUser },
+  auth: { getClaims: mockGetClaims },
   from: mockFrom,
 };
 
@@ -26,8 +26,8 @@ const USER_ID = "user-1";
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(createClient).mockResolvedValue(mockSupabase as never);
-  mockGetUser.mockResolvedValue({
-    data: { user: { id: USER_ID } },
+  mockGetClaims.mockResolvedValue({
+    data: { claims: { sub: USER_ID } },
     error: null,
   });
   mockMaybeSingle.mockResolvedValue({
@@ -38,9 +38,9 @@ beforeEach(() => {
 
 describe("verifyApplicationOwnership", () => {
   describe("인증 실패", () => {
-    it("auth.getUser가 에러를 반환하면 AUTH_REQUIRED를 반환한다", async () => {
-      mockGetUser.mockResolvedValue({
-        data: { user: null },
+    it("auth.getClaims가 에러를 반환하면 AUTH_REQUIRED를 반환한다", async () => {
+      mockGetClaims.mockResolvedValue({
+        data: { claims: null },
         error: { message: "JWT expired" },
       });
 
@@ -49,8 +49,11 @@ describe("verifyApplicationOwnership", () => {
       expect(result).toMatchObject({ code: "AUTH_REQUIRED", ok: false });
     });
 
-    it("user가 null이면 AUTH_REQUIRED를 반환한다", async () => {
-      mockGetUser.mockResolvedValue({ data: { user: null }, error: null });
+    it("claims.sub가 없으면 AUTH_REQUIRED를 반환한다", async () => {
+      mockGetClaims.mockResolvedValue({
+        data: { claims: {} },
+        error: null,
+      });
 
       const result = await verifyApplicationOwnership(APPLICATION_ID);
 
@@ -58,7 +61,10 @@ describe("verifyApplicationOwnership", () => {
     });
 
     it("인증 실패 시 from을 호출하지 않는다", async () => {
-      mockGetUser.mockResolvedValue({ data: { user: null }, error: null });
+      mockGetClaims.mockResolvedValue({
+        data: { claims: {} },
+        error: null,
+      });
 
       await verifyApplicationOwnership(APPLICATION_ID);
 

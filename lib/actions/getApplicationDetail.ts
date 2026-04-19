@@ -7,11 +7,11 @@ import {
   type GetApplicationDetailResult,
 } from "@/lib/types/application";
 
+import { getAuthenticatedUserId } from "./_auth";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
 
 const ERROR_MESSAGES = {
-  AUTH_REQUIRED: "로그인이 필요합니다.",
   INVALID_RESPONSE: "지원 상세 응답을 해석하지 못했습니다.",
   NOT_FOUND: "지원 상세 정보를 찾을 수 없습니다.",
   VALIDATION_ERROR: "유효하지 않은 applicationId입니다.",
@@ -33,13 +33,13 @@ export async function getApplicationDetail(
   }
 
   const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
+  const authResult = await getAuthenticatedUserId(supabase);
 
-  if (authError || !authData.user) {
+  if (!authResult.ok) {
     return {
       code: "AUTH_REQUIRED",
       ok: false,
-      reason: ERROR_MESSAGES.AUTH_REQUIRED,
+      reason: authResult.reason,
     };
   }
 
@@ -49,7 +49,7 @@ export async function getApplicationDetail(
       "id, applied_at, company_name, description, notes, origin_url, platform, position_title, status",
     )
     .eq("id", parsedApplicationId.data)
-    .eq("user_id", authData.user.id)
+    .eq("user_id", authResult.userId)
     .maybeSingle();
 
   if (error) {

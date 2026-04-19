@@ -8,12 +8,9 @@ import {
 } from "@/lib/constants/application-status";
 
 import { createClient } from "../supabase/server";
+import { getAuthenticatedUserId } from "./_auth";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
-
-const ERROR_MESSAGES = {
-  AUTH_REQUIRED: "로그인이 필요합니다.",
-} as const;
 
 /**
  * 사용자의 지원 현황 통계를 반환합니다.
@@ -21,17 +18,17 @@ const ERROR_MESSAGES = {
  */
 export async function getApplicationsStats(): Promise<GetApplicationsStatsResult> {
   const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
+  const authResult = await getAuthenticatedUserId(supabase);
 
-  if (authError || !authData.user) {
+  if (!authResult.ok) {
     return {
       code: "AUTH_REQUIRED",
       ok: false,
-      reason: ERROR_MESSAGES.AUTH_REQUIRED,
+      reason: authResult.reason,
     };
   }
 
-  const userId = authData.user.id;
+  const userId = authResult.userId;
 
   const { data, error } = await supabase
     .from("applications")
