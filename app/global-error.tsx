@@ -1,9 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
-import { createErrorReportPayload } from "@/lib/error-report/payload";
-
 import { ErrorPageFallback } from "./_components/ErrorPageFallback";
 
 export default function GlobalError({
@@ -13,29 +9,6 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const captured = useRef(false);
-
-  useEffect(() => {
-    if (captured.current) {
-      return;
-    }
-    captured.current = true;
-
-    void fetch("/api/error-report", {
-      body: JSON.stringify(
-        createErrorReportPayload({
-          digest: error.digest,
-          message: error.message,
-        }),
-      ),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      keepalive: true,
-      method: "POST",
-    });
-  }, [error]);
-
   return (
     <html lang="ko">
       <body className="bg-muted/30 text-foreground">
@@ -56,6 +29,7 @@ export default function GlobalError({
             error={error}
             navHref="/"
             navLabel="홈으로 이동"
+            reportSource="app-global-error"
             resetAction={reset}
             title="문제가 발생했습니다"
             viewport="withoutHeader"

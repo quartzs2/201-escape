@@ -16,6 +16,7 @@ export default function ApplicationDetailError({
         error={error}
         navHref="/dashboard"
         navLabel="지원 현황으로 돌아가기"
+        reportSource="application-detail-error"
         resetAction={reset}
         title="상세 페이지를 불러오지 못했습니다"
       />

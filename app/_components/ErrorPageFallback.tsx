@@ -2,6 +2,9 @@
 
 import type { Route } from "next";
 
+import * as Sentry from "@sentry/nextjs";
+import { useEffect, useRef } from "react";
+
 import { Button } from "@/components/ui/button/Button";
 import { cn } from "@/lib/utils/cn";
 
@@ -10,6 +13,7 @@ type ErrorPageFallbackProps = {
   error: Error & { digest?: string };
   navHref: Route;
   navLabel: string;
+  reportSource: string;
   resetAction: () => void;
   title: string;
   viewport?: "full" | "withoutHeader";
@@ -20,13 +24,35 @@ export function ErrorPageFallback({
   error,
   navHref,
   navLabel,
+  reportSource,
   resetAction,
   title,
   viewport = "full",
 }: ErrorPageFallbackProps) {
+  const capturedErrorRef = useRef<Error | null>(null);
   const isDeploymentMismatchError = error.message.includes(
     'Failed to find Server Action "',
   );
+
+  useEffect(() => {
+    if (capturedErrorRef.current === error) {
+      return;
+    }
+
+    capturedErrorRef.current = error;
+
+    Sentry.withScope((scope) => {
+      scope.setTag("error_boundary_source", reportSource);
+
+      if (error.digest) {
+        scope.setTag("digest", error.digest);
+      }
+
+      scope.setExtra("boundary_title", title);
+      scope.setExtra("pathname", window.location.pathname);
+      Sentry.captureException(error);
+    });
+  }, [error, reportSource, title]);
 
   const handleRetry = () => {
     if (isDeploymentMismatchError) {

@@ -16,6 +16,7 @@ export default function DashboardError({
         error={error}
         navHref="/"
         navLabel="홈으로 이동"
+        reportSource="dashboard-error"
         resetAction={reset}
         title="지원 현황을 불러오지 못했습니다"
       />
