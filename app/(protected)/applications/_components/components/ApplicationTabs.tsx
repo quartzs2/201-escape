@@ -4,7 +4,7 @@ import { useImperativeHandle, useRef } from "react";
 
 import type { VirtualListHandle } from "@/components/ui/virtual-list";
 
-import { Tabs } from "@/components/ui";
+import { Tabs } from "@/components/ui/tabs/Tabs";
 import { trackEvent } from "@/lib/analytics/client";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";

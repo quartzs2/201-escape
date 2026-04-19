@@ -2,7 +2,7 @@ import { InboxIcon } from "lucide-react";
 
 import type { VirtualListHandle } from "@/components/ui/virtual-list";
 
-import { Skeleton } from "@/components/ui";
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 import { VirtualList } from "@/components/ui/virtual-list";
 
 import type { ApplicationListItem } from "../types";

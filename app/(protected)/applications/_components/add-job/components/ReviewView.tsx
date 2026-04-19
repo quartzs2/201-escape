@@ -1,6 +1,6 @@
 import type { JobPlatform, JobPost } from "@/lib/types/job";
 
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui/button/Button";
 import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
 
 type ReviewFieldProps = {
