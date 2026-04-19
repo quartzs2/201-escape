@@ -30,6 +30,7 @@ const mockSupabase = {
 
 const VALID_INPUT: UpdateApplicationStatusInput = {
   applicationId: "550e8400-e29b-41d4-a716-446655440000",
+  previousStatus: "SAVED",
   status: "APPLIED",
 };
 
@@ -172,7 +173,7 @@ describe("updateApplicationStatus", () => {
       expect(trackServerEvent).toHaveBeenCalledWith(
         "user-1",
         "application_status_changed",
-        { status: "APPLIED" },
+        { from_status: "SAVED", to_status: "APPLIED" },
       );
     });
 

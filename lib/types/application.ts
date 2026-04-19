@@ -14,6 +14,7 @@ const applicationNotesSchema = nullableTextSchema;
 export const updateApplicationStatusInputSchema = z
   .object({
     applicationId: applicationIdSchema,
+    previousStatus: jobStatusSchema.optional(),
     status: jobStatusSchema,
   })
   .strict();
