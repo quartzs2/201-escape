@@ -23,7 +23,7 @@ import { ApplicationsProviders } from "@/app/(protected)/applications/Applicatio
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
 import { Button } from "@/components/ui/button/Button";
 import { Skeleton } from "@/components/ui/skeleton/Skeleton";
-import { getApplicationDetail } from "@/lib/actions";
+import { getApplicationDetail } from "@/lib/actions/getApplicationDetail";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 
 import {
@@ -63,8 +63,8 @@ const DEFAULT_PREVIEW_BODY_MIN_HEIGHT_CLASS = "min-h-58";
 const DEFAULT_PREVIEW_SHEET_HEIGHT_CLASS = "min-h-[40vh]";
 const MANUAL_PREVIEW_BODY_MIN_HEIGHT_CLASS = "min-h-36";
 const MANUAL_PREVIEW_SHEET_HEIGHT_CLASS = "min-h-[30vh]";
-const DEFAULT_PREVIEW_SKELETON_COUNT = 2;
-const MANUAL_PREVIEW_SKELETON_COUNT = 1;
+const DEFAULT_PREVIEW_SKELETON_KEYS = [0, 1] as const;
+const MANUAL_PREVIEW_SKELETON_KEYS = [0] as const;
 
 export function ApplicationPreviewSheet({
   application,
@@ -133,9 +133,9 @@ export function ApplicationPreviewSheet({
   const notesMeta = getNotesMeta(detail);
   const isManualPlatform = platform === "MANUAL";
   const shouldShowDescription = !isManualPlatform;
-  const previewSkeletonCount = isManualPlatform
-    ? MANUAL_PREVIEW_SKELETON_COUNT
-    : DEFAULT_PREVIEW_SKELETON_COUNT;
+  const previewSkeletonKeys = isManualPlatform
+    ? MANUAL_PREVIEW_SKELETON_KEYS
+    : DEFAULT_PREVIEW_SKELETON_KEYS;
 
   const footerButtonContent = (
     <>
@@ -219,11 +219,9 @@ export function ApplicationPreviewSheet({
                   className="space-y-4"
                   role="status"
                 >
-                  {Array.from({ length: previewSkeletonCount }).map(
-                    (_, index) => (
-                      <ApplicationPreviewSectionSkeleton key={index} />
-                    ),
-                  )}
+                  {previewSkeletonKeys.map((key) => (
+                    <ApplicationPreviewSectionSkeleton key={key} />
+                  ))}
                 </div>
               )}
 

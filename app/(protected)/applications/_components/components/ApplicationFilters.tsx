@@ -1,23 +1,15 @@
-"use client";
-
 import type { Route } from "next";
-import type { ChangeEvent, FormEvent } from "react";
 
 import { ChevronDownIcon, SearchIcon, XIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
 import type { PeriodPreset, SortValue, TabValue } from "../constants";
 
 import { buildApplicationsHref } from "../../_utils/route-state";
-import {
-  PERIOD_PRESET_LABELS,
-  PERIOD_PRESETS,
-  SORT_LABELS,
-  SORT_VALUES,
-} from "../constants";
+import { PERIOD_PRESET_LABELS, PERIOD_PRESETS } from "../constants";
+import { ApplicationSortSelect } from "./ApplicationSortSelect";
 
 type ApplicationFiltersProps = {
   period: PeriodPreset;
@@ -32,7 +24,6 @@ export function ApplicationFilters({
   sort,
   tab,
 }: ApplicationFiltersProps) {
-  const router = useRouter();
   const isFiltered =
     search !== "" || period !== "all" || sort !== "applied_at_desc";
   const resetHref = buildApplicationsHref({
@@ -43,39 +34,11 @@ export function ApplicationFilters({
     tab: "all",
   }) as Route;
 
-  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-    const nextSearch = String(formData.get("q") ?? "").trim();
-    const nextHref = buildApplicationsHref({
-      period,
-      previewApplicationId: null,
-      search: nextSearch,
-      sort,
-      tab,
-    }) as Route;
-
-    router.push(nextHref, { scroll: false });
-  }
-
-  function handleSortChange(event: ChangeEvent<HTMLSelectElement>) {
-    const nextSort = event.target.value as SortValue;
-    const nextHref = buildApplicationsHref({
-      period,
-      previewApplicationId: null,
-      search,
-      sort: nextSort,
-      tab,
-    }) as Route;
-
-    router.push(nextHref, { scroll: false });
-  }
-
   return (
     <section className="bg-background/95 px-5 py-5 backdrop-blur-sm sm:px-6">
       <div className="grid gap-4">
-        <form onSubmit={handleSearchSubmit} role="search">
+        <form action="/applications" method="get" role="search">
+          <HiddenRouteStateFields period={period} sort={sort} tab={tab} />
           <div className="relative">
             <SearchIcon
               aria-hidden="true"
@@ -86,7 +49,6 @@ export function ApplicationFilters({
               className="w-full rounded-2xl border border-border bg-muted/40 py-3 pr-11 pl-11 text-base text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/10 focus:outline-none sm:text-sm"
               defaultValue={search}
               id="applications-company-search"
-              key={search}
               name="q"
               placeholder="회사명으로 현재 목록 좁히기"
               type="text"
@@ -94,7 +56,7 @@ export function ApplicationFilters({
             <button className="sr-only" type="submit">
               회사명 검색
             </button>
-            {search !== "" && (
+            {search !== "" ? (
               <Link
                 aria-label="검색어 지우기"
                 className="absolute top-1/2 right-4 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
@@ -111,7 +73,7 @@ export function ApplicationFilters({
               >
                 <XIcon aria-hidden="true" className="size-4" />
               </Link>
-            )}
+            ) : null}
           </div>
         </form>
 
@@ -159,18 +121,13 @@ export function ApplicationFilters({
                 정렬
               </span>
               <div className="relative">
-                <select
-                  className="min-w-28 appearance-none rounded-full bg-transparent py-2 pr-9 pl-1 text-sm font-semibold text-foreground outline-none"
+                <ApplicationSortSelect
                   id="applications-sort"
-                  onChange={handleSortChange}
-                  value={sort}
-                >
-                  {SORT_VALUES.map((value) => (
-                    <option key={value} value={value}>
-                      {SORT_LABELS[value]}
-                    </option>
-                  ))}
-                </select>
+                  period={period}
+                  search={search}
+                  sort={sort}
+                  tab={tab}
+                />
                 <ChevronDownIcon
                   aria-hidden="true"
                   className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground"
@@ -191,5 +148,27 @@ export function ApplicationFilters({
         </div>
       </div>
     </section>
+  );
+}
+
+function HiddenRouteStateFields({
+  period,
+  sort,
+  tab,
+}: {
+  period: PeriodPreset;
+  sort: SortValue;
+  tab: TabValue;
+}) {
+  return (
+    <>
+      {period !== "all" ? (
+        <input name="period" type="hidden" value={period} />
+      ) : null}
+      {sort !== "applied_at_desc" ? (
+        <input name="sort" type="hidden" value={sort} />
+      ) : null}
+      {tab !== "all" ? <input name="tab" type="hidden" value={tab} /> : null}
+    </>
   );
 }

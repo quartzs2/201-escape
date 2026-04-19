@@ -15,7 +15,7 @@ import type {
 import type { JobStatus } from "@/lib/types/job";
 
 import { Button } from "@/components/ui/button/Button";
-import { getApplications } from "@/lib/actions";
+import { getApplications } from "@/lib/actions/getApplications";
 
 import type { PeriodPreset, SortValue, TabValue } from "../constants";
 import type { ApplicationTabsHandle } from "./ApplicationTabs";
