@@ -1,9 +1,7 @@
 import { getApplications } from "@/lib/actions";
-import { formatKoreanDate } from "@/lib/utils";
 
 import { parseApplicationsRouteState } from "../_utils/route-state";
 import { AddJobTrigger } from "./add-job";
-import { ApplicationsPageHeader } from "./ApplicationsPageHeader";
 import { ApplicationFilters } from "./components/ApplicationFilters";
 import { ApplicationsPanel } from "./components/ApplicationsPanel";
 import { getPeriodDateRange, PAGE_SIZE } from "./constants";
@@ -18,7 +16,6 @@ export async function ApplicationsView({
   const { period, previewApplicationId, search, sort, tab } =
     parseApplicationsRouteState(searchParams);
   const dateRange = getPeriodDateRange(period);
-  const dateLabel = formatKoreanDate(new Date());
   const panelKey = JSON.stringify({ period, search, sort });
   const initialPageResult = await getApplications({
     limit: PAGE_SIZE,
@@ -35,17 +32,7 @@ export async function ApplicationsView({
 
   return (
     <main className="min-h-screen bg-background pb-20">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 pt-0 pb-10 sm:px-6 lg:gap-20 lg:px-8 lg:pb-12">
-        <ApplicationsPageHeader
-          applications={initialPageResult.data.items}
-          dateLabel={dateLabel}
-          hasNextPage={initialPageResult.data.hasMore}
-          period={period}
-          search={search}
-          sort={sort}
-          tab={tab}
-        />
-
+      <div className="mx-auto flex w-full max-w-6xl flex-col px-4 pt-6 pb-10 sm:px-6 sm:pt-8 lg:px-8 lg:pt-10 lg:pb-12">
         <section className="flex flex-col overflow-hidden rounded-3xl border border-border/70 bg-background">
           <ApplicationFilters
             period={period}
