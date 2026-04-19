@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 
+import { getAuthenticatedUserId } from "./_auth";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 
 type VerifyResult =
@@ -22,13 +23,13 @@ export async function verifyApplicationOwnership(
   applicationId: string,
 ): Promise<VerifyResult> {
   const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
+  const authResult = await getAuthenticatedUserId(supabase);
 
-  if (authError || !authData.user) {
+  if (!authResult.ok) {
     return {
       code: "AUTH_REQUIRED",
       ok: false,
-      reason: "로그인이 필요합니다.",
+      reason: authResult.reason,
     };
   }
 
@@ -36,7 +37,7 @@ export async function verifyApplicationOwnership(
     .from("applications")
     .select("id")
     .eq("id", applicationId)
-    .eq("user_id", authData.user.id)
+    .eq("user_id", authResult.userId)
     .maybeSingle();
 
   if (applicationError) {
@@ -58,5 +59,5 @@ export async function verifyApplicationOwnership(
     };
   }
 
-  return { ok: true, supabase, userId: authData.user.id };
+  return { ok: true, supabase, userId: authResult.userId };
 }

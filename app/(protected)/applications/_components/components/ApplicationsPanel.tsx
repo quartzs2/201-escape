@@ -1,30 +1,27 @@
 "use client";
 
-import type { InfiniteData } from "@tanstack/react-query";
 import type { Route } from "next";
 
-import {
-  useQueryClient,
-  useSuspenseInfiniteQuery,
-} from "@tanstack/react-query";
+import { AlertCircleIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
-import type { GetApplicationsPage } from "@/lib/types/application";
+import type {
+  ApplicationListItem,
+  GetApplicationsPage,
+} from "@/lib/types/application";
 import type { JobStatus } from "@/lib/types/job";
 
+import { Button } from "@/components/ui";
 import { getApplications } from "@/lib/actions";
 
 import type { PeriodPreset, SortValue, TabValue } from "../constants";
-import type { ApplicationListItem } from "../types";
 import type { ApplicationTabsHandle } from "./ApplicationTabs";
 
 import { ApplicationsPageHeader } from "../ApplicationsPageHeader";
 import {
-  buildApplicationsQueryKey,
-  getApplicationsNextPageParam,
   getPeriodDateRange,
   PAGE_SIZE,
   parsePeriodParam,
@@ -50,17 +47,24 @@ const ApplicationPreviewSheet = dynamic(
 
 type ApplicationsPanelProps = {
   dateLabel: string;
+  initialPage: GetApplicationsPage;
 };
 
-export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
+export function ApplicationsPanel({
+  dateLabel,
+  initialPage,
+}: ApplicationsPanelProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
 
   const tabsRef = useRef<ApplicationTabsHandle>(null);
+  const paginationSequenceRef = useRef(0);
+  const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
   const [isListScrolled, setIsListScrolled] = useState(false);
   const [isNavigatingFromPreview, setIsNavigatingFromPreview] = useState(false);
+  const [pages, setPages] = useState<GetApplicationsPage[]>([initialPage]);
+  const [paginationError, setPaginationError] = useState<null | string>(null);
 
   const search = searchParams.get(SEARCH_PARAM) ?? "";
   const period = parsePeriodParam(searchParams.get(PERIOD_PARAM));
@@ -68,47 +72,21 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
   const tab = parseTabParam(searchParams.get(TAB_PARAM));
   const previewApplicationId = searchParams.get(PREVIEW_PARAM);
 
-  const queryKey = buildApplicationsQueryKey({ period, search, sort });
-  const dateRange = useMemo(() => getPeriodDateRange(period), [period]);
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useSuspenseInfiniteQuery({
-      getNextPageParam: getApplicationsNextPageParam,
-      initialPageParam: 0,
-      queryFn: async ({ pageParam }: { pageParam: number }) => {
-        const result = await getApplications({
-          limit: PAGE_SIZE,
-          offset: pageParam,
-          periodEnd: dateRange?.end,
-          periodStart: dateRange?.start,
-          search: search || undefined,
-          sort,
-        });
-        if (!result.ok) {
-          throw new Error(result.reason);
-        }
-        return result.data;
-      },
-      queryKey,
-    });
-
-  const applications: ApplicationListItem[] = data.pages.reduce<
-    ApplicationListItem[]
-  >((items, page) => {
-    items.push(...page.items);
-
-    return items;
-  }, []);
-
-  const selectedApplicationId = previewApplicationId;
-  const isPreviewOpen = selectedApplicationId !== null;
+  const dateRange = getPeriodDateRange(period);
+  const applications = pages.flatMap((page) => page.items);
+  const hasNextPage = pages[pages.length - 1]?.hasMore ?? false;
   const selectedApplication =
-    applications.find((a) => a.id === selectedApplicationId) ?? null;
+    applications.find(
+      (application) => application.id === previewApplicationId,
+    ) ?? null;
   const shouldRenderPreview =
-    isPreviewOpen && !isNavigatingFromPreview && selectedApplication !== null;
+    previewApplicationId !== null &&
+    !isNavigatingFromPreview &&
+    selectedApplication !== null;
 
-  const updateParams = (updates: Record<string, string>) => {
+  function updateParams(updates: Record<string, string>) {
     const params = new URLSearchParams(searchParams.toString());
+
     for (const [key, value] of Object.entries(updates)) {
       if (value) {
         params.set(key, value);
@@ -116,32 +94,33 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
         params.delete(key);
       }
     }
+
     const query = params.toString();
     router.replace(
       `${pathname}${query ? `?${query}` : ""}` as unknown as Route,
       { scroll: false },
     );
-  };
+  }
 
-  const handleSearchSubmit = (nextSearch: string) => {
+  function handleSearchSubmit(nextSearch: string) {
     updateParams({ [PREVIEW_PARAM]: "", [SEARCH_PARAM]: nextSearch });
-  };
+  }
 
-  const handlePeriodChange = (nextPeriod: PeriodPreset) => {
+  function handlePeriodChange(nextPeriod: PeriodPreset) {
     updateParams({
       [PERIOD_PARAM]: nextPeriod === "all" ? "" : nextPeriod,
       [PREVIEW_PARAM]: "",
     });
-  };
+  }
 
-  const handleSortChange = (nextSort: SortValue) => {
+  function handleSortChange(nextSort: SortValue) {
     updateParams({
       [PREVIEW_PARAM]: "",
       [SORT_PARAM]: nextSort === "applied_at_desc" ? "" : nextSort,
     });
-  };
+  }
 
-  const handleResetFilters = () => {
+  function handleResetFilters() {
     updateParams({
       [PERIOD_PARAM]: "",
       [PREVIEW_PARAM]: "",
@@ -149,26 +128,26 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
       [SORT_PARAM]: "",
       [TAB_PARAM]: "",
     });
-  };
+  }
 
-  const handleTabChange = (nextTab: TabValue) => {
+  function handleTabChange(nextTab: TabValue) {
     updateParams({
       [PREVIEW_PARAM]: "",
       [TAB_PARAM]: nextTab === "all" ? "" : nextTab,
     });
-  };
+  }
 
-  const handleSelectApplication = (application: ApplicationListItem) => {
+  function handleSelectApplication(application: ApplicationListItem) {
     setIsNavigatingFromPreview(false);
     updateParams({ [PREVIEW_PARAM]: application.id });
-  };
+  }
 
-  const handleClosePreview = () => {
+  function handleClosePreview() {
     setIsNavigatingFromPreview(false);
     updateParams({ [PREVIEW_PARAM]: "" });
-  };
+  }
 
-  const handleDetailNavigate = () => {
+  function handleDetailNavigate() {
     // iOS Safari bfcache가 "열린 시트" 상태를 스냅샷하지 않도록 상세 이동 직전에 프리뷰를 즉시 제거합니다.
     flushSync(() => {
       setIsNavigatingFromPreview(true);
@@ -181,42 +160,62 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
     const nextUrl = `${pathname}${query ? `?${query}` : ""}`;
 
     window.history.replaceState(window.history.state, "", nextUrl);
-  };
+  }
 
-  const handleStatusChange = (applicationId: string, nextStatus: JobStatus) => {
-    queryClient.setQueryData<InfiniteData<GetApplicationsPage>>(
-      queryKey,
-      (old) => {
-        if (!old) {
-          return old;
-        }
-        return {
-          ...old,
-          pages: old.pages.map((page) => ({
-            ...page,
-            items: page.items.map((item) =>
-              item.id === applicationId
-                ? { ...item, status: nextStatus }
-                : item,
-            ),
-          })),
-        };
-      },
+  function handleStatusChange(applicationId: string, nextStatus: JobStatus) {
+    setPages((currentPages) =>
+      currentPages.map((page) => ({
+        ...page,
+        items: page.items.map((item) => {
+          if (item.id !== applicationId) {
+            return item;
+          }
+
+          return { ...item, status: nextStatus };
+        }),
+      })),
     );
-  };
+  }
 
-  const handleNearEnd = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+  async function handleNearEnd() {
+    if (isFetchingNextPage || !hasNextPage) {
+      return;
     }
-  };
+
+    const activeSequence = paginationSequenceRef.current;
+
+    setIsFetchingNextPage(true);
+    setPaginationError(null);
+
+    const result = await getApplications({
+      limit: PAGE_SIZE,
+      offset: applications.length,
+      periodEnd: dateRange?.end,
+      periodStart: dateRange?.start,
+      search: search || undefined,
+      sort,
+    });
+
+    if (paginationSequenceRef.current !== activeSequence) {
+      return;
+    }
+
+    if (!result.ok) {
+      setPaginationError(result.reason);
+      setIsFetchingNextPage(false);
+      return;
+    }
+
+    setPages((currentPages) => [...currentPages, result.data]);
+    setIsFetchingNextPage(false);
+  }
 
   return (
     <div className="flex flex-col gap-6">
       <ApplicationsPageHeader
         applications={applications}
         dateLabel={dateLabel}
-        hasNextPage={hasNextPage ?? false}
+        hasNextPage={hasNextPage}
         period={period}
         search={search}
         sort={sort}
@@ -238,7 +237,9 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
           applications={applications}
           className="h-[32rem] min-h-0 sm:h-[36rem] lg:h-[40rem]"
           isFetchingNextPage={isFetchingNextPage}
-          onNearEndAction={handleNearEnd}
+          onNearEndAction={() => {
+            void handleNearEnd();
+          }}
           onRangeChangeAction={(startIndex: number) =>
             setIsListScrolled(startIndex > 0)
           }
@@ -247,9 +248,37 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
           ref={tabsRef}
           tab={tab}
         />
+
+        {paginationError ? (
+          <div
+            aria-live="polite"
+            className="border-t border-border/70 bg-muted/20 px-5 py-4 sm:px-6"
+            role="status"
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-2 text-sm text-red-700">
+                <AlertCircleIcon
+                  aria-hidden="true"
+                  className="mt-0.5 size-4 shrink-0"
+                />
+                <p>추가 목록을 불러오지 못했습니다. {paginationError}</p>
+              </div>
+              <Button
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  void handleNearEnd();
+                }}
+                size="sm"
+                variant="outline"
+              >
+                다시 시도
+              </Button>
+            </div>
+          </div>
+        ) : null}
       </section>
 
-      {shouldRenderPreview && (
+      {shouldRenderPreview ? (
         <ApplicationPreviewSheet
           application={selectedApplication}
           isOpen={true}
@@ -257,7 +286,8 @@ export function ApplicationsPanel({ dateLabel }: ApplicationsPanelProps) {
           onDetailNavigateAction={handleDetailNavigate}
           onStatusChangeAction={handleStatusChange}
         />
-      )}
+      ) : null}
+
       <GoToTopFAB
         className="md:bottom-24"
         isVisible={isListScrolled}
