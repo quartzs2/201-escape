@@ -19,7 +19,9 @@ import type {
 import type { JobStatus } from "@/lib/types/job";
 
 import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
-import { BottomSheet, Button, Skeleton } from "@/components/ui";
+import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
+import { Button } from "@/components/ui/button/Button";
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 import { getApplicationDetail } from "@/lib/actions";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { BottomSheet } from "@/components/ui";
+import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
 
 import { ManualFormView } from "./components/ManualFormView";
 import { ReviewView } from "./components/ReviewView";

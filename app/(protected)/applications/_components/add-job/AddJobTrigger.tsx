@@ -4,7 +4,7 @@ import { Plus as PlusIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui/button/Button";
 import { trackEvent } from "@/lib/analytics/client";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 

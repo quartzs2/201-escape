@@ -3,7 +3,7 @@
 import { ChevronDownIcon, SearchIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui/button/Button";
 import { cn } from "@/lib/utils";
 
 import type { PeriodPreset, SortValue } from "../constants";

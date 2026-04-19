@@ -2,7 +2,7 @@ import { FileTextIcon, LockKeyholeIcon } from "lucide-react";
 import { type CSSProperties, Suspense } from "react";
 
 import { ApplicationsProviders } from "@/app/(protected)/applications/ApplicationsProviders";
-import { Skeleton } from "@/components/ui";
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 import { deleteApplication, getApplicationDetail } from "@/lib/actions";
 import { updateApplicationNotes } from "@/lib/actions/updateApplicationNotes";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
