@@ -4,7 +4,7 @@ import type { Route } from "next";
 
 import { AlertCircleIcon } from "lucide-react";
 import dynamic from "next/dynamic";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
@@ -20,21 +20,9 @@ import { getApplications } from "@/lib/actions";
 import type { PeriodPreset, SortValue, TabValue } from "../constants";
 import type { ApplicationTabsHandle } from "./ApplicationTabs";
 
-import { ApplicationsPageHeader } from "../ApplicationsPageHeader";
-import {
-  getPeriodDateRange,
-  PAGE_SIZE,
-  parsePeriodParam,
-  parseSortParam,
-  parseTabParam,
-  PERIOD_PARAM,
-  PREVIEW_PARAM,
-  SEARCH_PARAM,
-  SORT_PARAM,
-  TAB_PARAM,
-} from "../constants";
+import { buildApplicationsHref } from "../../_utils/route-state";
+import { getPeriodDateRange, PAGE_SIZE } from "../constants";
 import { GoToTopFAB } from "../go-to-top";
-import { ApplicationFilters } from "./ApplicationFilters";
 import { ApplicationTabs } from "./ApplicationTabs";
 
 const ApplicationPreviewSheet = dynamic(
@@ -46,17 +34,31 @@ const ApplicationPreviewSheet = dynamic(
 );
 
 type ApplicationsPanelProps = {
-  dateLabel: string;
   initialPage: GetApplicationsPage;
+  period: PeriodPreset;
+  previewApplicationId: null | string;
+  search: string;
+  sort: SortValue;
+  tab: TabValue;
+};
+
+type RouteStateUpdate = {
+  period?: PeriodPreset;
+  previewApplicationId?: null | string;
+  search?: string;
+  sort?: SortValue;
+  tab?: TabValue;
 };
 
 export function ApplicationsPanel({
-  dateLabel,
   initialPage,
+  period,
+  previewApplicationId,
+  search,
+  sort,
+  tab,
 }: ApplicationsPanelProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const tabsRef = useRef<ApplicationTabsHandle>(null);
   const paginationSequenceRef = useRef(0);
@@ -65,12 +67,6 @@ export function ApplicationsPanel({
   const [isNavigatingFromPreview, setIsNavigatingFromPreview] = useState(false);
   const [pages, setPages] = useState<GetApplicationsPage[]>([initialPage]);
   const [paginationError, setPaginationError] = useState<null | string>(null);
-
-  const search = searchParams.get(SEARCH_PARAM) ?? "";
-  const period = parsePeriodParam(searchParams.get(PERIOD_PARAM));
-  const sort = parseSortParam(searchParams.get(SORT_PARAM));
-  const tab = parseTabParam(searchParams.get(TAB_PARAM));
-  const previewApplicationId = searchParams.get(PREVIEW_PARAM);
 
   const dateRange = getPeriodDateRange(period);
   const applications = pages.flatMap((page) => page.items);
@@ -84,67 +80,36 @@ export function ApplicationsPanel({
     !isNavigatingFromPreview &&
     selectedApplication !== null;
 
-  function updateParams(updates: Record<string, string>) {
-    const params = new URLSearchParams(searchParams.toString());
-
-    for (const [key, value] of Object.entries(updates)) {
-      if (value) {
-        params.set(key, value);
-      } else {
-        params.delete(key);
-      }
-    }
-
-    const query = params.toString();
-    router.replace(
-      `${pathname}${query ? `?${query}` : ""}` as unknown as Route,
-      { scroll: false },
-    );
-  }
-
-  function handleSearchSubmit(nextSearch: string) {
-    updateParams({ [PREVIEW_PARAM]: "", [SEARCH_PARAM]: nextSearch });
-  }
-
-  function handlePeriodChange(nextPeriod: PeriodPreset) {
-    updateParams({
-      [PERIOD_PARAM]: nextPeriod === "all" ? "" : nextPeriod,
-      [PREVIEW_PARAM]: "",
+  function updateRoute(nextState: RouteStateUpdate) {
+    const href = buildApplicationsHref({
+      period: nextState.period ?? period,
+      previewApplicationId:
+        nextState.previewApplicationId !== undefined
+          ? nextState.previewApplicationId
+          : previewApplicationId,
+      search: nextState.search ?? search,
+      sort: nextState.sort ?? sort,
+      tab: nextState.tab ?? tab,
     });
-  }
 
-  function handleSortChange(nextSort: SortValue) {
-    updateParams({
-      [PREVIEW_PARAM]: "",
-      [SORT_PARAM]: nextSort === "applied_at_desc" ? "" : nextSort,
-    });
-  }
-
-  function handleResetFilters() {
-    updateParams({
-      [PERIOD_PARAM]: "",
-      [PREVIEW_PARAM]: "",
-      [SEARCH_PARAM]: "",
-      [SORT_PARAM]: "",
-      [TAB_PARAM]: "",
-    });
+    router.replace(href as Route, { scroll: false });
   }
 
   function handleTabChange(nextTab: TabValue) {
-    updateParams({
-      [PREVIEW_PARAM]: "",
-      [TAB_PARAM]: nextTab === "all" ? "" : nextTab,
+    updateRoute({
+      previewApplicationId: null,
+      tab: nextTab,
     });
   }
 
   function handleSelectApplication(application: ApplicationListItem) {
     setIsNavigatingFromPreview(false);
-    updateParams({ [PREVIEW_PARAM]: application.id });
+    updateRoute({ previewApplicationId: application.id });
   }
 
   function handleClosePreview() {
     setIsNavigatingFromPreview(false);
-    updateParams({ [PREVIEW_PARAM]: "" });
+    updateRoute({ previewApplicationId: null });
   }
 
   function handleDetailNavigate() {
@@ -153,11 +118,13 @@ export function ApplicationsPanel({
       setIsNavigatingFromPreview(true);
     });
 
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete(PREVIEW_PARAM);
-
-    const query = params.toString();
-    const nextUrl = `${pathname}${query ? `?${query}` : ""}`;
+    const nextUrl = buildApplicationsHref({
+      period,
+      previewApplicationId: null,
+      search,
+      sort,
+      tab,
+    });
 
     window.history.replaceState(window.history.state, "", nextUrl);
   }
@@ -211,72 +178,50 @@ export function ApplicationsPanel({
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <ApplicationsPageHeader
+    <div className="flex flex-col">
+      <ApplicationTabs
         applications={applications}
-        dateLabel={dateLabel}
-        hasNextPage={hasNextPage}
-        period={period}
-        search={search}
-        sort={sort}
+        className="h-[32rem] min-h-0 sm:h-[36rem] lg:h-[40rem]"
+        isFetchingNextPage={isFetchingNextPage}
+        onNearEndAction={() => {
+          void handleNearEnd();
+        }}
+        onRangeChangeAction={(startIndex: number) =>
+          setIsListScrolled(startIndex > 0)
+        }
+        onSelectApplicationAction={handleSelectApplication}
+        onTabChangeAction={handleTabChange}
+        ref={tabsRef}
         tab={tab}
       />
 
-      <section className="flex flex-col overflow-hidden rounded-3xl border border-border/70 bg-background">
-        <ApplicationFilters
-          onPeriodChangeAction={handlePeriodChange}
-          onResetFiltersAction={handleResetFilters}
-          onSearchSubmitAction={handleSearchSubmit}
-          onSortChangeAction={handleSortChange}
-          period={period}
-          resultCount={applications.length}
-          search={search}
-          sort={sort}
-        />
-        <ApplicationTabs
-          applications={applications}
-          className="h-[32rem] min-h-0 sm:h-[36rem] lg:h-[40rem]"
-          isFetchingNextPage={isFetchingNextPage}
-          onNearEndAction={() => {
-            void handleNearEnd();
-          }}
-          onRangeChangeAction={(startIndex: number) =>
-            setIsListScrolled(startIndex > 0)
-          }
-          onSelectApplicationAction={handleSelectApplication}
-          onTabChangeAction={handleTabChange}
-          ref={tabsRef}
-          tab={tab}
-        />
-
-        {paginationError ? (
-          <div
-            aria-live="polite"
-            className="border-t border-border/70 bg-muted/20 px-5 py-4 sm:px-6"
-            role="status"
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-2 text-sm text-red-700">
-                <AlertCircleIcon
-                  aria-hidden="true"
-                  className="mt-0.5 size-4 shrink-0"
-                />
-                <p>추가 목록을 불러오지 못했습니다. {paginationError}</p>
-              </div>
-              <Button
-                className="w-full sm:w-auto"
-                onClick={() => {
-                  void handleNearEnd();
-                }}
-                size="sm"
-                variant="outline"
-              >
-                다시 시도
-              </Button>
+      {paginationError ? (
+        <div
+          aria-live="polite"
+          className="border-t border-border/70 bg-muted/20 px-5 py-4 sm:px-6"
+          role="status"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-2 text-sm text-red-700">
+              <AlertCircleIcon
+                aria-hidden="true"
+                className="mt-0.5 size-4 shrink-0"
+              />
+              <p>추가 목록을 불러오지 못했습니다. {paginationError}</p>
             </div>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => {
+                void handleNearEnd();
+              }}
+              size="sm"
+              variant="outline"
+            >
+              다시 시도
+            </Button>
           </div>
-        ) : null}
-      </section>
+        </div>
+      ) : null}
 
       {shouldRenderPreview ? (
         <ApplicationPreviewSheet

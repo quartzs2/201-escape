@@ -1,17 +1,12 @@
 import { getApplications } from "@/lib/actions";
 import { formatKoreanDate } from "@/lib/utils";
 
+import { parseApplicationsRouteState } from "../_utils/route-state";
 import { AddJobTrigger } from "./add-job";
+import { ApplicationsPageHeader } from "./ApplicationsPageHeader";
+import { ApplicationFilters } from "./components/ApplicationFilters";
 import { ApplicationsPanel } from "./components/ApplicationsPanel";
-import {
-  getPeriodDateRange,
-  PAGE_SIZE,
-  parsePeriodParam,
-  parseSortParam,
-  PERIOD_PARAM,
-  SEARCH_PARAM,
-  SORT_PARAM,
-} from "./constants";
+import { getPeriodDateRange, PAGE_SIZE } from "./constants";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -20,11 +15,8 @@ export async function ApplicationsView({
 }: {
   searchParams: SearchParams;
 }) {
-  const search = getString(searchParams[SEARCH_PARAM]);
-  const period = parsePeriodParam(
-    getString(searchParams[PERIOD_PARAM]) || null,
-  );
-  const sort = parseSortParam(getString(searchParams[SORT_PARAM]) || null);
+  const { period, previewApplicationId, search, sort, tab } =
+    parseApplicationsRouteState(searchParams);
   const dateRange = getPeriodDateRange(period);
   const dateLabel = formatKoreanDate(new Date());
   const panelKey = JSON.stringify({ period, search, sort });
@@ -44,17 +36,35 @@ export async function ApplicationsView({
   return (
     <main className="min-h-screen bg-background pb-20">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 pt-0 pb-10 sm:px-6 lg:gap-20 lg:px-8 lg:pb-12">
-        <ApplicationsPanel
+        <ApplicationsPageHeader
+          applications={initialPageResult.data.items}
           dateLabel={dateLabel}
-          initialPage={initialPageResult.data}
-          key={panelKey}
+          hasNextPage={initialPageResult.data.hasMore}
+          period={period}
+          search={search}
+          sort={sort}
+          tab={tab}
         />
+
+        <section className="flex flex-col overflow-hidden rounded-3xl border border-border/70 bg-background">
+          <ApplicationFilters
+            period={period}
+            search={search}
+            sort={sort}
+            tab={tab}
+          />
+          <ApplicationsPanel
+            initialPage={initialPageResult.data}
+            key={panelKey}
+            period={period}
+            previewApplicationId={previewApplicationId}
+            search={search}
+            sort={sort}
+            tab={tab}
+          />
+        </section>
       </div>
       <AddJobTrigger />
     </main>
   );
-}
-
-function getString(value: string | string[] | undefined): string {
-  return typeof value === "string" ? value : "";
 }
