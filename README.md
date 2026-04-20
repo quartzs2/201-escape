@@ -265,22 +265,23 @@ flowchart LR
 
 ### 이벤트 목록
 
-| 이벤트명                     | 발생 시점                      | 프로퍼티                           |
-| ---------------------------- | ------------------------------ | ---------------------------------- |
-| `login_attempted`            | Google 로그인 버튼 클릭        | -                                  |
-| `application_add_opened`     | 공고 추가 FAB 클릭             | -                                  |
-| `application_add_submitted`  | 수동 폼 제출 → 리뷰 단계 진입  | `has_url: boolean`                 |
-| `application_add_saved`      | 공고 저장 완료                 | -                                  |
-| `application_add_reset`      | 리뷰 단계에서 "다시 입력" 클릭 | -                                  |
-| `application_preview_opened` | 대시보드에서 지원 행 클릭      | -                                  |
-| `application_status_changed` | 지원 상태 변경 성공            | `from_status`, `to_status`         |
-| `application_deleted`        | 지원 삭제 완료                 | -                                  |
-| `interview_added`            | 면접 일정 추가 완료            | `interview_type`, `round`          |
-| `interview_edited`           | 면접 일정 수정 완료            | `interview_type`, `round`          |
-| `interview_deleted`          | 면접 일정 삭제 완료            | -                                  |
-| `job_description_saved`      | 공고 설명 저장 완료            | -                                  |
-| `memo_saved`                 | 개인 메모 저장 완료            | -                                  |
-| `applications_tab_changed`   | 지원 목록 탭 전환              | `tab: 'all' \| 'active' \| 'done'` |
+| 이벤트명                     | 발생 시점                             | 프로퍼티                           |
+| ---------------------------- | ------------------------------------- | ---------------------------------- |
+| `user_active`                | 인증된 사용자의 보호 영역 데이터 조회 | -                                  |
+| `login_attempted`            | Google 로그인 버튼 클릭               | -                                  |
+| `application_add_opened`     | 공고 추가 FAB 클릭                    | -                                  |
+| `application_add_submitted`  | 수동 폼 제출 → 리뷰 단계 진입         | `has_url: boolean`                 |
+| `application_add_saved`      | 공고 저장 완료                        | -                                  |
+| `application_add_reset`      | 리뷰 단계에서 "다시 입력" 클릭        | -                                  |
+| `application_preview_opened` | 대시보드에서 지원 행 클릭             | -                                  |
+| `application_status_changed` | 지원 상태 변경 성공                   | `from_status`, `to_status`         |
+| `application_deleted`        | 지원 삭제 완료                        | -                                  |
+| `interview_added`            | 면접 일정 추가 완료                   | `interview_type`, `round`          |
+| `interview_edited`           | 면접 일정 수정 완료                   | `interview_type`, `round`          |
+| `interview_deleted`          | 면접 일정 삭제 완료                   | -                                  |
+| `job_description_saved`      | 공고 설명 저장 완료                   | -                                  |
+| `memo_saved`                 | 개인 메모 저장 완료                   | -                                  |
+| `applications_tab_changed`   | 지원 목록 탭 전환                     | `tab: 'all' \| 'active' \| 'done'` |
 
 ### 퍼널 설정(PostHog 대시보드)
 
