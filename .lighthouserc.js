@@ -1,3 +1,21 @@
+const DEFAULT_BASE_URL = "http://localhost:3000";
+
+const baseUrl = (process.env.LHCI_BASE_URL ?? DEFAULT_BASE_URL).replace(
+  /\/+$/,
+  "",
+);
+const baseHostname = new URL(baseUrl).hostname;
+const isLocalMeasure =
+  baseHostname === "localhost" || baseHostname === "127.0.0.1";
+const vercelAutomationBypassSecret =
+  process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+const extraHeaders = vercelAutomationBypassSecret
+  ? {
+      "x-vercel-protection-bypass": vercelAutomationBypassSecret,
+      "x-vercel-set-bypass-cookie": "true",
+    }
+  : undefined;
+
 /** @type {import('@lhci/cli').LighthouseRcConfig} */
 module.exports = {
   ci: {
@@ -19,13 +37,22 @@ module.exports = {
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
       },
       puppeteerScript: "./lighthouse-auth.js",
-      startServerCommand: "pnpm start",
-      startServerReadyPattern: "Ready in",
+      settings: extraHeaders
+        ? {
+            extraHeaders,
+          }
+        : {},
+      ...(isLocalMeasure
+        ? {
+            startServerCommand: "pnpm start",
+            startServerReadyPattern: "Ready in",
+          }
+        : {}),
       url: [
-        "http://localhost:3000",
-        "http://localhost:3000/login",
-        "http://localhost:3000/dashboard",
-        "http://localhost:3000/applications",
+        baseUrl,
+        `${baseUrl}/login`,
+        `${baseUrl}/dashboard`,
+        `${baseUrl}/applications`,
       ],
     },
     upload: {
