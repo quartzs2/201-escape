@@ -7,18 +7,29 @@
  * @param {{ url: string }} context
  */
 module.exports = async (browser, context) => {
-  // 랜딩 페이지는 비인증 상태로 측정합니다.
-  if (context.url === "http://localhost:3000") {
+  const targetUrl = new URL(context.url);
+  const publicPaths = new Set(["/", "/login"]);
+
+  // 공개 페이지는 비인증 상태로 측정합니다.
+  if (publicPaths.has(targetUrl.pathname)) {
     return;
   }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const testEmail = process.env.LHCI_TEST_EMAIL;
+  const testPassword = process.env.LHCI_TEST_PASSWORD;
+
+  if (!supabaseUrl || !publishableKey || !testEmail || !testPassword) {
+    throw new Error("Lighthouse 인증에 필요한 환경변수가 누락되었습니다.");
+  }
+
   const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
 
   const res = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
     body: JSON.stringify({
-      email: process.env.LHCI_TEST_EMAIL,
-      password: process.env.LHCI_TEST_PASSWORD,
+      email: testEmail,
+      password: testPassword,
     }),
     headers: {
       apikey: publishableKey,
@@ -40,11 +51,11 @@ module.exports = async (browser, context) => {
   const page = await browser.newPage();
 
   await page.setCookie({
-    domain: "localhost",
     httpOnly: true,
     name: `sb-${projectRef}-auth-token`,
     path: "/",
-    secure: false,
+    secure: targetUrl.protocol === "https:",
+    url: targetUrl.origin,
     value: JSON.stringify({
       access_token: session.access_token,
       expires_at: session.expires_at,
