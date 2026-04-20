@@ -3,12 +3,16 @@
 import { after } from "next/server";
 import { PostHog } from "posthog-node";
 
-import type { AnalyticsEvent } from "./events";
+import { ANALYTICS_EVENTS, type AnalyticsEvent } from "./events";
 
 const POSTHOG_TOKEN = process.env.POSTHOG_PROJECT_TOKEN;
 const POSTHOG_HOST = process.env.POSTHOG_HOST;
 
 let _client: null | PostHog = null;
+
+export function trackAuthenticatedUserActivity(userId: string): void {
+  trackServerEvent(userId, ANALYTICS_EVENTS.USER_ACTIVE);
+}
 
 export function trackServerEvent(
   distinctId: string,

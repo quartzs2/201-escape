@@ -1,5 +1,6 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { z } from "zod";
 
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -10,6 +11,7 @@ import {
   type DeleteApplicationResult,
 } from "@/lib/types/application";
 
+import { getApplicationsUserCacheTag } from "./_cacheTags";
 import { normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
 import { verifyApplicationOwnership } from "./_verifyApplicationOwnership";
@@ -54,6 +56,7 @@ export async function deleteApplication(
   }
 
   trackServerEvent(userId, ANALYTICS_EVENTS.APPLICATION_DELETED);
+  updateTag(getApplicationsUserCacheTag(userId));
 
   return { ok: true };
 }

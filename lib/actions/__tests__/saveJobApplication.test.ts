@@ -1,3 +1,4 @@
+import { updateTag } from "next/cache";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { SaveJobApplicationInput } from "@/lib/types/jobApplication";
@@ -14,6 +15,10 @@ vi.mock("@/lib/analytics/server", () => ({
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(),
+}));
+
+vi.mock("next/cache", () => ({
+  updateTag: vi.fn(),
 }));
 
 const mockRpc = vi.fn();
@@ -214,6 +219,7 @@ describe("saveJobApplication", () => {
         "user-1",
         "application_add_saved",
       );
+      expect(updateTag).toHaveBeenCalledWith("user-1");
     });
 
     it("선택 필드를 포함한 전체 입력도 성공적으로 처리한다", async () => {

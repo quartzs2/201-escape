@@ -1,5 +1,6 @@
 "use server";
 
+import { updateTag } from "next/cache";
 import { z } from "zod";
 
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
@@ -11,6 +12,7 @@ import {
   type UpdateJobDescriptionResult,
 } from "@/lib/types/application";
 
+import { getApplicationsUserCacheTag } from "./_cacheTags";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
 
@@ -76,6 +78,7 @@ export async function updateJobDescription(
   }
 
   trackServerEvent(authData.user.id, ANALYTICS_EVENTS.JOB_DESCRIPTION_SAVED);
+  updateTag(getApplicationsUserCacheTag(authData.user.id));
 
   return {
     data: {

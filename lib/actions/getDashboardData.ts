@@ -15,14 +15,10 @@ import {
   DOCS_STATUSES,
 } from "@/lib/constants/application-status";
 
-import { createClient, createClientWithToken } from "../supabase/server";
-import { getAuthenticatedUserId } from "./_auth";
+import { createClientWithToken } from "../supabase/server";
+import { getAuthContext } from "./_authContext";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
-
-const ERROR_MESSAGES = {
-  AUTH_REQUIRED: "로그인이 필요합니다.",
-} as const;
 
 type DashboardApplicationRow = {
   applied_at: null | string;
@@ -58,8 +54,7 @@ const getCachedDashboardData = unstable_cache(
 );
 
 export async function getDashboardData(): Promise<GetDashboardDataResult> {
-  const supabase = await createClient();
-  const authResult = await getAuthenticatedUserId(supabase);
+  const authResult = await getAuthContext();
 
   if (!authResult.ok) {
     return {
@@ -69,19 +64,11 @@ export async function getDashboardData(): Promise<GetDashboardDataResult> {
     };
   }
 
-  const { data: sessionData } = await supabase.auth.getSession();
-  const accessToken = sessionData.session?.access_token;
-
-  if (!accessToken) {
-    return {
-      code: "AUTH_REQUIRED",
-      ok: false,
-      reason: ERROR_MESSAGES.AUTH_REQUIRED,
-    };
-  }
-
   try {
-    const data = await getCachedDashboardData(authResult.userId, accessToken);
+    const data = await getCachedDashboardData(
+      authResult.userId,
+      authResult.accessToken,
+    );
 
     return { data, ok: true };
   } catch (e) {

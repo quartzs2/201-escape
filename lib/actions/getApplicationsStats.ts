@@ -7,8 +7,8 @@ import {
   DOCS_STATUSES,
 } from "@/lib/constants/application-status";
 
-import { createClient } from "../supabase/server";
-import { getAuthenticatedUserId } from "./_auth";
+import { createClientWithToken } from "../supabase/server";
+import { getAuthContext } from "./_authContext";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
 
@@ -17,8 +17,7 @@ import { reportQueryError } from "./_reportQueryError";
  * 페이지네이션과 무관하게 전체 데이터 기준으로 집계합니다.
  */
 export async function getApplicationsStats(): Promise<GetApplicationsStatsResult> {
-  const supabase = await createClient();
-  const authResult = await getAuthenticatedUserId(supabase);
+  const authResult = await getAuthContext();
 
   if (!authResult.ok) {
     return {
@@ -28,6 +27,7 @@ export async function getApplicationsStats(): Promise<GetApplicationsStatsResult
     };
   }
 
+  const supabase = createClientWithToken(authResult.accessToken);
   const userId = authResult.userId;
 
   const { data, error } = await supabase
