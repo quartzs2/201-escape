@@ -5,8 +5,8 @@ import type {
   GetApplicationsResult,
 } from "@/lib/types/application";
 
-import { createClient } from "../supabase/server";
-import { getAuthenticatedUserId } from "./_auth";
+import { createClientWithToken } from "../supabase/server";
+import { getAuthContext } from "./_authContext";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
 
@@ -25,8 +25,7 @@ export async function getApplications({
   search?: string;
   sort?: "applied_at_asc" | "applied_at_desc";
 }): Promise<GetApplicationsResult> {
-  const supabase = await createClient();
-  const authResult = await getAuthenticatedUserId(supabase);
+  const authResult = await getAuthContext();
 
   if (!authResult.ok) {
     return {
@@ -35,6 +34,8 @@ export async function getApplications({
       reason: authResult.reason,
     };
   }
+
+  const supabase = createClientWithToken(authResult.accessToken);
 
   let query = supabase
     .from("applications")

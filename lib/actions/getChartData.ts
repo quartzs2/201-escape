@@ -13,14 +13,10 @@ import {
   INTERVIEW_STATUSES,
 } from "@/lib/constants/application-status";
 
-import { createClient, createClientWithToken } from "../supabase/server";
-import { getAuthenticatedUserId } from "./_auth";
+import { createClientWithToken } from "../supabase/server";
+import { getAuthContext } from "./_authContext";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
-
-const ERROR_MESSAGES = {
-  AUTH_REQUIRED: "로그인이 필요합니다.",
-} as const;
 
 function getMonthCutoff(): string {
   const d = new Date();
@@ -111,8 +107,7 @@ const getCachedChartData = unstable_cache(
 );
 
 export async function getChartData(): Promise<GetChartDataResult> {
-  const supabase = await createClient();
-  const authResult = await getAuthenticatedUserId(supabase);
+  const authResult = await getAuthContext();
 
   if (!authResult.ok) {
     return {
@@ -122,19 +117,11 @@ export async function getChartData(): Promise<GetChartDataResult> {
     };
   }
 
-  const { data: sessionData } = await supabase.auth.getSession();
-  const accessToken = sessionData.session?.access_token;
-
-  if (!accessToken) {
-    return {
-      code: "AUTH_REQUIRED",
-      ok: false,
-      reason: ERROR_MESSAGES.AUTH_REQUIRED,
-    };
-  }
-
   try {
-    const data = await getCachedChartData(authResult.userId, accessToken);
+    const data = await getCachedChartData(
+      authResult.userId,
+      authResult.accessToken,
+    );
     return { data, ok: true };
   } catch (e) {
     const reason = e instanceof Error ? e.message : "알 수 없는 오류";

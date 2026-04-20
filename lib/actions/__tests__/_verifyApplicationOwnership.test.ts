@@ -1,12 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AUTH_ERROR_CODE } from "@/lib/actions/_queryError";
-import { createClient } from "@/lib/supabase/server";
+import { createClientWithToken } from "@/lib/supabase/server";
 
+import { getAuthContext } from "../_authContext";
 import { verifyApplicationOwnership } from "../_verifyApplicationOwnership";
 
 vi.mock("@/lib/supabase/server", () => ({
-  createClient: vi.fn(),
+  createClientWithToken: vi.fn(),
+}));
+
+vi.mock("../_authContext", () => ({
+  getAuthContext: vi.fn(),
 }));
 
 const mockMaybeSingle = vi.fn();
@@ -14,21 +19,21 @@ const mockEqUserId = vi.fn(() => ({ maybeSingle: mockMaybeSingle }));
 const mockEqId = vi.fn(() => ({ eq: mockEqUserId }));
 const mockSelect = vi.fn(() => ({ eq: mockEqId }));
 const mockFrom = vi.fn(() => ({ select: mockSelect }));
-const mockGetClaims = vi.fn();
 const mockSupabase = {
-  auth: { getClaims: mockGetClaims },
   from: mockFrom,
 };
 
+const ACCESS_TOKEN = "access-token";
 const APPLICATION_ID = "550e8400-e29b-41d4-a716-446655440000";
 const USER_ID = "user-1";
 
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.mocked(createClient).mockResolvedValue(mockSupabase as never);
-  mockGetClaims.mockResolvedValue({
-    data: { claims: { sub: USER_ID } },
-    error: null,
+  vi.mocked(createClientWithToken).mockReturnValue(mockSupabase as never);
+  vi.mocked(getAuthContext).mockResolvedValue({
+    accessToken: ACCESS_TOKEN,
+    ok: true,
+    userId: USER_ID,
   });
   mockMaybeSingle.mockResolvedValue({
     data: { id: APPLICATION_ID },
@@ -38,21 +43,10 @@ beforeEach(() => {
 
 describe("verifyApplicationOwnership", () => {
   describe("인증 실패", () => {
-    it("auth.getClaims가 에러를 반환하면 AUTH_REQUIRED를 반환한다", async () => {
-      mockGetClaims.mockResolvedValue({
-        data: { claims: null },
-        error: { message: "JWT expired" },
-      });
-
-      const result = await verifyApplicationOwnership(APPLICATION_ID);
-
-      expect(result).toMatchObject({ code: "AUTH_REQUIRED", ok: false });
-    });
-
-    it("claims.sub가 없으면 AUTH_REQUIRED를 반환한다", async () => {
-      mockGetClaims.mockResolvedValue({
-        data: { claims: {} },
-        error: null,
+    it("인증 컨텍스트가 실패하면 AUTH_REQUIRED를 반환한다", async () => {
+      vi.mocked(getAuthContext).mockResolvedValue({
+        ok: false,
+        reason: "로그인이 필요합니다.",
       });
 
       const result = await verifyApplicationOwnership(APPLICATION_ID);
@@ -61,13 +55,14 @@ describe("verifyApplicationOwnership", () => {
     });
 
     it("인증 실패 시 from을 호출하지 않는다", async () => {
-      mockGetClaims.mockResolvedValue({
-        data: { claims: {} },
-        error: null,
+      vi.mocked(getAuthContext).mockResolvedValue({
+        ok: false,
+        reason: "로그인이 필요합니다.",
       });
 
       await verifyApplicationOwnership(APPLICATION_ID);
 
+      expect(createClientWithToken).not.toHaveBeenCalled();
       expect(mockFrom).not.toHaveBeenCalled();
     });
   });
@@ -140,6 +135,12 @@ describe("verifyApplicationOwnership", () => {
         supabase: mockSupabase,
         userId: USER_ID,
       });
+    });
+
+    it("access token으로 Supabase 클라이언트를 생성한다", async () => {
+      await verifyApplicationOwnership(APPLICATION_ID);
+
+      expect(createClientWithToken).toHaveBeenCalledWith(ACCESS_TOKEN);
     });
 
     it("select 쿼리 시 applicationId와 userId를 올바르게 전달한다", async () => {

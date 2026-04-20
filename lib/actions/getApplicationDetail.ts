@@ -1,13 +1,13 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClientWithToken } from "@/lib/supabase/server";
 import {
   applicationDetailSchema,
   applicationIdSchema,
   type GetApplicationDetailResult,
 } from "@/lib/types/application";
 
-import { getAuthenticatedUserId } from "./_auth";
+import { getAuthContext } from "./_authContext";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
 
@@ -32,8 +32,7 @@ export async function getApplicationDetail(
     };
   }
 
-  const supabase = await createClient();
-  const authResult = await getAuthenticatedUserId(supabase);
+  const authResult = await getAuthContext();
 
   if (!authResult.ok) {
     return {
@@ -42,6 +41,8 @@ export async function getApplicationDetail(
       reason: authResult.reason,
     };
   }
+
+  const supabase = createClientWithToken(authResult.accessToken);
 
   const { data, error } = await supabase
     .from("applications")
