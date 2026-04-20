@@ -1,3 +1,4 @@
+import { updateTag } from "next/cache";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { UpdateApplicationStatusInput } from "@/lib/types/application";
@@ -14,6 +15,10 @@ vi.mock("@/lib/analytics/server", () => ({
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(),
+}));
+
+vi.mock("next/cache", () => ({
+  updateTag: vi.fn(),
 }));
 
 const mockMaybeSingle = vi.fn();
@@ -175,6 +180,7 @@ describe("updateApplicationStatus", () => {
         "application_status_changed",
         { from_status: "SAVED", to_status: "APPLIED" },
       );
+      expect(updateTag).toHaveBeenCalledWith("user-1");
     });
 
     it.each<UpdateApplicationStatusInput["status"]>([
