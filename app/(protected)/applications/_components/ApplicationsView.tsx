@@ -1,19 +1,10 @@
 import { Suspense } from "react";
 
-import { getApplications } from "@/lib/actions/getApplications";
-
 import { parseApplicationsRouteState } from "../_utils/route-state";
 import { AddJobTrigger } from "./add-job";
 import { ApplicationFilters } from "./components/ApplicationFilters";
 import { ApplicationsPanel } from "./components/ApplicationsPanel";
 import { ApplicationsPanelFallback } from "./components/ApplicationsPanelFallback";
-import {
-  getPeriodDateRange,
-  PAGE_SIZE,
-  type PeriodPreset,
-  type SortValue,
-  type TabValue,
-} from "./constants";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -37,7 +28,7 @@ export function ApplicationsView({
             tab={tab}
           />
           <Suspense fallback={<ApplicationsPanelFallback />} key={panelKey}>
-            <ApplicationsPanelSection
+            <ApplicationsPanel
               period={period}
               previewApplicationId={previewApplicationId}
               search={search}
@@ -49,46 +40,5 @@ export function ApplicationsView({
       </div>
       <AddJobTrigger />
     </main>
-  );
-}
-
-async function ApplicationsPanelSection({
-  period,
-  previewApplicationId,
-  search,
-  sort,
-  tab,
-}: {
-  period: PeriodPreset;
-  previewApplicationId: null | string;
-  search: string;
-  sort: SortValue;
-  tab: TabValue;
-}) {
-  const dateRange = getPeriodDateRange(period);
-  const panelKey = JSON.stringify({ period, search, sort });
-  const initialPageResult = await getApplications({
-    limit: PAGE_SIZE,
-    offset: 0,
-    periodEnd: dateRange?.end,
-    periodStart: dateRange?.start,
-    search: search || undefined,
-    sort,
-  });
-
-  if (!initialPageResult.ok) {
-    throw new Error(initialPageResult.reason);
-  }
-
-  return (
-    <ApplicationsPanel
-      initialPage={initialPageResult.data}
-      key={panelKey}
-      period={period}
-      previewApplicationId={previewApplicationId}
-      search={search}
-      sort={sort}
-      tab={tab}
-    />
   );
 }
