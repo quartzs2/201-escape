@@ -1,7 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClientWithToken } from "@/lib/supabase/server";
 
-import { getAuthenticatedUserId } from "./_auth";
+import { getAuthContext } from "./_authContext";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
+
+type ServerSupabaseClient = ReturnType<typeof createClientWithToken>;
 
 type VerifyResult =
   | {
@@ -11,7 +13,7 @@ type VerifyResult =
     }
   | {
       ok: true;
-      supabase: Awaited<ReturnType<typeof createClient>>;
+      supabase: ServerSupabaseClient;
       userId: string;
     };
 
@@ -22,8 +24,7 @@ type VerifyResult =
 export async function verifyApplicationOwnership(
   applicationId: string,
 ): Promise<VerifyResult> {
-  const supabase = await createClient();
-  const authResult = await getAuthenticatedUserId(supabase);
+  const authResult = await getAuthContext();
 
   if (!authResult.ok) {
     return {
@@ -32,6 +33,8 @@ export async function verifyApplicationOwnership(
       reason: authResult.reason,
     };
   }
+
+  const supabase = createClientWithToken(authResult.accessToken);
 
   const { data: applicationData, error: applicationError } = await supabase
     .from("applications")
