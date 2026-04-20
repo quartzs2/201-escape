@@ -19,8 +19,11 @@ import type {
 import type { JobStatus } from "@/lib/types/job";
 
 import { ApplicationStatusSelector } from "@/app/(protected)/_components/ApplicationStatusSelector";
-import { BottomSheet, Button, Skeleton } from "@/components/ui";
-import { getApplicationDetail } from "@/lib/actions";
+import { ApplicationsProviders } from "@/app/(protected)/applications/ApplicationsProviders";
+import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
+import { Button } from "@/components/ui/button/Button";
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
+import { getApplicationDetail } from "@/lib/actions/getApplicationDetail";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 
 import {
@@ -60,8 +63,8 @@ const DEFAULT_PREVIEW_BODY_MIN_HEIGHT_CLASS = "min-h-58";
 const DEFAULT_PREVIEW_SHEET_HEIGHT_CLASS = "min-h-[40vh]";
 const MANUAL_PREVIEW_BODY_MIN_HEIGHT_CLASS = "min-h-36";
 const MANUAL_PREVIEW_SHEET_HEIGHT_CLASS = "min-h-[30vh]";
-const DEFAULT_PREVIEW_SKELETON_COUNT = 2;
-const MANUAL_PREVIEW_SKELETON_COUNT = 1;
+const DEFAULT_PREVIEW_SKELETON_KEYS = [0, 1] as const;
+const MANUAL_PREVIEW_SKELETON_KEYS = [0] as const;
 
 export function ApplicationPreviewSheet({
   application,
@@ -130,9 +133,9 @@ export function ApplicationPreviewSheet({
   const notesMeta = getNotesMeta(detail);
   const isManualPlatform = platform === "MANUAL";
   const shouldShowDescription = !isManualPlatform;
-  const previewSkeletonCount = isManualPlatform
-    ? MANUAL_PREVIEW_SKELETON_COUNT
-    : DEFAULT_PREVIEW_SKELETON_COUNT;
+  const previewSkeletonKeys = isManualPlatform
+    ? MANUAL_PREVIEW_SKELETON_KEYS
+    : DEFAULT_PREVIEW_SKELETON_KEYS;
 
   const footerButtonContent = (
     <>
@@ -142,171 +145,173 @@ export function ApplicationPreviewSheet({
   );
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onCloseAction}>
-      <BottomSheet.Overlay />
-      <BottomSheet.Content
-        className={
-          isManualPlatform
-            ? MANUAL_PREVIEW_SHEET_HEIGHT_CLASS
-            : DEFAULT_PREVIEW_SHEET_HEIGHT_CLASS
-        }
-      >
-        <BottomSheet.Header />
-        <div className="px-6 pb-4">
-          {(platform || appliedAt) && (
-            <div className="mb-2 flex flex-wrap items-center gap-0">
-              {platform && platform !== "MANUAL" && (
-                <span className="text-sm font-medium text-muted-foreground">
-                  {PLATFORM_LABEL[platform]}
-                </span>
-              )}
-              {platform && platform !== "MANUAL" && appliedAt && (
-                <span className="mx-2 text-sm text-muted-foreground/40">|</span>
-              )}
-              {appliedAt && (
-                <span className="flex gap-1 text-sm font-medium text-muted-foreground">
-                  <span>{status === "SAVED" ? "저장일" : "지원일"}</span>
-                  <span>{formatAppliedAt(appliedAt)}</span>
-                </span>
-              )}
-            </div>
-          )}
-          <BottomSheet.Title className="text-xl tracking-[-0.02em] text-foreground">
-            {title}
-          </BottomSheet.Title>
-          {companyName && (
-            <p className="mt-2 text-sm font-medium text-muted-foreground">
-              {companyName}
-            </p>
-          )}
-        </div>
-
-        <BottomSheet.Body className="space-y-4 px-6 pb-4">
-          {application && (
-            <ApplicationStatusSelector
-              applicationId={application.id}
-              ariaLabel="지원 상태 변경"
-              className="mt-2"
-              icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
-              key={application.id}
-              label="지원 상태"
-              onStatusChangeAction={(nextStatus) => {
-                onStatusChangeAction(application.id, nextStatus);
-              }}
-              status={application.status}
-              updateStatusAction={updateApplicationStatus}
-            />
-          )}
-
-          {/* min-h는 로딩→콘텐츠 전환 시 시트 높이 변동(레이아웃 시프트)을 방지합니다. */}
-          <div
-            className={
-              isManualPlatform
-                ? MANUAL_PREVIEW_BODY_MIN_HEIGHT_CLASS
-                : DEFAULT_PREVIEW_BODY_MIN_HEIGHT_CLASS
-            }
-          >
-            {visiblePreviewState.status === "loading" && (
-              <div
-                aria-busy="true"
-                aria-label="지원 정보를 불러오는 중입니다"
-                className="space-y-4"
-                role="status"
-              >
-                {Array.from({ length: previewSkeletonCount }).map(
-                  (_, index) => (
-                    <ApplicationPreviewSectionSkeleton key={index} />
-                  ),
+    <ApplicationsProviders>
+      <BottomSheet isOpen={isOpen} onClose={onCloseAction}>
+        <BottomSheet.Overlay />
+        <BottomSheet.Content
+          className={
+            isManualPlatform
+              ? MANUAL_PREVIEW_SHEET_HEIGHT_CLASS
+              : DEFAULT_PREVIEW_SHEET_HEIGHT_CLASS
+          }
+        >
+          <BottomSheet.Header />
+          <div className="px-6 pb-4">
+            {(platform || appliedAt) && (
+              <div className="mb-2 flex flex-wrap items-center gap-0">
+                {platform && platform !== "MANUAL" && (
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {PLATFORM_LABEL[platform]}
+                  </span>
+                )}
+                {platform && platform !== "MANUAL" && appliedAt && (
+                  <span className="mx-2 text-sm text-muted-foreground/40">
+                    |
+                  </span>
+                )}
+                {appliedAt && (
+                  <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+                    <span>{status === "SAVED" ? "저장일" : "지원일"}</span>
+                    <span>{formatAppliedAt(appliedAt)}</span>
+                  </span>
                 )}
               </div>
             )}
-
-            {visiblePreviewState.status === "error" && (
-              <section
-                aria-live="polite"
-                className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700"
-              >
-                <div className="flex items-start gap-3">
-                  <AlertCircleIcon
-                    aria-hidden="true"
-                    className="mt-0.5 size-5 shrink-0"
-                  />
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold">
-                      미리보기를 불러오지 못했습니다
-                    </p>
-                    <p className="text-sm leading-6">
-                      {visiblePreviewState.summary}
-                    </p>
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {detail && (
-              <>
-                {shouldShowDescription ? (
-                  <ApplicationPreviewSection
-                    body={descriptionMeta.text}
-                    icon={
-                      <FileTextIcon aria-hidden="true" className="size-4" />
-                    }
-                    isEmpty={descriptionMeta.isEmpty}
-                    title="공고 설명"
-                  />
-                ) : null}
-                <ApplicationPreviewSection
-                  body={notesMeta.text}
-                  icon={
-                    <StickyNoteIcon aria-hidden="true" className="size-4" />
-                  }
-                  isEmpty={notesMeta.isEmpty}
-                  title="개인 메모"
-                />
-              </>
+            <BottomSheet.Title className="text-xl tracking-[-0.02em] text-foreground">
+              {title}
+            </BottomSheet.Title>
+            {companyName && (
+              <p className="mt-2 text-sm font-medium text-muted-foreground">
+                {companyName}
+              </p>
             )}
           </div>
-        </BottomSheet.Body>
 
-        <div className="border-t border-border bg-background px-6 py-4">
-          {application ? (
-            <Button
-              asChild
-              className="h-11 w-full justify-between rounded-xl px-4"
-            >
-              <Link
-                href={`/applications/${application.id}` as Route}
-                onClick={(event) => {
-                  if (
-                    event.defaultPrevented ||
-                    event.button !== 0 ||
-                    event.metaKey ||
-                    event.ctrlKey ||
-                    event.shiftKey ||
-                    event.altKey
-                  ) {
-                    return;
-                  }
-
-                  // iOS Safari bfcache 복원 시 이전 목록 URL의 preview 파라미터로
-                  // 바텀시트가 다시 열리지 않도록 현재 히스토리 엔트리를 정리합니다.
-                  onDetailNavigateAction();
+          <BottomSheet.Body className="space-y-4 px-6 pb-4">
+            {application && (
+              <ApplicationStatusSelector
+                applicationId={application.id}
+                ariaLabel="지원 상태 변경"
+                className="mt-2"
+                icon={<ListChecksIcon aria-hidden="true" className="size-4" />}
+                key={application.id}
+                label="지원 상태"
+                onStatusChangeAction={(nextStatus) => {
+                  onStatusChangeAction(application.id, nextStatus);
                 }}
+                status={application.status}
+                updateStatusAction={updateApplicationStatus}
+              />
+            )}
+
+            {/* min-h는 로딩→콘텐츠 전환 시 시트 높이 변동(레이아웃 시프트)을 방지합니다. */}
+            <div
+              className={
+                isManualPlatform
+                  ? MANUAL_PREVIEW_BODY_MIN_HEIGHT_CLASS
+                  : DEFAULT_PREVIEW_BODY_MIN_HEIGHT_CLASS
+              }
+            >
+              {visiblePreviewState.status === "loading" && (
+                <div
+                  aria-busy="true"
+                  aria-label="지원 정보를 불러오는 중입니다"
+                  className="space-y-4"
+                  role="status"
+                >
+                  {previewSkeletonKeys.map((key) => (
+                    <ApplicationPreviewSectionSkeleton key={key} />
+                  ))}
+                </div>
+              )}
+
+              {visiblePreviewState.status === "error" && (
+                <section
+                  aria-live="polite"
+                  className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700"
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertCircleIcon
+                      aria-hidden="true"
+                      className="mt-0.5 size-5 shrink-0"
+                    />
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold">
+                        미리보기를 불러오지 못했습니다
+                      </p>
+                      <p className="text-sm leading-6">
+                        {visiblePreviewState.summary}
+                      </p>
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {detail && (
+                <>
+                  {shouldShowDescription ? (
+                    <ApplicationPreviewSection
+                      body={descriptionMeta.text}
+                      icon={
+                        <FileTextIcon aria-hidden="true" className="size-4" />
+                      }
+                      isEmpty={descriptionMeta.isEmpty}
+                      title="공고 설명"
+                    />
+                  ) : null}
+                  <ApplicationPreviewSection
+                    body={notesMeta.text}
+                    icon={
+                      <StickyNoteIcon aria-hidden="true" className="size-4" />
+                    }
+                    isEmpty={notesMeta.isEmpty}
+                    title="개인 메모"
+                  />
+                </>
+              )}
+            </div>
+          </BottomSheet.Body>
+
+          <div className="border-t border-border bg-background px-6 py-4">
+            {application ? (
+              <Button
+                asChild
+                className="h-11 w-full justify-between rounded-xl px-4"
+              >
+                <Link
+                  href={`/applications/${application.id}` as Route}
+                  onClick={(event) => {
+                    if (
+                      event.defaultPrevented ||
+                      event.button !== 0 ||
+                      event.metaKey ||
+                      event.ctrlKey ||
+                      event.shiftKey ||
+                      event.altKey
+                    ) {
+                      return;
+                    }
+
+                    // iOS Safari bfcache 복원 시 이전 목록 URL의 preview 파라미터로
+                    // 바텀시트가 다시 열리지 않도록 현재 히스토리 엔트리를 정리합니다.
+                    onDetailNavigateAction();
+                  }}
+                >
+                  {footerButtonContent}
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                className="h-11 w-full justify-between rounded-xl px-4"
+                disabled
               >
                 {footerButtonContent}
-              </Link>
-            </Button>
-          ) : (
-            <Button
-              className="h-11 w-full justify-between rounded-xl px-4"
-              disabled
-            >
-              {footerButtonContent}
-            </Button>
-          )}
-        </div>
-      </BottomSheet.Content>
-    </BottomSheet>
+              </Button>
+            )}
+          </div>
+        </BottomSheet.Content>
+      </BottomSheet>
+    </ApplicationsProviders>
   );
 }
 

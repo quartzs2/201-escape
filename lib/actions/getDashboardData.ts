@@ -16,6 +16,7 @@ import {
 } from "@/lib/constants/application-status";
 
 import { createClient, createClientWithToken } from "../supabase/server";
+import { getAuthenticatedUserId } from "./_auth";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
 
@@ -58,13 +59,13 @@ const getCachedDashboardData = unstable_cache(
 
 export async function getDashboardData(): Promise<GetDashboardDataResult> {
   const supabase = await createClient();
-  const { data: authData, error: authError } = await supabase.auth.getUser();
+  const authResult = await getAuthenticatedUserId(supabase);
 
-  if (authError || !authData.user) {
+  if (!authResult.ok) {
     return {
       code: "AUTH_REQUIRED",
       ok: false,
-      reason: ERROR_MESSAGES.AUTH_REQUIRED,
+      reason: authResult.reason,
     };
   }
 
@@ -80,7 +81,7 @@ export async function getDashboardData(): Promise<GetDashboardDataResult> {
   }
 
   try {
-    const data = await getCachedDashboardData(authData.user.id, accessToken);
+    const data = await getCachedDashboardData(authResult.userId, accessToken);
 
     return { data, ok: true };
   } catch (e) {

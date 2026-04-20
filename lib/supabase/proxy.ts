@@ -1,7 +1,26 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
+const ROOT_PATH = "/";
+const LOGIN_PATH = "/login";
+const DASHBOARD_PATH = "/dashboard";
+const AUTH_BYPASS_PATH_PREFIXES = [
+  "/api/events",
+  "/auth",
+  "/login",
+  "/monitoring",
+  "/privacy",
+] as const;
+
 export async function updateSession(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (isAuthBypassPath(pathname)) {
+    return NextResponse.next({
+      request,
+    });
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -40,24 +59,16 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
 
   const user = data?.claims;
-  const { pathname } = request.nextUrl;
 
-  const isPublicPath =
-    pathname === "/" ||
-    pathname.startsWith("/api/events") ||
-    pathname.startsWith("/privacy") ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/auth");
-
-  if (!user && !isPublicPath) {
+  if (!user && pathname !== ROOT_PATH) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = LOGIN_PATH;
     return NextResponse.redirect(url);
   }
 
-  if (user && pathname === "/") {
+  if (user && pathname === ROOT_PATH) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = DASHBOARD_PATH;
     return NextResponse.redirect(url);
   }
 
@@ -75,4 +86,10 @@ export async function updateSession(request: NextRequest) {
   // of sync and terminate the user's session prematurely!
 
   return supabaseResponse;
+}
+
+function isAuthBypassPath(pathname: string) {
+  return AUTH_BYPASS_PATH_PREFIXES.some((prefix) => {
+    return pathname === prefix || pathname.startsWith(`${prefix}/`);
+  });
 }

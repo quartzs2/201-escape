@@ -2,7 +2,7 @@ import { InboxIcon } from "lucide-react";
 
 import type { VirtualListHandle } from "@/components/ui/virtual-list";
 
-import { Skeleton } from "@/components/ui";
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 import { VirtualList } from "@/components/ui/virtual-list";
 
 import type { ApplicationListItem } from "../types";
@@ -15,6 +15,7 @@ const ESTIMATED_ROW_HEIGHT = 105;
 
 // 끝에서 몇 개 전에 다음 페이지를 미리 로드할지.
 const NEAR_END_THRESHOLD = 5;
+const PAGINATION_SKELETON_KEYS = [0, 1, 2] as const;
 
 type ApplicationListProps = {
   applications: ApplicationListItem[];
@@ -76,8 +77,8 @@ export function ApplicationList({
           className="pb-10"
           role="status"
         >
-          {Array.from({ length: 3 }).map((_, i) => (
-            <ApplicationRowSkeleton key={i} />
+          {PAGINATION_SKELETON_KEYS.map((key) => (
+            <ApplicationRowSkeleton key={key} />
           ))}
         </div>
       )}
