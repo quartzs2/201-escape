@@ -22,6 +22,8 @@ export const ANALYTICS_EVENTS = {
   LOGIN_ATTEMPTED: "login_attempted",
   LOGOUT_CLICKED: "logout_clicked",
   MEMO_SAVED: "memo_saved",
+  // 사용자 활성
+  USER_ACTIVE: "user_active",
 } as const;
 
 export type AnalyticsEvent =
