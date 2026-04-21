@@ -90,6 +90,14 @@ export function ApplicationsPanelClient({
     setLocalPreviewApplicationId(previewApplicationId);
   }, [previewApplicationId]);
 
+  useEffect(() => {
+    paginationSequenceRef.current += 1;
+    setPages([initialPage]);
+    setPaginationError(null);
+    setIsFetchingNextPage(false);
+    setIsListScrolled(false);
+  }, [initialPage]);
+
   function updateRoute(nextState: RouteStateUpdate) {
     const nextPreviewApplicationId =
       nextState.previewApplicationId !== undefined
