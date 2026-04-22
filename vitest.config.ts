@@ -65,6 +65,7 @@ export default defineConfig({
           environment: "node",
           include: [
             "lib/utils/**/*.test.ts",
+            "lib/auth/**/*.test.ts",
             "lib/adapters/**/*.test.ts",
             "lib/actions/**/*.test.ts",
           ],

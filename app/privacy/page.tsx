@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { PublicHeader } from "../_components/PublicHeader";
+import { OPEN_GRAPH_IMAGES } from "../_utils/metadata";
 
 export const metadata: Metadata = {
   alternates: {
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
   description: "201 escape 개인정보처리방침 안내 페이지",
   openGraph: {
     description: "201 escape 개인정보처리방침 안내 페이지",
+    images: OPEN_GRAPH_IMAGES,
     title: "개인정보처리방침",
     url: "/privacy",
   },
