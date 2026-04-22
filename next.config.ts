@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     resolveAlias: {
       "../build/polyfills/polyfill-module": "./lib/modern-polyfill.js",
+      "@sentry-internal/replay": "./lib/sentry/replay-disabled.ts",
+      "@sentry-internal/replay-canvas": "./lib/sentry/replay-disabled.ts",
       "next/dist/build/polyfills/polyfill-module": "./lib/modern-polyfill.js",
     },
     rules: {

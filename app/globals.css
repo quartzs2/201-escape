@@ -1,4 +1,8 @@
-@import "tailwindcss";
+@import "tailwindcss/theme";
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
+@source not "../**/*.stories.tsx";
 
 @layer base {
   html {
@@ -53,8 +57,6 @@
 
   /* Animations */
   --animate-fade-up: fade-up 0.5s ease-out both;
-  --animate-fade-in: fade-in 0.4s ease-out both;
-  --animate-slide-up: slide-up 0.5s ease-out both;
 }
 
 @layer base {
@@ -75,68 +77,13 @@
     --color-input: #31343c;
     --color-ring: #9db58d;
   }
-
-  input[type="datetime-local"].mobile-datetime-local-input {
-    min-width: 0;
-  }
-
-  input[type="datetime-local"].mobile-datetime-local-input::-webkit-date-and-time-value {
-    min-width: 0;
-    text-align: left;
-  }
-
-  input[type="datetime-local"].mobile-datetime-local-input::-webkit-datetime-edit {
-    min-width: 0;
-    padding: 0;
-  }
-
-  input[type="datetime-local"].mobile-datetime-local-input::-webkit-datetime-edit-fields-wrapper {
-    min-width: 0;
-  }
-
-  input[type="datetime-local"].mobile-datetime-local-input::-webkit-calendar-picker-indicator {
-    margin: 0;
-  }
-}
-
-@keyframes slide-up {
-  from {
-    transform: translateY(16px);
-  }
-  to {
-    transform: translateY(0);
-  }
 }
 
 @keyframes fade-up {
   from {
-    opacity: 0;
     transform: translateY(16px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.bg-dot-pattern {
-  background-image: radial-gradient(circle, #40513b18 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-html[data-theme="dark"] .bg-dot-pattern {
-  background-image: radial-gradient(
-    circle,
-    rgb(157 181 141 / 0.14) 1px,
-    transparent 1px
-  );
 }

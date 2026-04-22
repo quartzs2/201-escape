@@ -19,6 +19,8 @@ import { INTERVIEW_TYPE_LABEL } from "@/lib/constants/interview-type";
 import { Constants } from "@/lib/types/supabase";
 import { cn, toDatetimeLocalValue } from "@/lib/utils";
 
+import styles from "./InterviewFormSheet.module.css";
+
 const INTERVIEW_TYPES = Constants.public.Enums.interview_type;
 const INPUT_CLASS = cn(
   "min-w-0 w-full rounded-md border border-input",
@@ -231,7 +233,10 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
                   )}
                 >
                   <input
-                    className="mobile-datetime-local-input block w-full min-w-0 bg-transparent px-0 py-0 text-base text-foreground focus:outline-none disabled:cursor-not-allowed"
+                    className={cn(
+                      styles.mobileDatetimeLocalInput,
+                      "block w-full min-w-0 bg-transparent px-0 py-0 text-base text-foreground focus:outline-none disabled:cursor-not-allowed",
+                    )}
                     disabled={isSaving}
                     id="interview-scheduled-at"
                     onChange={(e) =>
@@ -300,7 +305,10 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
               </div>
 
               {errorMessage !== null && (
-                <p className="text-sm font-medium text-red-600" role="alert">
+                <p
+                  className="text-sm font-medium text-destructive"
+                  role="alert"
+                >
                   {errorMessage}
                 </p>
               )}

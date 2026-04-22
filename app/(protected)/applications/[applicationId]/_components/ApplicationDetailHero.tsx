@@ -77,7 +77,7 @@ export function ApplicationDetailHero({
   ];
 
   return (
-    <section className="relative overflow-hidden rounded-[32px] border border-border/60 bg-background shadow-[0_36px_120px_-64px_rgba(23,23,23,0.45)] motion-safe:animate-fade-in">
+    <section className="relative overflow-hidden rounded-[32px] border border-border/60 bg-background shadow-[0_36px_120px_-64px_rgba(23,23,23,0.45)]">
       <div className="absolute inset-0" style={HERO_OVERLAY_STYLE} />
       <div className="relative grid gap-8 p-5 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)] lg:gap-10">
         <div className="space-y-8 motion-safe:animate-fade-up">
