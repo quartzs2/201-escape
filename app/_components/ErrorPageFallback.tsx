@@ -2,10 +2,10 @@
 
 import type { Route } from "next";
 
-import * as Sentry from "@sentry/nextjs";
 import { useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button/Button";
+import { captureClientException } from "@/lib/sentry/client";
 import { cn } from "@/lib/utils/cn";
 
 type ErrorPageFallbackProps = {
@@ -41,7 +41,7 @@ export function ErrorPageFallback({
 
     capturedErrorRef.current = error;
 
-    Sentry.withScope((scope) => {
+    captureClientException(error, (scope) => {
       scope.setTag("error_boundary_source", reportSource);
 
       if (error.digest) {
@@ -50,7 +50,6 @@ export function ErrorPageFallback({
 
       scope.setExtra("boundary_title", title);
       scope.setExtra("pathname", window.location.pathname);
-      Sentry.captureException(error);
     });
   }, [error, reportSource, title]);
 

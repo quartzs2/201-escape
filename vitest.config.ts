@@ -28,8 +28,6 @@ const storybookProject = {
       "class-variance-authority",
       "clsx",
       "next/navigation",
-      "posthog-js",
-      "posthog-js/react",
       "react",
       "react-dom",
       "tailwind-merge",
