@@ -6,6 +6,7 @@ import localFont from "next/font/local";
 import { PORTAL_ROOT_ID } from "@/lib/constants/dom";
 
 import { ThemeScript } from "./_components/ThemeScript";
+import { OPEN_GRAPH_IMAGE, OPEN_GRAPH_IMAGES } from "./_utils/metadata";
 import "./globals.css";
 
 const DEFAULT_SITE_URL = "https://201-escape.vercel.app";
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL),
   openGraph: {
     description: SITE_DESCRIPTION,
+    images: OPEN_GRAPH_IMAGES,
     locale: "ko_KR",
     siteName: "201 escape",
     title: "201 escape",
@@ -35,8 +37,9 @@ export const metadata: Metadata = {
     template: "%s | 201 escape",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     description: SITE_DESCRIPTION,
+    images: [OPEN_GRAPH_IMAGE.url],
     title: "201 escape",
   },
 };
