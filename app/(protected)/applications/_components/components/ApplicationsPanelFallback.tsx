@@ -5,7 +5,7 @@ const ROW_SKELETON_KEYS = [0, 1, 2, 3, 4] as const;
 
 export function ApplicationsPanelFallback() {
   return (
-    <div className="flex flex-col">
+    <div className="flex h-[32rem] min-h-0 flex-col sm:h-[36rem] lg:h-[40rem]">
       <div className="border-b border-border/70 bg-background px-5 sm:px-6">
         <div className="flex items-end gap-5 py-3">
           {TAB_SKELETON_KEYS.map((key) => (
@@ -19,8 +19,8 @@ export function ApplicationsPanelFallback() {
         </div>
       </div>
 
-      <div className="px-4 sm:px-5">
-        <div className="h-[32rem] min-h-0 space-y-3 overflow-hidden pt-4 sm:h-[36rem] lg:h-[40rem]">
+      <div className="min-h-0 flex-1 px-4 sm:px-5">
+        <div className="h-full space-y-3 overflow-hidden pt-4">
           {ROW_SKELETON_KEYS.map((index) => (
             <div
               className="rounded-2xl border border-border/60 px-4 py-4"

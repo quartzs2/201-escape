@@ -21,6 +21,8 @@ type VirtualItemMeasurerProps = {
   onMeasure: (index: number, height: number) => void;
 };
 
+type VirtualListContentProps<T> = Omit<VirtualListProps<T>, "resetKey">;
+
 type VirtualListProps<T> = {
   /**
    * 스크롤 컨테이너의 접근성 레이블.
@@ -72,6 +74,11 @@ type VirtualListProps<T> = {
    * 아이템을 렌더링하는 함수.
    */
   renderItem: (item: T, index: number) => ReactNode;
+  /**
+   * 데이터셋 의미가 바뀔 때 높이 측정 캐시와 스크롤 위치를 초기화하기 위한 키.
+   * 무한 스크롤처럼 같은 데이터셋에 아이템을 append하는 경우에는 변경하지 않습니다.
+   */
+  resetKey?: number | string;
 };
 
 /**
@@ -84,67 +91,10 @@ type VirtualListProps<T> = {
  *
  * 데이터셋 교체 시 높이 캐시 초기화:
  * - 아이템 수가 줄어드는 경우(필터링 등): 자동으로 범위 밖 측정값을 정리합니다.
- * - 같은 개수의 완전히 다른 데이터로 교체하는 경우: `key` prop으로 컴포넌트를 리셋하세요.
- *   예) `<VirtualList key={activeTabId} ... />`
+ * - 같은 개수의 완전히 다른 데이터로 교체하는 경우: `resetKey`를 변경해 캐시와 스크롤을 리셋하세요.
  */
-export function VirtualList<T>({
-  "aria-label": ariaLabel,
-  className,
-  emptyState,
-  estimatedItemHeight,
-  items,
-  keyExtractor,
-  onRangeChange,
-  overscan,
-  paddingBottom,
-  paddingTop,
-  ref,
-  renderItem,
-}: VirtualListProps<T>) {
-  const {
-    containerRef,
-    handleScroll,
-    measureItem,
-    scrollToIndex,
-    totalHeight,
-    virtualItems,
-  } = useVirtualList({
-    estimatedItemHeight,
-    itemCount: items.length,
-    onRangeChange,
-    overscan,
-    paddingBottom,
-    paddingTop,
-  });
-
-  useImperativeHandle(ref, () => ({ scrollToIndex }), [scrollToIndex]);
-
-  if (items.length === 0) {
-    return emptyState ?? null;
-  }
-
-  return (
-    <div
-      aria-label={ariaLabel}
-      className={cn("overflow-y-auto", className)}
-      onScroll={handleScroll}
-      ref={containerRef}
-      role="list"
-    >
-      <div className="relative" style={{ height: totalHeight }}>
-        {virtualItems.map(({ index, offsetTop }) => (
-          <VirtualItemMeasurer
-            index={index}
-            key={keyExtractor(items[index], index)}
-            offsetTop={offsetTop}
-            onMeasure={measureItem}
-          >
-            {renderItem(items[index], index)}
-          </VirtualItemMeasurer>
-        ))}
-      </div>
-    </div>
-  );
+export function VirtualList<T>({ resetKey, ...props }: VirtualListProps<T>) {
+  return <VirtualListContent<T> key={resetKey ?? "default"} {...props} />;
 }
 
 /**
@@ -190,6 +140,66 @@ function VirtualItemMeasurer({
       style={{ top: offsetTop }}
     >
       {children}
+    </div>
+  );
+}
+
+function VirtualListContent<T>({
+  "aria-label": ariaLabel,
+  className,
+  emptyState,
+  estimatedItemHeight,
+  items,
+  keyExtractor,
+  onRangeChange,
+  overscan,
+  paddingBottom,
+  paddingTop,
+  ref,
+  renderItem,
+}: VirtualListContentProps<T>) {
+  const {
+    containerRef,
+    handleScroll,
+    measureItem,
+    scrollToIndex,
+    totalHeight,
+    virtualItems,
+  } = useVirtualList({
+    estimatedItemHeight,
+    itemCount: items.length,
+    onRangeChange,
+    overscan,
+    paddingBottom,
+    paddingTop,
+  });
+
+  useImperativeHandle(ref, () => ({ scrollToIndex }), [scrollToIndex]);
+
+  if (items.length === 0) {
+    return emptyState ?? null;
+  }
+
+  return (
+    <div
+      aria-label={ariaLabel}
+      className={cn("overflow-y-auto", className)}
+      onScroll={handleScroll}
+      ref={containerRef}
+      role="list"
+    >
+      <div className="relative" style={{ height: totalHeight }}>
+        {virtualItems.map(({ index, offsetTop }) => (
+          <VirtualItemMeasurer
+            index={index}
+            key={keyExtractor(items[index], index)}
+            offsetTop={offsetTop}
+            onMeasure={measureItem}
+          >
+            {renderItem(items[index], index)}
+          </VirtualItemMeasurer>
+        ))}
+      </div>
     </div>
   );
 }

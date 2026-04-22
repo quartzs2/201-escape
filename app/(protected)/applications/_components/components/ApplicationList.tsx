@@ -25,6 +25,7 @@ type ApplicationListProps = {
   onRangeChange?: (startIndex: number, endIndex: number) => void;
   onSelectApplication: (application: ApplicationListItem) => void;
   ref?: React.Ref<VirtualListHandle>;
+  resetKey?: number | string;
 };
 
 export function ApplicationList({
@@ -35,6 +36,7 @@ export function ApplicationList({
   onRangeChange,
   onSelectApplication,
   ref,
+  resetKey,
 }: ApplicationListProps) {
   const handleRangeChange = (startIndex: number, endIndex: number) => {
     onRangeChange?.(startIndex, endIndex);
@@ -67,6 +69,7 @@ export function ApplicationList({
             onSelectAction={onSelectApplication}
           />
         )}
+        resetKey={resetKey}
       />
       {!isFetchingNextPage && <div className="h-10 shrink-0" />}
 
