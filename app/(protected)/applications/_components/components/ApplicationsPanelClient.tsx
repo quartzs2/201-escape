@@ -241,7 +241,7 @@ export function ApplicationsPanelClient({
           role="status"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-2 text-sm text-red-700">
+            <div className="flex items-start gap-2 text-sm text-destructive">
               <AlertCircleIcon
                 aria-hidden="true"
                 className="mt-0.5 size-4 shrink-0"

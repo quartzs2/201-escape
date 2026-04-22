@@ -228,7 +228,7 @@ export function ApplicationPreviewSheet({
               {visiblePreviewState.status === "error" && (
                 <section
                   aria-live="polite"
-                  className="rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700"
+                  className="rounded-2xl border border-destructive/20 bg-destructive/5 px-4 py-4 text-destructive"
                 >
                   <div className="flex items-start gap-3">
                     <AlertCircleIcon

@@ -305,7 +305,10 @@ export function InterviewFormSheet(props: InterviewFormSheetProps) {
               </div>
 
               {errorMessage !== null && (
-                <p className="text-sm font-medium text-red-600" role="alert">
+                <p
+                  className="text-sm font-medium text-destructive"
+                  role="alert"
+                >
                   {errorMessage}
                 </p>
               )}
