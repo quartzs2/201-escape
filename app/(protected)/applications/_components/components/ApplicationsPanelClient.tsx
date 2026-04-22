@@ -5,7 +5,7 @@ import type { Route } from "next";
 import { AlertCircleIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
 import type {
@@ -65,10 +65,12 @@ export function ApplicationsPanelClient({
   const router = useRouter();
 
   const tabsRef = useRef<ApplicationTabsHandle>(null);
+  const initialPageRef = useRef(initialPage);
   const paginationSequenceRef = useRef(0);
   const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
   const [isListScrolled, setIsListScrolled] = useState(false);
   const [isNavigatingFromPreview, setIsNavigatingFromPreview] = useState(false);
+  const [listResetVersion, setListResetVersion] = useState(0);
   const [localPreviewApplicationId, setLocalPreviewApplicationId] = useState<
     null | string
   >(previewApplicationId);
@@ -90,12 +92,18 @@ export function ApplicationsPanelClient({
     setLocalPreviewApplicationId(previewApplicationId);
   }, [previewApplicationId]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (initialPageRef.current === initialPage) {
+      return;
+    }
+
+    initialPageRef.current = initialPage;
     paginationSequenceRef.current += 1;
     setPages([initialPage]);
     setPaginationError(null);
     setIsFetchingNextPage(false);
     setIsListScrolled(false);
+    setListResetVersion((version) => version + 1);
   }, [initialPage]);
 
   function updateRoute(nextState: RouteStateUpdate) {
@@ -222,6 +230,7 @@ export function ApplicationsPanelClient({
         applications={applications}
         className="h-[32rem] min-h-0 sm:h-[36rem] lg:h-[40rem]"
         isFetchingNextPage={isFetchingNextPage}
+        listResetKey={listResetVersion}
         onNearEndAction={() => {
           void handleNearEnd();
         }}
