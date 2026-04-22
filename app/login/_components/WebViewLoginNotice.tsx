@@ -62,10 +62,7 @@ export function WebViewLoginNotice() {
   const isCopied = copyStatus === "copied";
 
   return (
-    <section
-      aria-labelledby="webview-login-title"
-      className="rounded-2xl border border-primary/15 bg-primary/5 p-4 text-left"
-    >
+    <section aria-labelledby="webview-login-title" className="text-left">
       <div className="flex gap-3">
         <span
           aria-hidden="true"
@@ -82,8 +79,9 @@ export function WebViewLoginNotice() {
             외부 브라우저에서 로그인이 필요합니다.
           </h2>
           <p className="mt-2 text-sm leading-6 font-medium text-muted-foreground">
-            현재 앱 내 브라우저에서는 Google 로그인이 제한될 수 있습니다. Safari
-            또는 Chrome에서 다시 열어 주십시오.
+            현재 앱 내 브라우저에서는 Google 로그인이 제한될 수 있습니다.
+            <br />
+            Safari 또는 Chrome에서 다시 열어 주세요.
           </p>
 
           <div className="mt-4 flex flex-col gap-2">
@@ -119,8 +117,8 @@ export function WebViewLoginNotice() {
             className="mt-3 text-xs leading-5 font-medium text-muted-foreground"
           >
             {isAndroid
-              ? "Chrome으로 열기가 동작하지 않으면 주소를 복사해 외부 브라우저에 붙여넣어 주십시오."
-              : "iPhone에서는 공유 버튼을 누른 뒤 Safari에서 열기를 선택해 주십시오."}
+              ? "Chrome으로 열기가 동작하지 않으면 주소를 복사해 외부 브라우저에 붙여넣어 주세요."
+              : "iPhone에서는 공유 버튼을 누른 뒤 Safari에서 열기를 선택해 주세요."}
           </p>
         </div>
       </div>
@@ -129,38 +127,12 @@ export function WebViewLoginNotice() {
 }
 
 async function copyTextToClipboard(text: string): Promise<boolean> {
-  if (window.navigator.clipboard?.writeText) {
-    try {
-      await window.navigator.clipboard.writeText(text);
-
-      return true;
-    } catch {
-      return copyTextWithHiddenTextArea(text);
-    }
-  }
-
-  return copyTextWithHiddenTextArea(text);
-}
-
-function copyTextWithHiddenTextArea(text: string): boolean {
-  const textArea = window.document.createElement("textarea");
-
-  textArea.value = text;
-  textArea.setAttribute("readonly", "");
-  textArea.style.left = "-9999px";
-  textArea.style.position = "fixed";
-  textArea.style.top = "0";
-
-  window.document.body.append(textArea);
-  textArea.focus();
-  textArea.select();
-
   try {
-    return window.document.execCommand("copy");
+    await window.navigator.clipboard.writeText(text);
+
+    return true;
   } catch {
     return false;
-  } finally {
-    textArea.remove();
   }
 }
 
