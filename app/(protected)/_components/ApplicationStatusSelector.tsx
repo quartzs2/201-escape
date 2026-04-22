@@ -125,7 +125,7 @@ export function ApplicationStatusSelector({
               <p className="text-sm text-muted-foreground">저장하는 중...</p>
             )}
             {!mutation.isPending && errorMessage && (
-              <p className="text-sm text-red-600">{errorMessage}</p>
+              <p className="text-sm text-destructive">{errorMessage}</p>
             )}
           </div>
         </div>

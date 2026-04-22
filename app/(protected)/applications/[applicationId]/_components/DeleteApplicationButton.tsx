@@ -108,7 +108,10 @@ export function DeleteApplicationButton({
             </p>
 
             {errorMessage !== null && (
-              <p className="mb-4 text-sm font-medium text-red-600" role="alert">
+              <p
+                className="mb-4 text-sm font-medium text-destructive"
+                role="alert"
+              >
                 {errorMessage}
               </p>
             )}
