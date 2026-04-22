@@ -59,24 +59,22 @@
   --animate-fade-up: fade-up 0.5s ease-out both;
 }
 
-@layer base {
-  html[data-theme="dark"] {
-    --color-background: #16171a;
-    --color-foreground: #f3f1ec;
-    --color-primary: #9db58d;
-    --color-primary-foreground: #0f140f;
-    --color-secondary: #202228;
-    --color-secondary-foreground: #f3f1ec;
-    --color-destructive: #f87171;
-    --color-destructive-foreground: #1f1111;
-    --color-muted: #1a1c21;
-    --color-muted-foreground: #abaeb8;
-    --color-accent: #262930;
-    --color-accent-foreground: #f3f1ec;
-    --color-border: #31343c;
-    --color-input: #31343c;
-    --color-ring: #9db58d;
-  }
+html[data-theme="dark"] {
+  --color-background: #16171a;
+  --color-foreground: #f3f1ec;
+  --color-primary: #9db58d;
+  --color-primary-foreground: #0f140f;
+  --color-secondary: #202228;
+  --color-secondary-foreground: #f3f1ec;
+  --color-destructive: #f87171;
+  --color-destructive-foreground: #1f1111;
+  --color-muted: #1a1c21;
+  --color-muted-foreground: #abaeb8;
+  --color-accent: #262930;
+  --color-accent-foreground: #f3f1ec;
+  --color-border: #31343c;
+  --color-input: #31343c;
+  --color-ring: #9db58d;
 }
 
 @keyframes fade-up {
