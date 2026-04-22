@@ -1,9 +1,18 @@
 import { PublicHeader } from "../_components/PublicHeader";
-import { GoogleLoginButton } from "./_components/GoogleLoginButton";
+import { LoginActions } from "./_components/LoginActions";
 
 const PRIVACY_PAGE_HREF = "/privacy";
+const WEBVIEW_QUERY_VALUE = "1";
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const shouldShowWebViewNotice =
+    getFirstSearchParam(resolvedSearchParams?.webview) === WEBVIEW_QUERY_VALUE;
+
   return (
     <div className="flex h-dvh flex-col bg-muted/30">
       <PublicHeader />
@@ -22,7 +31,7 @@ export default function LoginPage() {
           </header>
 
           <div className="space-y-4">
-            <GoogleLoginButton />
+            <LoginActions shouldShowWebViewNotice={shouldShowWebViewNotice} />
 
             <div className="flex justify-center px-1">
               <p className="inline-flex flex-wrap items-center justify-center gap-x-1 text-center text-sm leading-5 font-medium text-muted-foreground">
@@ -41,4 +50,14 @@ export default function LoginPage() {
       </div>
     </div>
   );
+}
+
+function getFirstSearchParam(
+  value: string | string[] | undefined,
+): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
 }
