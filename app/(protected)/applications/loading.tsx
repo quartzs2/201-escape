@@ -2,7 +2,11 @@ import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 
 import { ApplicationsPanelFallback } from "./_components/components/ApplicationsPanelFallback";
 
-const PERIOD_CHIP_KEYS = [0, 1, 2, 3] as const;
+const PERIOD_CHIP_SKELETON_CLASSES = [
+  "h-10 w-14 rounded-full",
+  "h-10 w-24 rounded-full",
+  "h-10 w-20 rounded-full",
+] as const;
 
 export default function ApplicationsLoading() {
   return (
@@ -26,10 +30,14 @@ function ApplicationFiltersFallback() {
       <div className="grid gap-4">
         <Skeleton className="h-12 w-full rounded-2xl" />
         <div className="flex flex-wrap items-center gap-2">
-          {PERIOD_CHIP_KEYS.map((key) => (
-            <Skeleton className="h-8 w-16 rounded-full" key={key} />
-          ))}
-          <Skeleton className="ml-auto h-8 w-28 rounded-full" />
+          <div className="flex flex-wrap gap-2">
+            {PERIOD_CHIP_SKELETON_CLASSES.map((className) => (
+              <Skeleton className={className} key={className} />
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Skeleton className="h-10 w-40 rounded-full" />
+          </div>
         </div>
       </div>
     </section>

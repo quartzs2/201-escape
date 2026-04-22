@@ -28,6 +28,7 @@ type ApplicationTabsProps = {
   applications: ApplicationListItem[];
   className?: string;
   isFetchingNextPage?: boolean;
+  listResetKey?: number | string;
   onNearEndAction?: () => void;
   onRangeChangeAction?: (startIndex: number, endIndex: number) => void;
   onSelectApplicationAction: (application: ApplicationListItem) => void;
@@ -40,6 +41,7 @@ export function ApplicationTabs({
   applications,
   className,
   isFetchingNextPage,
+  listResetKey,
   onNearEndAction,
   onRangeChangeAction,
   onSelectApplicationAction,
@@ -168,6 +170,7 @@ export function ApplicationTabs({
           onRangeChange={onRangeChangeAction}
           onSelectApplication={onSelectApplicationAction}
           ref={listRef}
+          resetKey={`${tab}:${listResetKey ?? "default"}`}
         />
       </div>
     </div>
