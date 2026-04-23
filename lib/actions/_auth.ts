@@ -20,8 +20,9 @@ type ServerSupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
 export async function getAuthenticatedUserId(
   supabase: ServerSupabaseClient,
+  accessToken?: string,
 ): Promise<AuthenticatedUserIdResult> {
-  const { data, error } = await supabase.auth.getClaims();
+  const { data, error } = await supabase.auth.getClaims(accessToken);
   const userId = data?.claims?.sub;
 
   if (error || typeof userId !== "string" || userId.length === 0) {

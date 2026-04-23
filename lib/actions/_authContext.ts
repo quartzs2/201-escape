@@ -13,17 +13,17 @@ export type AuthContextResult =
 
 export const getAuthContext = cache(async (): Promise<AuthContextResult> => {
   const supabase = await createClient();
-  const authResult = await getAuthenticatedUserId(supabase);
-
-  if (!authResult.ok) {
-    return { ok: false, reason: authResult.reason };
-  }
-
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData.session?.access_token;
 
   if (!accessToken) {
     return { ok: false, reason: AUTH_REQUIRED_REASON };
+  }
+
+  const authResult = await getAuthenticatedUserId(supabase, accessToken);
+
+  if (!authResult.ok) {
+    return { ok: false, reason: authResult.reason };
   }
 
   return { accessToken, ok: true, userId: authResult.userId };
