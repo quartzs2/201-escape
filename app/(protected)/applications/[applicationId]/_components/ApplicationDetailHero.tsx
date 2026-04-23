@@ -88,6 +88,7 @@ export function ApplicationDetailHero({
               companyName={detail.companyName}
               deleteAction={deleteAction}
               positionTitle={detail.positionTitle}
+              redirectHref="/applications"
             />
           </div>
 
