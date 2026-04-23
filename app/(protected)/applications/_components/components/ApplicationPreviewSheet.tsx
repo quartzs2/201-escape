@@ -23,6 +23,7 @@ import { ApplicationsProviders } from "@/app/(protected)/applications/Applicatio
 import { BottomSheet } from "@/components/ui/bottom-sheet/BottomSheet";
 import { Button } from "@/components/ui/button/Button";
 import { Skeleton } from "@/components/ui/skeleton/Skeleton";
+import { deleteApplication } from "@/lib/actions";
 import { getApplicationDetail } from "@/lib/actions/getApplicationDetail";
 import { updateApplicationStatus } from "@/lib/actions/updateApplicationStatus";
 
@@ -34,11 +35,13 @@ import {
 } from "../../_utils/preview";
 import { PLATFORM_LABEL } from "../constants";
 import { ApplicationPreviewSection } from "./ApplicationPreviewSection";
+import { DeleteApplicationButton } from "./DeleteApplicationButton";
 
 type ApplicationPreviewSheetProps = {
   application: ApplicationListItem | null;
   isOpen: boolean;
   onCloseAction: () => void;
+  onDeleteSuccessAction: (applicationId: string) => void;
   onDetailNavigateAction: () => void;
   onStatusChangeAction: (applicationId: string, nextStatus: JobStatus) => void;
 };
@@ -70,6 +73,7 @@ export function ApplicationPreviewSheet({
   application,
   isOpen,
   onCloseAction,
+  onDeleteSuccessAction,
   onDetailNavigateAction,
   onStatusChangeAction,
 }: ApplicationPreviewSheetProps) {
@@ -157,34 +161,51 @@ export function ApplicationPreviewSheet({
         >
           <BottomSheet.Header />
           <div className="px-6 pb-4">
-            {(platform || appliedAt) && (
-              <div className="mb-2 flex flex-wrap items-center gap-0">
-                {platform && platform !== "MANUAL" && (
-                  <span className="text-sm font-medium text-muted-foreground">
-                    {PLATFORM_LABEL[platform]}
-                  </span>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                {(platform || appliedAt) && (
+                  <div className="mb-2 flex flex-wrap items-center gap-0">
+                    {platform && platform !== "MANUAL" && (
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {PLATFORM_LABEL[platform]}
+                      </span>
+                    )}
+                    {platform && platform !== "MANUAL" && appliedAt && (
+                      <span className="mx-2 text-sm text-muted-foreground/40">
+                        |
+                      </span>
+                    )}
+                    {appliedAt && (
+                      <span className="flex gap-1 text-sm font-medium text-muted-foreground">
+                        <span>{status === "SAVED" ? "저장일" : "지원일"}</span>
+                        <span>{formatAppliedAt(appliedAt)}</span>
+                      </span>
+                    )}
+                  </div>
                 )}
-                {platform && platform !== "MANUAL" && appliedAt && (
-                  <span className="mx-2 text-sm text-muted-foreground/40">
-                    |
-                  </span>
-                )}
-                {appliedAt && (
-                  <span className="flex gap-1 text-sm font-medium text-muted-foreground">
-                    <span>{status === "SAVED" ? "저장일" : "지원일"}</span>
-                    <span>{formatAppliedAt(appliedAt)}</span>
-                  </span>
-                )}
+                <BottomSheet.Title className="text-xl tracking-[-0.02em] text-foreground">
+                  {title}
+                </BottomSheet.Title>
+                {companyName ? (
+                  <p className="mt-2 text-sm font-medium text-muted-foreground">
+                    {companyName}
+                  </p>
+                ) : null}
               </div>
-            )}
-            <BottomSheet.Title className="text-xl tracking-[-0.02em] text-foreground">
-              {title}
-            </BottomSheet.Title>
-            {companyName && (
-              <p className="mt-2 text-sm font-medium text-muted-foreground">
-                {companyName}
-              </p>
-            )}
+
+              {application ? (
+                <DeleteApplicationButton
+                  applicationId={application.id}
+                  buttonClassName="shrink-0"
+                  companyName={companyName || application.companyName}
+                  deleteAction={deleteApplication}
+                  onDeleteSuccessAction={() => {
+                    onDeleteSuccessAction(application.id);
+                  }}
+                  positionTitle={title || application.positionTitle}
+                />
+              ) : null}
+            </div>
           </div>
 
           <BottomSheet.Body className="space-y-4 px-6 pb-4">

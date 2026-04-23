@@ -51,7 +51,9 @@ export const ApplicationStatusSelector = dynamic(
 
 export const DeleteApplicationButton = dynamic(
   () =>
-    import("./DeleteApplicationButton").then((m) => m.DeleteApplicationButton),
+    import("@/app/(protected)/applications/_components/components/DeleteApplicationButton").then(
+      (m) => m.DeleteApplicationButton,
+    ),
   { ssr: false },
 );
 

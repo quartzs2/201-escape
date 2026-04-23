@@ -191,6 +191,19 @@ export function ApplicationsPanelClient({
     );
   }
 
+  function handleDeleteApplication(applicationId: string) {
+    setIsNavigatingFromPreview(false);
+    setLocalPreviewApplicationId(null);
+    setPages((currentPages) =>
+      currentPages.map((page) => ({
+        ...page,
+        items: page.items.filter((item) => item.id !== applicationId),
+      })),
+    );
+    updatePreviewHistory(null);
+    router.refresh();
+  }
+
   async function handleNearEnd() {
     if (isFetchingNextPage || !hasNextPage) {
       return;
@@ -276,6 +289,7 @@ export function ApplicationsPanelClient({
           application={selectedApplication}
           isOpen={true}
           onCloseAction={handleClosePreview}
+          onDeleteSuccessAction={handleDeleteApplication}
           onDetailNavigateAction={handleDetailNavigate}
           onStatusChangeAction={handleStatusChange}
         />
