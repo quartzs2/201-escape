@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui";
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 
 import { FUNNEL_CHART_HEIGHT, MONTHLY_CHART_HEIGHT } from "./constants";
 

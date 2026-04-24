@@ -2,8 +2,10 @@ import type { FunnelStep, MonthlyCount } from "@/lib/types/application";
 
 import { DashboardFunnelBreakdown } from "./DashboardFunnelBreakdown";
 import { DashboardInsightPanel } from "./DashboardInsightPanel";
-import { FunnelChart } from "./FunnelChart";
-import { MonthlyTrendChart } from "./MonthlyTrendChart";
+import {
+  DeferredFunnelChart,
+  DeferredMonthlyTrendChart,
+} from "./DeferredDashboardCharts";
 
 type Props = {
   funnel: FunnelStep[];
@@ -29,7 +31,7 @@ export function DashboardCharts({ funnel, monthly }: Props) {
               </p>
             </div>
           </div>
-          <MonthlyTrendChart data={monthly} />
+          <DeferredMonthlyTrendChart data={monthly} />
         </div>
 
         <DashboardInsightPanel funnel={funnel} monthly={monthly} />
@@ -48,7 +50,7 @@ export function DashboardCharts({ funnel, monthly }: Props) {
               전체 지원 수를 기준으로 각 단계에 몇 건이 남아 있는지 확인합니다.
             </p>
           </div>
-          <FunnelChart data={funnel} />
+          <DeferredFunnelChart data={funnel} />
         </div>
 
         <DashboardFunnelBreakdown data={funnel} />
