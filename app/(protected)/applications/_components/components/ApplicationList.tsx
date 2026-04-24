@@ -15,6 +15,7 @@ const ESTIMATED_ROW_HEIGHT = 105;
 
 // 끝에서 몇 개 전에 다음 페이지를 미리 로드할지.
 const NEAR_END_THRESHOLD = 5;
+const LIST_BOTTOM_PADDING = 40;
 const PAGINATION_SKELETON_KEYS = [0, 1, 2] as const;
 
 type ApplicationListProps = {
@@ -28,6 +29,16 @@ type ApplicationListProps = {
   resetKey?: number | string;
 };
 
+type ApplicationListRow =
+  | {
+      application: ApplicationListItem;
+      type: "application";
+    }
+  | {
+      key: number;
+      type: "pagination-skeleton";
+    };
+
 export function ApplicationList({
   applications,
   emptyMessage = "해당하는 지원 내역이 없습니다",
@@ -38,6 +49,19 @@ export function ApplicationList({
   ref,
   resetKey,
 }: ApplicationListProps) {
+  const rows: ApplicationListRow[] = [
+    ...applications.map((application) => ({
+      application,
+      type: "application" as const,
+    })),
+    ...(isFetchingNextPage
+      ? PAGINATION_SKELETON_KEYS.map((key) => ({
+          key,
+          type: "pagination-skeleton" as const,
+        }))
+      : []),
+  ];
+
   const handleRangeChange = (startIndex: number, endIndex: number) => {
     onRangeChange?.(startIndex, endIndex);
     if (onNearEnd && endIndex >= applications.length - NEAR_END_THRESHOLD) {
@@ -59,39 +83,45 @@ export function ApplicationList({
         className="flex-1 pt-2"
         emptyState={emptyState}
         estimatedItemHeight={ESTIMATED_ROW_HEIGHT}
-        items={applications}
-        keyExtractor={(item) => item.id}
+        items={rows}
+        keyExtractor={(row) =>
+          row.type === "application"
+            ? row.application.id
+            : `pagination-skeleton-${row.key}`
+        }
         onRangeChange={handleRangeChange}
+        paddingBottom={LIST_BOTTOM_PADDING}
         ref={ref}
-        renderItem={(item) => (
-          <ApplicationRow
-            application={item}
-            onSelectAction={onSelectApplication}
-          />
-        )}
+        renderItem={(row) => {
+          if (row.type === "pagination-skeleton") {
+            return <ApplicationRowSkeleton shouldAnnounce={row.key === 0} />;
+          }
+
+          return (
+            <ApplicationRow
+              application={row.application}
+              onSelectAction={onSelectApplication}
+            />
+          );
+        }}
         resetKey={resetKey}
       />
-      {!isFetchingNextPage && <div className="h-10 shrink-0" />}
-
-      {isFetchingNextPage && (
-        <div
-          aria-label="추가 항목을 불러오는 중입니다"
-          aria-live="polite"
-          className="pb-10"
-          role="status"
-        >
-          {PAGINATION_SKELETON_KEYS.map((key) => (
-            <ApplicationRowSkeleton key={key} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
 
-function ApplicationRowSkeleton() {
+function ApplicationRowSkeleton({
+  shouldAnnounce,
+}: {
+  shouldAnnounce: boolean;
+}) {
   return (
-    <div className="border-b border-border/70 py-4">
+    <div
+      aria-label={shouldAnnounce ? "추가 항목을 불러오는 중입니다" : undefined}
+      aria-live={shouldAnnounce ? "polite" : undefined}
+      className="border-b border-border/70 py-4"
+      role={shouldAnnounce ? "status" : undefined}
+    >
       <div className="flex w-full items-start justify-between gap-4">
         <div className="flex min-w-0 flex-1 flex-col gap-2.5">
           <div className="flex flex-col gap-1.5">
