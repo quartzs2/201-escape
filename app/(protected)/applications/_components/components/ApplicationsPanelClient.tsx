@@ -10,6 +10,7 @@ import { flushSync } from "react-dom";
 
 import type {
   ApplicationListItem,
+  ApplicationTabCounts,
   GetApplicationsPage,
 } from "@/lib/types/application";
 import type { JobStatus } from "@/lib/types/job";
@@ -21,7 +22,7 @@ import type { PeriodPreset, SortValue, TabValue } from "../constants";
 import type { ApplicationTabsHandle } from "./ApplicationTabs";
 
 import { buildApplicationsHref } from "../../_utils/route-state";
-import { PAGE_SIZE } from "../constants";
+import { DONE_STATUSES, IN_PROGRESS_STATUSES, PAGE_SIZE } from "../constants";
 import { GoToTopFAB } from "../go-to-top";
 import { ApplicationTabs } from "./ApplicationTabs";
 
@@ -76,6 +77,9 @@ export function ApplicationsPanelClient({
   >(previewApplicationId);
   const [pages, setPages] = useState<GetApplicationsPage[]>([initialPage]);
   const [paginationError, setPaginationError] = useState<null | string>(null);
+  const [tabCounts, setTabCounts] = useState<ApplicationTabCounts>(
+    initialPage.tabCounts,
+  );
 
   const applications = pages.flatMap((page) => page.items);
   const hasNextPage = pages[pages.length - 1]?.hasMore ?? false;
@@ -100,6 +104,7 @@ export function ApplicationsPanelClient({
     initialPageRef.current = initialPage;
     paginationSequenceRef.current += 1;
     setPages([initialPage]);
+    setTabCounts(initialPage.tabCounts);
     setPaginationError(null);
     setIsFetchingNextPage(false);
     setIsListScrolled(false);
@@ -177,6 +182,10 @@ export function ApplicationsPanelClient({
   }
 
   function handleStatusChange(applicationId: string, nextStatus: JobStatus) {
+    const previousStatus =
+      applications.find((application) => application.id === applicationId)
+        ?.status ?? null;
+
     setPages((currentPages) =>
       currentPages.map((page) => ({
         ...page,
@@ -189,9 +198,23 @@ export function ApplicationsPanelClient({
         }),
       })),
     );
+
+    if (previousStatus !== null && previousStatus !== nextStatus) {
+      setTabCounts((currentCounts) =>
+        getStatusChangeTabCounts({
+          counts: currentCounts,
+          nextStatus,
+          previousStatus,
+        }),
+      );
+    }
   }
 
   function handleDeleteApplication(applicationId: string) {
+    const deletedApplication =
+      applications.find((application) => application.id === applicationId) ??
+      null;
+
     setIsNavigatingFromPreview(false);
     setLocalPreviewApplicationId(null);
     setPages((currentPages) =>
@@ -200,6 +223,11 @@ export function ApplicationsPanelClient({
         items: page.items.filter((item) => item.id !== applicationId),
       })),
     );
+    if (deletedApplication !== null) {
+      setTabCounts((currentCounts) =>
+        getDeleteTabCounts(currentCounts, deletedApplication.status),
+      );
+    }
     updatePreviewHistory(null);
     router.refresh();
   }
@@ -242,6 +270,7 @@ export function ApplicationsPanelClient({
       <ApplicationTabs
         applications={applications}
         className="h-[32rem] min-h-0 sm:h-[36rem] lg:h-[40rem]"
+        counts={tabCounts}
         isFetchingNextPage={isFetchingNextPage}
         listResetKey={listResetVersion}
         onNearEndAction={() => {
@@ -302,4 +331,56 @@ export function ApplicationsPanelClient({
       />
     </>
   );
+}
+
+function getDeleteTabCounts(
+  counts: ApplicationTabCounts,
+  deletedStatus: JobStatus,
+): ApplicationTabCounts {
+  return {
+    active: Math.max(
+      0,
+      counts.active - (IN_PROGRESS_STATUSES.includes(deletedStatus) ? 1 : 0),
+    ),
+    all: Math.max(0, counts.all - 1),
+    done: Math.max(
+      0,
+      counts.done - (DONE_STATUSES.includes(deletedStatus) ? 1 : 0),
+    ),
+  };
+}
+
+function getStatusChangeTabCounts({
+  counts,
+  nextStatus,
+  previousStatus,
+}: {
+  counts: ApplicationTabCounts;
+  nextStatus: JobStatus;
+  previousStatus: JobStatus;
+}): ApplicationTabCounts {
+  return {
+    active:
+      counts.active +
+      getStatusGroupDelta(previousStatus, nextStatus, IN_PROGRESS_STATUSES),
+    all: counts.all,
+    done:
+      counts.done +
+      getStatusGroupDelta(previousStatus, nextStatus, DONE_STATUSES),
+  };
+}
+
+function getStatusGroupDelta(
+  previousStatus: JobStatus,
+  nextStatus: JobStatus,
+  statuses: readonly JobStatus[],
+): number {
+  const wasIncluded = statuses.includes(previousStatus);
+  const isIncluded = statuses.includes(nextStatus);
+
+  if (wasIncluded === isIncluded) {
+    return 0;
+  }
+
+  return isIncluded ? 1 : -1;
 }
