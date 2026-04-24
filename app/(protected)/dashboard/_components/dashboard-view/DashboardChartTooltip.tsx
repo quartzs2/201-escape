@@ -1,4 +1,4 @@
-import { Tooltip } from "@/components/ui";
+import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 
 export type DashboardChartTooltipState = {
   description?: string;
