@@ -35,6 +35,17 @@ export type ApplicationListItem = {
   status: JobStatus;
 };
 
+export type ApplicationTabCounts = {
+  active: number;
+  all: number;
+  done: number;
+};
+
+export type MonthlyCount = {
+  count: number;
+  month: string; // "YYYY-MM" 형식
+};
+
 export const applicationDetailSchema = z
   .object({
     appliedAt: z.string(),
@@ -125,6 +136,7 @@ export type GetApplicationsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
 export type GetApplicationsPage = {
   hasMore: boolean;
   items: ApplicationListItem[];
+  tabCounts: ApplicationTabCounts;
 };
 
 export type GetApplicationsResult =
@@ -154,11 +166,6 @@ export type GetStatCountsErrorCode = "AUTH_REQUIRED" | "QUERY_ERROR";
 export type GetStatCountsResult =
   | { code: GetStatCountsErrorCode; ok: false; reason: string }
   | { data: StatCounts; ok: true };
-
-export type MonthlyCount = {
-  count: number;
-  month: string; // "YYYY-MM" 형식
-};
 
 export type StatCounts = {
   applied: number;
