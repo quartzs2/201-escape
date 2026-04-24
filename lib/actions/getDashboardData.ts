@@ -17,6 +17,7 @@ import {
 
 import { createClientWithToken } from "../supabase/server";
 import { getAuthContext } from "./_authContext";
+import { getApplicationsCacheTags } from "./_cacheTags";
 import { AUTH_ERROR_CODE, normalizeQueryError } from "./_queryError";
 import { reportQueryError } from "./_reportQueryError";
 
@@ -24,34 +25,6 @@ type DashboardApplicationRow = {
   applied_at: null | string;
   status: JobStatus;
 };
-
-// cookies()를 사용하지 않으므로 unstable_cache 안에서 안전하게 실행됩니다.
-const getCachedDashboardData = unstable_cache(
-  async (userId: string, accessToken: string): Promise<DashboardData> => {
-    const supabase = createClientWithToken(accessToken);
-
-    const { data, error } = await supabase
-      .from("applications")
-      .select("applied_at, status")
-      .eq("user_id", userId);
-
-    if (error) {
-      const code =
-        error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR";
-      const reason = normalizeQueryError(error);
-
-      if (code === "QUERY_ERROR") {
-        reportQueryError("getDashboardData", reason);
-      }
-
-      throw new Error(reason);
-    }
-
-    return buildDashboardData(data ?? []);
-  },
-  ["dashboard-data"],
-  { revalidate: 60 },
-);
 
 export async function getDashboardData(): Promise<GetDashboardDataResult> {
   const authResult = await getAuthContext();
@@ -64,11 +37,38 @@ export async function getDashboardData(): Promise<GetDashboardDataResult> {
     };
   }
 
+  const { accessToken, userId } = authResult;
+
+  // cookies()를 사용하지 않으므로 unstable_cache 안에서 안전하게 실행됩니다.
+  const getCachedDashboardData = unstable_cache(
+    async (): Promise<DashboardData> => {
+      const supabase = createClientWithToken(accessToken);
+
+      const { data, error } = await supabase
+        .from("applications")
+        .select("applied_at, status")
+        .eq("user_id", userId);
+
+      if (error) {
+        const code =
+          error.code === AUTH_ERROR_CODE ? "AUTH_REQUIRED" : "QUERY_ERROR";
+        const reason = normalizeQueryError(error);
+
+        if (code === "QUERY_ERROR") {
+          reportQueryError("getDashboardData", reason);
+        }
+
+        throw new Error(reason);
+      }
+
+      return buildDashboardData(data ?? []);
+    },
+    ["dashboard-data", userId],
+    { revalidate: 60, tags: getApplicationsCacheTags(userId) },
+  );
+
   try {
-    const data = await getCachedDashboardData(
-      authResult.userId,
-      authResult.accessToken,
-    );
+    const data = await getCachedDashboardData();
 
     return { data, ok: true };
   } catch (e) {

@@ -1,53 +1,58 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-
-const BottomTabBar = dynamic(
-  () =>
-    import("./_components/BottomTabBar").then((mod) => ({
-      default: mod.BottomTabBar,
-    })),
-  { ssr: false },
-);
-
-const WindowScrollTopFAB = dynamic(
-  () =>
-    import("./_components/WindowScrollTopFAB").then((mod) => ({
-      default: mod.WindowScrollTopFAB,
-    })),
-  { ssr: false },
-);
+import { type ComponentType, useEffect, useState } from "react";
 
 export function ProtectedEnhancements() {
-  const [shouldMount, setShouldMount] = useState(false);
+  const [BottomTabBar, setBottomTabBar] = useState<ComponentType | null>(null);
+  const [WindowScrollTopFAB, setWindowScrollTopFAB] =
+    useState<ComponentType | null>(null);
 
   useEffect(() => {
+    let isCancelled = false;
+
+    const mountEnhancements = () => {
+      void Promise.all([
+        import("./_components/BottomTabBar"),
+        import("./_components/WindowScrollTopFAB"),
+      ]).then(([bottomTabBarModule, windowScrollTopFabModule]) => {
+        if (isCancelled) {
+          return;
+        }
+
+        setBottomTabBar(() => bottomTabBarModule.BottomTabBar);
+        setWindowScrollTopFAB(
+          () => windowScrollTopFabModule.WindowScrollTopFAB,
+        );
+      });
+    };
+
     const requestIdle = window.requestIdleCallback;
 
     if (requestIdle) {
       const idleId = requestIdle(
         () => {
-          setShouldMount(true);
+          mountEnhancements();
         },
         { timeout: 1200 },
       );
 
       return () => {
+        isCancelled = true;
         window.cancelIdleCallback(idleId);
       };
     }
 
     const timeoutId = window.setTimeout(() => {
-      setShouldMount(true);
+      mountEnhancements();
     }, 400);
 
     return () => {
+      isCancelled = true;
       window.clearTimeout(timeoutId);
     };
   }, []);
 
-  if (!shouldMount) {
+  if (!BottomTabBar || !WindowScrollTopFAB) {
     return null;
   }
 

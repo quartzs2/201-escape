@@ -20,6 +20,18 @@ export const DOCS_PASSED_STATUSES = [
   "OFFERED",
 ] as const satisfies readonly JobStatus[];
 
+export const APPLICATION_ACTIVE_STATUSES: readonly JobStatus[] = [
+  "SAVED",
+  "APPLIED",
+  "DOCS_PASSED",
+  "INTERVIEWING",
+] as const;
+
+export const APPLICATION_DONE_STATUSES: readonly JobStatus[] = [
+  "OFFERED",
+  "REJECTED",
+] as const;
+
 export const INTERVIEW_STATUSES = [
   "INTERVIEWING",
   "OFFERED",

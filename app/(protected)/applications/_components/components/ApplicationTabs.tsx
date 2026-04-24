@@ -3,13 +3,16 @@
 import { useId, useImperativeHandle, useRef } from "react";
 
 import type { VirtualListHandle } from "@/components/ui/virtual-list";
+import type {
+  ApplicationListItem,
+  ApplicationTabCounts,
+} from "@/lib/types/application";
 
 import { trackEvent } from "@/lib/analytics/client";
 import { ANALYTICS_EVENTS } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
 import type { TabValue } from "../constants";
-import type { ApplicationListItem } from "../types";
 
 import { DONE_STATUSES, IN_PROGRESS_STATUSES } from "../constants";
 import { ApplicationList } from "./ApplicationList";
@@ -27,6 +30,7 @@ export type ApplicationTabsHandle = {
 type ApplicationTabsProps = {
   applications: ApplicationListItem[];
   className?: string;
+  counts: ApplicationTabCounts;
   isFetchingNextPage?: boolean;
   listResetKey?: number | string;
   onNearEndAction?: () => void;
@@ -40,6 +44,7 @@ type ApplicationTabsProps = {
 export function ApplicationTabs({
   applications,
   className,
+  counts,
   isFetchingNextPage,
   listResetKey,
   onNearEndAction,
@@ -64,9 +69,9 @@ export function ApplicationTabs({
     label: string;
     value: TabValue;
   }> = [
-    { count: applications.length, label: "전체", value: "all" },
-    { count: inProgressApplications.length, label: "진행중", value: "active" },
-    { count: doneApplications.length, label: "완료", value: "done" },
+    { count: counts.all, label: "전체", value: "all" },
+    { count: counts.active, label: "진행중", value: "active" },
+    { count: counts.done, label: "완료", value: "done" },
   ];
   const selectedApplications = getApplicationsByTab({
     active: inProgressApplications,

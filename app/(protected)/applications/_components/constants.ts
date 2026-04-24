@@ -1,6 +1,11 @@
-import { APPLICATION_STATUS_META } from "@/lib/constants/application-status";
+import type { JobStatus } from "@/lib/types/job";
+
+import {
+  APPLICATION_ACTIVE_STATUSES,
+  APPLICATION_DONE_STATUSES,
+  APPLICATION_STATUS_META,
+} from "@/lib/constants/application-status";
 import { PLATFORM_LABEL } from "@/lib/constants/job-platform";
-import { JobStatus } from "@/lib/types/job";
 
 export const STATUS_META = APPLICATION_STATUS_META;
 
@@ -9,12 +14,9 @@ export { PLATFORM_LABEL };
 export { DOCS_STATUSES } from "@/lib/constants/application-status";
 
 export const IN_PROGRESS_STATUSES: JobStatus[] = [
-  "SAVED",
-  "APPLIED",
-  "DOCS_PASSED",
-  "INTERVIEWING",
+  ...APPLICATION_ACTIVE_STATUSES,
 ];
-export const DONE_STATUSES: JobStatus[] = ["OFFERED", "REJECTED"];
+export const DONE_STATUSES: JobStatus[] = [...APPLICATION_DONE_STATUSES];
 
 /**
  * 한 페이지에 로드할 지원서 수
