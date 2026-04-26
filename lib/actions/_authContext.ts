@@ -1,7 +1,8 @@
 import "server-only";
 import { cache } from "react";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClientWithToken } from "@/lib/supabase/server";
+import { getSupabaseAccessTokenFromCookie } from "@/lib/supabase/session";
 
 import { getAuthenticatedUserId } from "./_auth";
 
@@ -12,14 +13,13 @@ export type AuthContextResult =
   | { ok: false; reason: string };
 
 export const getAuthContext = cache(async (): Promise<AuthContextResult> => {
-  const supabase = await createClient();
-  const { data: sessionData } = await supabase.auth.getSession();
-  const accessToken = sessionData.session?.access_token;
+  const accessToken = await getSupabaseAccessTokenFromCookie();
 
   if (!accessToken) {
     return { ok: false, reason: AUTH_REQUIRED_REASON };
   }
 
+  const supabase = createClientWithToken(accessToken);
   const authResult = await getAuthenticatedUserId(supabase, accessToken);
 
   if (!authResult.ok) {
