@@ -68,6 +68,7 @@ export default defineConfig({
             "lib/auth/**/*.test.ts",
             "lib/adapters/**/*.test.ts",
             "lib/actions/**/*.test.ts",
+            "lib/supabase/**/*.test.ts",
           ],
           name: "unit",
         },

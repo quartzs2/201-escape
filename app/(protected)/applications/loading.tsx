@@ -3,9 +3,9 @@ import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 import { ApplicationsPanelFallback } from "./_components/components/ApplicationsPanelFallback";
 
 const PERIOD_CHIP_SKELETON_CLASSES = [
-  "h-10 w-14 rounded-full",
-  "h-10 w-24 rounded-full",
-  "h-10 w-20 rounded-full",
+  "h-[38px] w-14 rounded-full",
+  "h-[38px] w-24 rounded-full",
+  "h-[38px] w-20 rounded-full",
 ] as const;
 
 export default function ApplicationsLoading() {
@@ -28,7 +28,7 @@ function ApplicationFiltersFallback() {
       className="bg-background/95 px-5 py-5 backdrop-blur-sm sm:px-6"
     >
       <div className="grid gap-4">
-        <Skeleton className="h-12 w-full rounded-2xl" />
+        <Skeleton className="h-[50px] w-full rounded-2xl" />
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex flex-wrap gap-2">
             {PERIOD_CHIP_SKELETON_CLASSES.map((className) => (
@@ -36,7 +36,7 @@ function ApplicationFiltersFallback() {
             ))}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-10 w-40 rounded-full" />
+            <Skeleton className="h-[38px] w-40 rounded-full" />
           </div>
         </div>
       </div>
