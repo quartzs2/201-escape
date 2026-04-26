@@ -10,13 +10,13 @@ import type { ApplicationListItem } from "../types";
 import { ApplicationRow } from "./ApplicationRow";
 
 // ApplicationRow의 실측 전 초기 높이 추정값(px).
-// py-4(32) + 회사명(22.5) + 직군명(21) + gap-2(8) + 상태행(21) ≈ 105
-const ESTIMATED_ROW_HEIGHT = 105;
+// py-4(32) + 제목 영역(48) + gap-2.5(10) + 메타 행(20) + border-b(1) = 111
+const ESTIMATED_ROW_HEIGHT = 111;
 
 // 끝에서 몇 개 전에 다음 페이지를 미리 로드할지.
 const NEAR_END_THRESHOLD = 5;
-const LIST_BOTTOM_PADDING = 40;
 const PAGINATION_SKELETON_KEYS = [0, 1, 2] as const;
+const LIST_PADDING_BOTTOM = 40;
 
 type ApplicationListProps = {
   applications: ApplicationListItem[];
@@ -35,8 +35,8 @@ type ApplicationListRow =
       type: "application";
     }
   | {
-      key: number;
-      type: "pagination-skeleton";
+      id: string;
+      type: "skeleton";
     };
 
 export function ApplicationList({
@@ -56,15 +56,19 @@ export function ApplicationList({
     })),
     ...(isFetchingNextPage
       ? PAGINATION_SKELETON_KEYS.map((key) => ({
-          key,
-          type: "pagination-skeleton" as const,
+          id: `pagination-skeleton-${key}`,
+          type: "skeleton" as const,
         }))
       : []),
   ];
 
   const handleRangeChange = (startIndex: number, endIndex: number) => {
     onRangeChange?.(startIndex, endIndex);
-    if (onNearEnd && endIndex >= applications.length - NEAR_END_THRESHOLD) {
+    if (
+      onNearEnd &&
+      !isFetchingNextPage &&
+      endIndex >= applications.length - NEAR_END_THRESHOLD
+    ) {
       onNearEnd();
     }
   };
@@ -84,22 +88,24 @@ export function ApplicationList({
         emptyState={emptyState}
         estimatedItemHeight={ESTIMATED_ROW_HEIGHT}
         items={rows}
-        keyExtractor={(row) =>
-          row.type === "application"
-            ? row.application.id
-            : `pagination-skeleton-${row.key}`
+        keyExtractor={(item) =>
+          item.type === "application" ? item.application.id : item.id
         }
         onRangeChange={handleRangeChange}
-        paddingBottom={LIST_BOTTOM_PADDING}
+        paddingBottom={LIST_PADDING_BOTTOM}
         ref={ref}
-        renderItem={(row) => {
-          if (row.type === "pagination-skeleton") {
-            return <ApplicationRowSkeleton shouldAnnounce={row.key === 0} />;
+        renderItem={(item, index) => {
+          if (item.type === "skeleton") {
+            return (
+              <ApplicationRowSkeleton
+                shouldAnnounce={index === applications.length}
+              />
+            );
           }
 
           return (
             <ApplicationRow
-              application={row.application}
+              application={item.application}
               onSelectAction={onSelectApplication}
             />
           );
@@ -119,23 +125,22 @@ function ApplicationRowSkeleton({
     <div
       aria-label={shouldAnnounce ? "추가 항목을 불러오는 중입니다" : undefined}
       aria-live={shouldAnnounce ? "polite" : undefined}
-      className="border-b border-border/70 py-4"
+      className="border-b border-border/70"
       role={shouldAnnounce ? "status" : undefined}
     >
-      <div className="flex w-full items-start justify-between gap-4">
+      <div className="flex min-h-[110px] w-full items-start justify-between gap-4 px-1 py-4">
         <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-          <div className="flex flex-col gap-1.5">
-            <Skeleton className="h-4.5 w-24" />
-            <Skeleton className="h-4 w-40" />
+          <div className="flex flex-col">
+            <Skeleton className="mt-0.5 h-4.5 w-24" />
+            <Skeleton className="mt-1 h-6 w-40" />
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-6 w-16 rounded-full" />
-            <Skeleton className="h-4 w-14" />
-            <Skeleton className="h-4 w-12" />
+            <Skeleton className="h-5 w-16 rounded-full" />
+            <Skeleton className="h-5 w-12" />
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <Skeleton className="h-4.5 w-24" />
+        <div className="flex shrink-0 items-center gap-2 pt-1">
+          <Skeleton className="hidden h-5 w-12 sm:block" />
           <Skeleton className="size-4" />
         </div>
       </div>

@@ -27,7 +27,7 @@ export function ApplicationRow({
       <button
         aria-label={`${application.companyName} ${application.positionTitle} 지원 미리보기 열기`}
         className={cn(
-          "group flex w-full items-start justify-between gap-4 px-1 py-4 text-left transition-colors",
+          "group flex min-h-[110px] w-full items-start justify-between gap-4 px-1 py-4 text-left transition-colors",
           "cursor-pointer hover:bg-muted/30",
           "focus-visible:rounded-2xl focus-visible:bg-muted/30 focus-visible:ring-2 focus-visible:ring-primary/15 focus-visible:outline-none",
         )}
@@ -38,29 +38,29 @@ export function ApplicationRow({
         type="button"
       >
         <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-          <div className="flex flex-col gap-1">
-            <span className="text-[15px] font-bold tracking-tight text-foreground">
+          <div className="flex flex-col">
+            <span className="text-[15px] leading-5 font-bold tracking-tight text-foreground">
               {application.companyName}
             </span>
-            <span className="truncate text-sm leading-6 font-medium text-muted-foreground">
+            <span className="mt-1 truncate text-sm leading-6 font-medium text-muted-foreground">
               {application.positionTitle}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={cn(
-                "rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase",
+                "rounded-full px-2.5 py-1 text-[10px] leading-3 font-bold tracking-wider uppercase",
                 badgeClassName,
               )}
             >
               {label}
             </span>
             {application.platform !== "MANUAL" && (
-              <span className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+              <span className="text-[11px] leading-5 font-semibold tracking-wide text-muted-foreground uppercase">
                 {PLATFORM_LABEL[application.platform]}
               </span>
             )}
-            <span className="text-sm text-muted-foreground/80">
+            <span className="text-sm leading-5 text-muted-foreground/80">
               <TimeAgo dateString={application.appliedAt} />
             </span>
           </div>
