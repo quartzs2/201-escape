@@ -2,8 +2,9 @@
 
 import { type ComponentType, useEffect, useState } from "react";
 
+import { BottomTabBar } from "./_components/BottomTabBar";
+
 export function ProtectedEnhancements() {
-  const [BottomTabBar, setBottomTabBar] = useState<ComponentType | null>(null);
   const [WindowScrollTopFAB, setWindowScrollTopFAB] =
     useState<ComponentType | null>(null);
 
@@ -11,18 +12,12 @@ export function ProtectedEnhancements() {
     let isCancelled = false;
 
     const mountEnhancements = () => {
-      void Promise.all([
-        import("./_components/BottomTabBar"),
-        import("./_components/WindowScrollTopFAB"),
-      ]).then(([bottomTabBarModule, windowScrollTopFabModule]) => {
+      void import("./_components/WindowScrollTopFAB").then((module) => {
         if (isCancelled) {
           return;
         }
 
-        setBottomTabBar(() => bottomTabBarModule.BottomTabBar);
-        setWindowScrollTopFAB(
-          () => windowScrollTopFabModule.WindowScrollTopFAB,
-        );
+        setWindowScrollTopFAB(() => module.WindowScrollTopFAB);
       });
     };
 
@@ -52,14 +47,10 @@ export function ProtectedEnhancements() {
     };
   }, []);
 
-  if (!BottomTabBar || !WindowScrollTopFAB) {
-    return null;
-  }
-
   return (
     <>
       <BottomTabBar />
-      <WindowScrollTopFAB />
+      {WindowScrollTopFAB ? <WindowScrollTopFAB /> : null}
     </>
   );
 }
