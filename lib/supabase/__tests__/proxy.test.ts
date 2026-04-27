@@ -18,12 +18,12 @@ describe("updateSession", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = SUPABASE_URL;
   });
 
-  it("루트 요청에 세션 쿠키가 있으면 Supabase 검증 없이 로그인 페이지로 보낸다", async () => {
+  it("루트 요청에 세션 쿠키가 있어도 Supabase 검증 없이 공개 홈을 유지한다", async () => {
     const request = createRequest("/", `${AUTH_COOKIE_NAME}=session-cookie`);
 
     const response = await updateSession(request);
 
-    expect(response.headers.get("location")).toBe("https://example.com/login");
+    expect(response.headers.get("location")).toBeNull();
     expect(createServerClient).not.toHaveBeenCalled();
   });
 
