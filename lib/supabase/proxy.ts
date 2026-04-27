@@ -3,7 +3,6 @@ import { type NextRequest, NextResponse } from "next/server";
 
 const ROOT_PATH = "/";
 const LOGIN_PATH = "/login";
-const AUTH_COOKIE_SUFFIX = "-auth-token";
 const AUTH_BYPASS_PATH_PREFIXES = [
   "/api/events",
   "/auth",
@@ -22,12 +21,6 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (pathname === ROOT_PATH) {
-    if (hasSupabaseAuthCookie(request.cookies.getAll())) {
-      const url = request.nextUrl.clone();
-      url.pathname = LOGIN_PATH;
-      return NextResponse.redirect(url);
-    }
-
     return NextResponse.next({
       request,
     });
@@ -92,34 +85,6 @@ export async function updateSession(request: NextRequest) {
   // of sync and terminate the user's session prematurely!
 
   return supabaseResponse;
-}
-
-function getSupabaseAuthCookieName() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-
-  if (!supabaseUrl) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_URL is required.");
-  }
-
-  const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
-
-  return `sb-${projectRef}${AUTH_COOKIE_SUFFIX}`;
-}
-
-function hasSupabaseAuthCookie(
-  cookies: {
-    name: string;
-    value: string;
-  }[],
-) {
-  const authCookieName = getSupabaseAuthCookieName();
-
-  return cookies.some(({ name, value }) => {
-    const isAuthCookie =
-      name === authCookieName || name.startsWith(`${authCookieName}.`);
-
-    return isAuthCookie && value.length > 0;
-  });
 }
 
 function isAuthBypassPath(pathname: string) {
