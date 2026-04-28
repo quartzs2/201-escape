@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 const ROOT_PATH = "/";
+const DASHBOARD_PATH = "/dashboard";
 const LOGIN_PATH = "/login";
 const AUTH_BYPASS_PATH_PREFIXES = [
   "/api/events",
@@ -15,12 +16,6 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (isAuthBypassPath(pathname)) {
-    return NextResponse.next({
-      request,
-    });
-  }
-
-  if (pathname === ROOT_PATH) {
     return NextResponse.next({
       request,
     });
@@ -64,6 +59,12 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
 
   const user = data?.claims;
+
+  if (user && pathname === ROOT_PATH) {
+    const url = request.nextUrl.clone();
+    url.pathname = DASHBOARD_PATH;
+    return NextResponse.redirect(url);
+  }
 
   if (!user && pathname !== ROOT_PATH) {
     const url = request.nextUrl.clone();
