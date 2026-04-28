@@ -18,22 +18,24 @@ describe("updateSession", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = SUPABASE_URL;
   });
 
-  it("루트 요청에 세션 쿠키가 있어도 Supabase 검증 없이 공개 홈을 유지한다", async () => {
+  it("루트 요청에 인증 claims가 있으면 대시보드로 보낸다", async () => {
+    mockSupabaseClaims({ sub: "user-id" });
     const request = createRequest("/", `${AUTH_COOKIE_NAME}=session-cookie`);
 
     const response = await updateSession(request);
 
-    expect(response.headers.get("location")).toBeNull();
-    expect(createServerClient).not.toHaveBeenCalled();
+    expect(response.headers.get("location")).toBe(
+      "https://example.com/dashboard",
+    );
   });
 
-  it("루트 요청에 세션 쿠키가 없으면 Supabase 검증 없이 공개 홈을 유지한다", async () => {
+  it("루트 요청에 인증 claims가 없으면 공개 홈을 유지한다", async () => {
+    mockSupabaseClaims(null);
     const request = createRequest("/");
 
     const response = await updateSession(request);
 
     expect(response.headers.get("location")).toBeNull();
-    expect(createServerClient).not.toHaveBeenCalled();
   });
 
   it("보호 라우트에서 인증 claims가 없으면 로그인 페이지로 보낸다", async () => {
